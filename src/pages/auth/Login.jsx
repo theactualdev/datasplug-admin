@@ -76,7 +76,7 @@ const Login = () => {
                   type="text"
                   id="default-01"
                   {...register("name", { required: "This field is required" })}
-                  defaultValue="admin@mail.com"
+                  defaultValue="admin@fabpay.com"
                   placeholder="Enter your email address or username"
                   className="form-control-lg form-control"
                 />
@@ -88,7 +88,7 @@ const Login = () => {
                 <label className="form-label" htmlFor="password">
                   Passcode
                 </label>
-                <Link className="link link-primary link-sm" to={`${import.meta.env.PUBLIC_URL}/auth-reset`}>
+                <Link className="link link-primary link-sm" to={`/auth-reset`}>
                   Forgot Code?
                 </Link>
               </div>
@@ -109,7 +109,7 @@ const Login = () => {
                   type={passState ? "text" : "password"}
                   id="password"
                   {...register("passcode", { required: "This field is required" })}
-                  defaultValue="test123.."
+                  defaultValue="password"
                   placeholder="Enter your passcode"
                   className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
                 />

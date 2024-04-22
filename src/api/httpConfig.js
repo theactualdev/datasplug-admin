@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import BACKEND_URLS from "./urls";
 import config from "../utils/config";
 import { useRefreshToken } from "./authentication";
+import { redirect } from "react-router";
 
 export const configOptions = () => {
   if (typeof window === "undefined") return {};
@@ -53,10 +54,14 @@ instance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (error?.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+      console.error(error);
+      Cookies.remove("refresh_token");
+      Cookies.remove("access_token");
+      window.location.pathname = "/auth-login";
+      // originalRequest._retry = true;
       //IF ACCESS TOKEN HAS EXPIRED, CALL THE REFRESH FUNCTION
-      await useRefreshToken();
-      return instance(originalRequest);
+      // await useRefreshToken();
+      // return instance(originalRequest);
     }
 
     return Promise.reject(error);

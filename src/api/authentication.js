@@ -28,11 +28,11 @@ export const useLogin = () => {
     },
     {
       onSuccess: (data) => {
+        // console.log(data);
         toast.success(data?.message);
-        const { admin, accesstoken, refreshToken } = data.user;
-        setUser(admin);
-        Cookies.set("access_token", accesstoken, { expires: inOneHour });
-        Cookies.set("refresh_token", refreshToken, { expires: 1 });
+        setUser(data?.data?.user);
+        Cookies.set("access_token", data?.data?.token, { expires: 1 });
+        Cookies.set("refresh_token", data?.data?.token, { expires: 1 });
         navigate(redirectPath);
       },
       onError: (error) => {

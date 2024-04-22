@@ -4,7 +4,7 @@ const BACKEND_URLS = {
   auth: {
     me: "/",
     // register: "/users/",
-    login: "/login",
+    login: "/auth/login",
     // resendOtp: "/users/resend-verification/",
     forgotPassword: "/forgot-password",
     resetPassword: "/reset-password/",
@@ -12,6 +12,10 @@ const BACKEND_URLS = {
     logout: "/logout",
     refreshToken: "/refresh-access-token/",
   },
+  crypto: "/crypto-transactions",
+  giftcard: "/giftcard-transactions",
+  transaction: "/transactions",
+  wallet: "/wallet/transactions",
   product: {
     all: "/products",
     productReview: "/review",

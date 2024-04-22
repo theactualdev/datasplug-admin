@@ -15,12 +15,12 @@ const ImageContainer = ({ img }) => {
       }}
       href="#gallery"
     >
-      <img className="w-100 rounded-top" src={img} alt="" />
+      <img className="w-100 h-100" style={{ objectFit: "cover" }} src={img} alt="" />
       <Modal isOpen={open} toggle={toggle} size="large">
         <button type="button" className="mfp-close" onClick={toggle}>
           ×
         </button>
-        <img className="w-100 rounded-top" style={{ height: "100%" }} src={img} alt="" />
+        <img className="w-100" style={{ maxHeight: "90svh", objectFit: "contain" }} src={img} alt="" />
       </Modal>
     </a>
   );

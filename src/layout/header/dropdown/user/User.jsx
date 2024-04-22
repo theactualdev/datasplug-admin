@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Dropdown, DropdownMenu, DropdownToggle } from "reactstrap";
 import { useRecoilState } from "recoil";
 import { useLogout } from "../../../../api/authentication";
@@ -10,6 +10,14 @@ import { findUpper } from "../../../../utils/Utils";
 const User = () => {
   const [open, setOpen] = useState(false);
   const [user] = useRecoilState(userState);
+
+  const fullname = useMemo(() => {
+    if (user) {
+      return `${user?.firstname} ${user?.lastname}`;
+    } else {
+      return null;
+    }
+  }, [user]);
 
   const { mutate } = useLogout();
   const toggle = () => setOpen((prevState) => !prevState);
@@ -29,10 +37,10 @@ const User = () => {
         }}
       >
         <div className="user-toggle">
-          <UserAvatar className="sm" text={user?.name && findUpper(user.name)} image={user?.avatar} />
+          <UserAvatar className="sm" text={fullname && findUpper(fullname)} image={user?.avatar} />
           <div className="user-info d-none d-md-block">
             <div className="user-status">Administrator</div>
-            <div className="user-name dropdown-indicator">{user?.name}</div>
+            <div className="user-name dropdown-indicator">{fullname}</div>
           </div>
         </div>
       </DropdownToggle>
@@ -40,14 +48,10 @@ const User = () => {
         <div className="dropdown-inner user-card-wrap bg-lighter d-none d-md-block">
           <div className="user-card sm">
             <div className="user-avatar">
-              {user?.avatar ? (
-                <img src={user?.avatar} alt="avatar" />
-              ) : (
-                <span>{user?.name && findUpper(user?.name)}</span>
-              )}
+              {user?.avatar ? <img src={user?.avatar} alt="avatar" /> : <span>{fullname && findUpper(fullname)}</span>}
             </div>
             <div className="user-info">
-              <span className="lead-text">{user?.name}</span>
+              <span className="lead-text">{fullname}</span>
               <span className="sub-text">{user?.email}</span>
             </div>
           </div>

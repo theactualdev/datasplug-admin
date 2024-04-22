@@ -43,10 +43,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import { RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import ChangePassword from "../pages/auth/ChangePassword";
 import OtherSettingsPage from "../pages/main/dashboard/settings/OtherSettings";
-import AssetListPage from "../pages/main/dashboard/assets/ProductList";
-import GiftCardListPage from "../pages/main/dashboard/giftcards/ProductList";
-import WithdrawalListPage from "../pages/main/dashboard/withdrawals/ProductList";
-import TransactionsPage from "../pages/main/dashboard/transactions/ProductList";
+import AssetListPage from "../pages/main/dashboard/assets/assetsPage";
+import GiftCardListPage from "../pages/main/dashboard/giftcards/giftcard";
+import WithdrawalListPage from "../pages/main/dashboard/withdrawals/withdrawals";
+import TransactionsPage from "../pages/main/dashboard/transactions/transactions";
 import ReferralsPage from "../pages/main/dashboard/referrals/ProductList";
 import AnnouncementPage from "../pages/main/dashboard/announcement/ProductList";
 import BannersPage from "../pages/main/dashboard/banners/ProductList";
@@ -57,6 +57,8 @@ import SystemBankAccountPage from "../pages/main/dashboard/system-bank-account/P
 import ServicesPage from "../pages/main/dashboard/services/ProductList";
 import ServiceProviders from "../pages/main/dashboard/service-providers/ProductList";
 import TradeSettings from "../pages/main/dashboard/trade-settings/ProductList";
+import AssetDetails from "../pages/main/dashboard/assets/details";
+import GiftcardDetails from "../pages/main/dashboard/giftcards/details";
 
 const routes = (
   <Route>
@@ -88,7 +90,9 @@ const routes = (
           <Route path="coupons" element={<CouponsPage />}></Route>
 
           <Route path="assets" element={<AssetListPage />} />
+          <Route path="assets-details/:assetId" element={<AssetDetails />} />
           <Route path="giftcards" element={<GiftCardListPage />} />
+          <Route path="giftcards-details/:giftcardId" element={<GiftcardDetails />} />
           <Route path="withdrawals" element={<WithdrawalListPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="announcement" element={<AnnouncementPage />} />
