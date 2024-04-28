@@ -23,7 +23,7 @@ import {
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { findUpper, formatDateWithTime } from "../../../../utils/Utils";
+import { findUpper, formatDateWithTime, formatter } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import SortToolTip from "../tables/SortTooltip";
 import { filterRole, filterStatus } from "./UserData";
@@ -31,25 +31,27 @@ import Search from "../tables/Search";
 const UserList = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [userId, setUserId] = useState(null);
 
-  const itemsPerPage = searchParams.get("limit") ?? 7;
+  const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
   const search = searchParams.get("search") ?? "";
 
   const { isLoading, data: users } = useGetAllUsers(currentPage, itemsPerPage, search);
-  const { mutate: updateUserStatus } = useUpdateUserStatus();
+  const { mutate: updateUserStatus } = useUpdateUserStatus(userId);
+  // console.log(users);
 
   const [tablesm, updateTableSm] = useState(false);
-  const [onSearch, setonSearch] = useState(true);
+  const [onSearch, setonSearch] = useState(false);
 
   const [filters, setfilters] = useState({});
 
   // function to change to suspend property for an item
   const suspendUser = (id) => {
-    let data = {
-      id,
-      status: "blocked",
-    };
+    // let data = {
+    //   id,
+    //   status: "blocked",
+    // };
     updateUserStatus(data);
   };
 
@@ -80,7 +82,7 @@ const UserList = () => {
               Users Lists
             </BlockTitle>
             <BlockDes className="text-soft">
-              <p>You have total {users?.totalDocuments?.toLocaleString()} users.</p>
+              <p>You have total {users?.meta?.total?.toLocaleString()} users.</p>
             </BlockDes>
           </BlockHeadContent>
         </BlockHead>
@@ -213,7 +215,7 @@ const UserList = () => {
             </div>
             {isLoading ? (
               <LoadingSpinner />
-            ) : users?.totalDocuments > 0 ? (
+            ) : users?.meta?.total > 0 ? (
               <>
                 <DataTableBody compact>
                   <DataTableHead>
@@ -223,11 +225,12 @@ const UserList = () => {
                     <DataTableRow>
                       <span className="sub-text ">User</span>
                     </DataTableRow>
-                    <DataTableRow size="md">
-                      <span className="sub-text">Role</span>
-                    </DataTableRow>
+
                     <DataTableRow size="sm">
-                      <span className="sub-text">Email</span>
+                      <span className="sub-text">Phone</span>
+                    </DataTableRow>
+                    <DataTableRow size="md">
+                      <span className="sub-text">Wallet</span>
                     </DataTableRow>
                     <DataTableRow size="sm">
                       <span className="sub-text">Date Joined</span>
@@ -256,25 +259,34 @@ const UserList = () => {
                             <UserAvatar
                               theme={item?.avatar}
                               className="xs"
-                              text={findUpper(`${item?.firstName} ${item?.lastName}`)}
+                              text={findUpper(`${item?.firstname} ${item?.lastname}`)}
                               image={item?.profilePicture}
                             />
                             <div className="user-name">
                               <span className="tb-lead">
-                                {item?.firstName} {item?.lastName}{" "}
+                                {item?.firstname} {item?.lastname}{" "}
                               </span>
+                              <span className="text-primary text-ellipsis fw-normal fs-12px">{item.email}</span>
                             </div>
                           </div>
+
                           {/* </Link> */}
                         </DataTableRow>
-                        <DataTableRow size="md">
-                          <span className="text-capitalize">{item.role}</span>
+
+                        <DataTableRow size="sm">
+                          {item.phone ? (
+                            <span>
+                              ({item.phone_code}) {item.phone}
+                            </span>
+                          ) : (
+                            <span>Not set</span>
+                          )}
                         </DataTableRow>
                         <DataTableRow size="sm">
-                          <span>{item.email}</span>
+                          <span>{formatter("NGN").format(item?.wallet?.balance)}</span>
                         </DataTableRow>
                         <DataTableRow size="lg">
-                          <span>{formatDateWithTime(item.createdAt)}</span>
+                          <span>{formatDateWithTime(item.created_at)}</span>
                         </DataTableRow>
                         <DataTableRow>
                           <span
@@ -307,23 +319,25 @@ const UserList = () => {
                                         <span>View user</span>
                                       </DropdownItem>
                                     </li>
-                                    {item.status !== "Suspend" && (
-                                      <React.Fragment>
-                                        <li className="divider"></li>
-                                        <li onClick={() => suspendUser(item.id)}>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#suspend"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                            }}
-                                          >
-                                            <Icon name="na"></Icon>
-                                            <span>Suspend User</span>
-                                          </DropdownItem>
-                                        </li>
-                                      </React.Fragment>
-                                    )}
+
+                                    <li className="divider"></li>
+                                    <li
+                                      onClick={() => {
+                                        setUserId(item.id);
+                                        updateUserStatus();
+                                      }}
+                                    >
+                                      <DropdownItem
+                                        tag="a"
+                                        href="#suspend"
+                                        onClick={(ev) => {
+                                          ev.preventDefault();
+                                        }}
+                                      >
+                                        <Icon name="na"></Icon>
+                                        <span>{item.status === "active" ? "Restrict" : "Unrestrict"} User</span>
+                                      </DropdownItem>
+                                    </li>
                                   </ul>
                                 </DropdownMenu>
                               </UncontrolledDropdown>
@@ -335,10 +349,10 @@ const UserList = () => {
                   })}
                 </DataTableBody>
                 <div className="card-inner">
-                  {users?.totalDocuments > 0 && (
+                  {users?.meta?.total > 0 && (
                     <PaginationComponent
                       itemPerPage={itemsPerPage}
-                      totalItems={users?.totalDocuments}
+                      totalItems={users?.meta?.total}
                       paginate={paginate}
                       currentPage={Number(currentPage)}
                     />

@@ -78,9 +78,20 @@ const menu = [
   },
   {
     icon: "question",
-    text: "FAQs",
-    link: "/faqs",
+    text: "FAQ",
     permission: "all",
+    subMenu: [
+      {
+        text: "FAQ Categories",
+        link: "/faq-categories",
+        permission: "all",
+      },
+      {
+        text: "FAQs",
+        link: "/faqs",
+        permission: "all",
+      },
+    ],
   },
   {
     icon: "mobile",

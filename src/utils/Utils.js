@@ -188,6 +188,17 @@ export const formatDateNumeric = (str) => {
   });
 };
 
+export const formatDateTimeNumeric = (str) => {
+  return new Date(str).toLocaleDateString("en-ca", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+};
+
 export const formatDateWithTime = (str) => {
   return new Date(str).toLocaleDateString("en-us", {
     year: "numeric",

@@ -16,6 +16,8 @@ const BACKEND_URLS = {
   giftcard: "/giftcard-transactions",
   transaction: "/transactions",
   wallet: "/wallet/transactions",
+  annoucement: "/alerts",
+  banners: "/banners",
   product: {
     all: "/products",
     productReview: "/review",

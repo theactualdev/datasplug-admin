@@ -3,13 +3,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { instance } from "../httpConfig";
 import { toast } from "react-hot-toast";
 
-export const useGetAllUsers = (page, limit, search) => {
+export const useGetAllUsers = (currentPage, size, search) => {
+  const page = `page=${currentPage}`;
+  const per_page = `per_page=${size}`;
   const searchTerm = search ? `&search=${search}` : "";
   return useQuery(
-    ["getAllUsers", page, limit, searchTerm],
+    ["getAllUsers", page, size, searchTerm],
     async () => {
       const request = await instance
-        .get(BACKEND_URLS.users + `?page=${page}&limit=${limit}${searchTerm}`)
+        .get(BACKEND_URLS.users + `?${page}&${per_page}${searchTerm}`)
         .then((res) => res?.data)
         .catch((err) => {
           throw err;
@@ -30,7 +32,7 @@ export const useGetSingleUser = (id) => {
     ["getSingleUser"],
     async () => {
       const request = await instance
-        .get(BACKEND_URLS.users + `?id=${id}`)
+        .get(BACKEND_URLS.users + `/${id}`)
         .then((res) => res?.data)
         .catch((err) => {
           throw err;
@@ -46,14 +48,14 @@ export const useGetSingleUser = (id) => {
   );
 };
 
-export const useUpdateUserStatus = () => {
+export const useUpdateUserStatus = (id) => {
   const queryClient = useQueryClient();
 
   return useMutation(
     (data) =>
       toast.promise(
         instance
-          .put(BACKEND_URLS.users, data)
+          .put(BACKEND_URLS.users + `/${id}`)
           .then((res) => res.data)
           .catch((err) => {
             throw err;

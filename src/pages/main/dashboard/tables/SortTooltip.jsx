@@ -5,7 +5,7 @@ import { DropdownItem } from "reactstrap";
 const SortToolTip = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const itemsPerPage = searchParams.get("limit") ?? 7;
+  const itemsPerPage = searchParams.get("limit") ?? 100;
   const changeLimit = (value) => {
     setSearchParams((searchParams) => {
       searchParams.set("limit", value);
@@ -18,51 +18,40 @@ const SortToolTip = () => {
         <li>
           <span>Show</span>
         </li>
-        <li className={itemsPerPage === 7 ? "active" : ""}>
-          <DropdownItem
-            tag="a"
-            href="#dropdownitem"
-            onClick={(ev) => {
-              ev.preventDefault();
-              changeLimit(7);
-            }}
-          >
-            7
-          </DropdownItem>
-        </li>
-        <li className={itemsPerPage === 20 ? "active" : ""}>
-          <DropdownItem
-            tag="a"
-            href="#dropdownitem"
-            onClick={(ev) => {
-              ev.preventDefault();
-              changeLimit(20);
-            }}
-          >
-            20
-          </DropdownItem>
-        </li>
-        <li className={itemsPerPage === 50 ? "active" : ""}>
-          <DropdownItem
-            tag="a"
-            href="#dropdownitem"
-            onClick={(ev) => {
-              ev.preventDefault();
-              changeLimit(50);
-            }}
-          >
-            50
-          </DropdownItem>
-        </li>
         <li className={itemsPerPage === 100 ? "active" : ""}>
           <DropdownItem
             tag="a"
             href="#dropdownitem"
             onClick={(ev) => {
               ev.preventDefault();
+              changeLimit(100);
             }}
           >
             100
+          </DropdownItem>
+        </li>
+        <li className={itemsPerPage === 200 ? "active" : ""}>
+          <DropdownItem
+            tag="a"
+            href="#dropdownitem"
+            onClick={(ev) => {
+              ev.preventDefault();
+              changeLimit(200);
+            }}
+          >
+            200
+          </DropdownItem>
+        </li>
+        <li className={itemsPerPage === 500 ? "active" : ""}>
+          <DropdownItem
+            tag="a"
+            href="#dropdownitem"
+            onClick={(ev) => {
+              ev.preventDefault();
+              changeLimit(500);
+            }}
+          >
+            500
           </DropdownItem>
         </li>
       </ul>

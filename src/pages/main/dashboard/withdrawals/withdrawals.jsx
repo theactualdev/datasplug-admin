@@ -473,7 +473,7 @@ const WithdrawalListPage = () => {
                   <span className="sub-text">Phone</span>
                   <span className="caption-text">{formData.phone}</span>
                 </Col>
-
+                {/* 
                 <h6>Bank</h6>
                 <Col lg={6}>
                   <span className="sub-text">Account Name</span>
@@ -486,7 +486,7 @@ const WithdrawalListPage = () => {
                 <Col lg={6}>
                   <span className="sub-text">Bank</span>
                   <span className="caption-text"> {formData.bank}</span>
-                </Col>
+                </Col> */}
               </Row>
             </div>
           </ModalBody>

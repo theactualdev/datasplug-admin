@@ -1,9 +1,15 @@
-import React, { Suspense, useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import SortToolTip from "../tables/SortTooltip";
-import Search from "../tables/Search";
-import { useGetAllProducts } from "../../../../api/product/products";
+import { useSearchParams } from "react-router-dom";
+import { Card, DropdownItem, DropdownMenu, DropdownToggle, Modal, ModalBody, UncontrolledDropdown } from "reactstrap";
+import {
+  useCreateAnnouncement,
+  useDeleteAnnouncement,
+  useDispatchAnnouncement,
+  useEditAnnouncement,
+  useGetAnnouncement,
+  useRestoreAnnouncement,
+} from "../../../../api/announcement";
 import {
   Block,
   BlockBetween,
@@ -18,30 +24,18 @@ import {
   DataTableRow,
   Icon,
   PaginationComponent,
-  RSelect,
   Row,
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
+import { formatDateWithTime } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
-import ProductTable from "../tables/ProductTable";
-import { useGetAssetsTransactions } from "../../../../api/assets";
-import {
-  Badge,
-  Card,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Modal,
-  ModalBody,
-  UncontrolledDropdown,
-} from "reactstrap";
-import { formatter, formatDateWithTime } from "../../../../utils/Utils";
-import { useGetAllTransactions, useGetWithdrawalTransactions } from "../../../../api/transactions";
+import Search from "../tables/Search";
+import SortToolTip from "../tables/SortTooltip";
+import AddModal from "./AddModal";
 
-const TransactionsPage = () => {
+const AnnouncementPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const [editedId, setEditedId] = useState(null);
 
@@ -49,24 +43,26 @@ const TransactionsPage = () => {
   const currentPage = searchParams.get("page") ?? 1;
   const search = searchParams.get("search") ?? "";
   const type = searchParams.get("type") ?? undefined;
-  // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
-  const { isLoading, data, error } = useGetAllTransactions(currentPage, itemsPerPage);
+  const { isLoading, data } = useGetAnnouncement(currentPage, itemsPerPage);
+  const { mutate: createAnnouncement } = useCreateAnnouncement();
+  const { mutate: editAnnouncement } = useEditAnnouncement(editedId);
+  const { mutate: deleteAnnouncement } = useDeleteAnnouncement(editedId);
+  const { mutate: restoreAnnoucement } = useRestoreAnnouncement(editedId);
+  const { mutate: dispatchAnnoucement } = useDispatchAnnouncement(editedId);
+
   // console.log(data);
+  const [sm, updateSm] = useState(false);
 
   const [formData, setFormData] = useState({
-    reference: "",
-    amount: "",
-    type: "",
-    provider: "",
-    remark: "",
+    title: "",
+    body: "",
+    target: "",
+    userCount: "",
+    channels: [],
+    failedNote: "",
+    dispatchDate: "",
+    dateCreated: "",
     status: "",
-    fee: "",
-    accountName: "",
-    accountNumber: "",
-    bank: "",
-    fullName: "",
-    email: "",
-    phone: "",
   });
   const [view, setView] = useState({
     edit: false,
@@ -92,69 +88,42 @@ const TransactionsPage = () => {
 
   const resetForm = () => {
     setFormData({
-      reference: "",
-      amount: "",
-      type: "",
-      provider: "",
-      remark: "",
+      title: "",
+      body: "",
+      target: "",
+      userCount: "",
+      channels: [],
+      failedNote: "",
+      dispatchDate: "",
+      dateCreated: "",
       status: "",
-      fee: "",
-      accountName: "",
-      accountNumber: "",
-      bank: "",
-      fullName: "",
-      email: "",
-      phone: "",
     });
-    reset({});
+    // reset({});
   };
 
   // function that loads the want to editted data
   const onEditClick = (id) => {
     data?.data?.forEach((item) => {
-      let customerDetails;
       if (item.id === id) {
-        if (item.purpose === "electricity") {
-          customerDetails = {
-            meterName: item?.meta?.customer?.meter_name,
-            meterNumber: item?.meta?.customer?.meter_number,
-            meterAddress: item?.meta?.customer?.meter_address,
-            provider: item?.meta?.provider?.name,
-          };
-        }
-        if (item.purpose === "airtime") {
-          customerDetails = {
-            customerPhone: item?.meta?.customer?.phone,
-            network: item?.meta?.provider?.name,
-          };
-        }
-        if (item.purpose === "betting") {
-          customerDetails = {
-            bettingId: item?.meta?.customer?.customer_id,
-            bettingProvider: item?.meta?.provider?.name,
-          };
-        }
         setFormData({
-          reference: item?.reference,
-          amount: item?.amount,
-          type: item?.type,
-          purpose: item?.purpose,
-          provider: item?.provider,
-          remark: item?.remark,
+          title: item?.title,
+          body: item?.body,
           status: item?.status,
-          fee: item?.fee,
-          accountName: item?.meta?.account_name,
-          accountNumber: item?.meta?.account_number,
-          bank: item?.meta?.bank_name,
-          fullName: `${item?.user?.firstname} ${item?.user?.lastname}`,
-          email: item?.user?.email,
-          phone: `${item?.user?.phone_code}${item?.user?.phone}`,
-          ...customerDetails,
+          target: item?.target,
+          userCount: item?.user_count,
+          failedNote: item?.failed_note ? item.failedNote : "No note",
+          channels: item?.channels,
+          dateCreated: item?.created_at,
+          dispatchDate: item?.dispatch_datetime,
         });
       }
     });
     setEditedId(id);
     setView({ add: false, edit: true });
+  };
+
+  const onSubmit = (data) => {
+    console.log(data);
   };
 
   // function to filter data
@@ -181,11 +150,11 @@ const TransactionsPage = () => {
   };
 
   const statusColor = useCallback((status) => {
-    if (status === "upcoming") {
+    if (status === "pending") {
       return "warning";
-    } else if (status === "active") {
+    } else if (status === "successful") {
       return "success";
-    } else if (status === "completed") {
+    } else if (status === "") {
       return "info";
     } else {
       return "danger";
@@ -203,12 +172,39 @@ const TransactionsPage = () => {
 
   return (
     <React.Fragment>
-      <Head title="Assets"></Head>
+      <Head title="Announcement"></Head>
       <Content>
         <BlockHead size="sm">
+          {/* <BlockBetween>
+            <BlockHeadContent>
+              <BlockTitle>Announcements</BlockTitle>
+            </BlockHeadContent>
+          </BlockBetween> */}
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle>Transactions</BlockTitle>
+              <BlockTitle tag="h3" page>
+                Announcements{" "}
+              </BlockTitle>
+            </BlockHeadContent>
+            <BlockHeadContent>
+              <div className="toggle-wrap nk-block-tools-toggle">
+                <Button
+                  className={`btn-icon btn-trigger toggle-expand me-n1 ${sm ? "active" : ""}`}
+                  onClick={() => updateSm(!sm)}
+                >
+                  <Icon name="menu-alt-r"></Icon>
+                </Button>
+                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
+                  <ul className="nk-block-tools g-3">
+                    <li className="nk-block-tools-opt">
+                      <Button color="primary" onClick={() => toggle("add")}>
+                        <Icon name="plus"></Icon>
+                        <span>Create Announcement</span>
+                      </Button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
@@ -218,7 +214,7 @@ const TransactionsPage = () => {
             <div className="card-inner border-bottom">
               <div className="card-title-group">
                 <div className="card-title">
-                  <h5 className="title">Transactions</h5>
+                  <h5 className="title">All Annoucements</h5>
                 </div>
                 <div className="card-tools me-n1">
                   <ul className="btn-toolbar gx-1">
@@ -317,19 +313,19 @@ const TransactionsPage = () => {
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
                         <DataTableRow size="sm">
-                          <span className="tb-tnx-head bg-white text-secondary">Fullname</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Title</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span className="tb-tnx-head bg-white text-secondary">Amount</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Creator</span>
                         </DataTableRow>
                         <DataTableRow size="md">
-                          <span className="tb-tnx-head bg-white text-secondary">Purpose</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Channel</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span className="tb-tnx-head bg-white text-secondary">Type</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Target</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span className="tb-tnx-head bg-white text-secondary">Date</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Target Count</span>
                         </DataTableRow>
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
@@ -356,60 +352,115 @@ const TransactionsPage = () => {
                         return (
                           <DataTableItem key={item.id} className="text-secondary">
                             <DataTableRow size="sm" className="text-primary fw-bold">
-                              <span className="title">
-                                {item?.user?.firstname} {item?.user?.lastname}
-                              </span>
+                              <span className="title">{item.title}</span>
                             </DataTableRow>
                             <DataTableRow>
-                              <span>{formatter("NGN").format(item?.amount)}</span>
+                              <span>Super Admin</span>
                             </DataTableRow>
 
                             <DataTableRow>
-                              <span className="text-capitalize"> {item?.purpose}</span>
+                              {item?.channels?.map((item, index) => (
+                                <span key={item} className="text-capitalize">
+                                  {item}
+                                  {index !== 1 && ","}{" "}
+                                </span>
+                              ))}
                             </DataTableRow>
                             <DataTableRow>
-                              <span className="text-capitalize"> {item?.type}</span>
+                              <span className="text-capitalize"> {item?.target}</span>
                             </DataTableRow>
                             <DataTableRow>
-                              <span>{formatDateWithTime(item.created_at)}</span>
+                              <span>{item.user_count}</span>
                             </DataTableRow>
                             <DataTableRow>
                               <span className="text-capitalize">{item.status}</span>
                             </DataTableRow>
-                            <DataTableRow className="nk-tb-col-tools">
-                              <ul className="nk-tb-actions gx-1 my-n1">
-                                <li className="me-n1">
-                                  <UncontrolledDropdown>
-                                    <DropdownToggle
-                                      tag="a"
-                                      href="#more"
-                                      onClick={(ev) => ev.preventDefault()}
-                                      className="dropdown-toggle btn btn-icon btn-trigger"
-                                    >
-                                      <Icon name="more-h"></Icon>
-                                    </DropdownToggle>
-                                    <DropdownMenu end>
-                                      <ul className="link-list-opt no-bdr">
+                            <DataTableRow className="tb-odr-action">
+                              <div className="tb-odr-btns d-none d-md-inline">
+                                <Button
+                                  color="primary"
+                                  className="btn-sm"
+                                  onClick={(ev) => {
+                                    onEditClick(item.id);
+                                    toggle("details");
+                                  }}
+                                >
+                                  View
+                                </Button>
+
+                                <UncontrolledDropdown>
+                                  <DropdownToggle
+                                    tag="a"
+                                    href="#more"
+                                    onClick={(ev) => ev.preventDefault()}
+                                    className="text-soft dropdown-toggle btn btn-icon btn-trigger ms-1"
+                                  >
+                                    <Icon name="more-h"></Icon>
+                                  </DropdownToggle>
+                                  <DropdownMenu end>
+                                    <ul className="link-list-plain">
+                                      {item.status === "pending" && (
                                         <li>
                                           <DropdownItem
                                             tag="a"
                                             href="#edit"
                                             onClick={(ev) => {
                                               ev.preventDefault();
-                                              // navigate(`/giftcards-details/${item.id}`);
                                               onEditClick(item.id);
-                                              toggle("details");
+                                              toggle("edit");
                                             }}
                                           >
-                                            <Icon name="eye"></Icon>
-                                            <span>View</span>
+                                            <Icon name="pen2"></Icon>
+                                            <span>Edit</span>
                                           </DropdownItem>
                                         </li>
-                                      </ul>
-                                    </DropdownMenu>
-                                  </UncontrolledDropdown>
-                                </li>
-                              </ul>
+                                      )}
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#edit"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            setEditedId(item.id);
+                                            dispatchAnnoucement();
+                                          }}
+                                        >
+                                          <Icon name="send-alt"></Icon>
+                                          <span>Dispatch</span>
+                                        </DropdownItem>
+                                      </li>{" "}
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#edit"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            setEditedId(item.id);
+                                            restoreAnnoucement();
+                                          }}
+                                        >
+                                          <Icon name="reload-alt"></Icon>
+                                          <span>Restore</span>
+                                        </DropdownItem>
+                                      </li>
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#edit"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            setEditedId(item.id);
+                                            deleteAnnouncement();
+                                          }}
+                                        >
+                                          <Icon name="trash" className="text-danger"></Icon>
+                                          <span className="text-danger">Delete</span>
+                                        </DropdownItem>
+                                      </li>
+                                    </ul>
+                                  </DropdownMenu>
+                                </UncontrolledDropdown>
+                              </div>
                             </DataTableRow>
                           </DataTableItem>
                         );
@@ -449,103 +500,65 @@ const TransactionsPage = () => {
               ></Icon>
             </a>
             <div className="nk-modal-head">
-              <h4 className="nk-modal-title title">Transaction Details</h4>
+              <h4 className="nk-modal-title title">Details</h4>
             </div>
             <div className="nk-tnx-details mt-sm-3">
               <Row className="gy-2">
                 <Col lg={4}>
-                  <span className="sub-text">Transaction Reference</span>
-                  <span className="caption-text">{formData.reference}</span>
+                  <span className="sub-text">Title</span>
+                  <span className="caption-text text-primary">{formData.title}</span>
+                </Col>
+                <Col>
+                  <span className="sub-text">Body</span>
+                  <span className="caption-text">{formData.body}</span>
                 </Col>
                 <Col lg={4}>
-                  <span className="sub-text">Amount</span>
-                  <span className="caption-text">{formatter("NGN").format(formData.amount)}</span>
+                  <span className="sub-text">Target</span>
+                  <span className="caption-text ccap">{formData.target}</span>
                 </Col>
                 <Col lg={4}>
-                  <span className="sub-text">Type</span>
-                  <span className="caption-text">{formData.type}</span>
-                </Col>
-                <Col lg={4}>
-                  <span className="sub-text">Provider</span>
-                  <span className="caption-text">{formData.provider}</span>
+                  <span className="sub-text">Target Count</span>
+                  <span className="caption-text">{formData.userCount}</span>
                 </Col>
                 <Col lg={4}>
                   <span className="sub-text">Status</span>
-                  <span className="caption-text">{formData.status}</span>
-                </Col>
-
-                <Col lg={4}>
-                  <span className="sub-text">Fee</span>
-                  <span className="caption-text">{formatter("NGN").format(formData.fee)}</span>
-                </Col>
-                <Col>
-                  <span className="sub-text">Remark</span>
-                  <span className="caption-text">{formData.remark}</span>
-                </Col>
-
-                <h6>User</h6>
-                <Col lg={4}>
-                  <span className="sub-text">Fullname</span>
-                  <span className="caption-text">{formData.fullName}</span>
+                  <span className="caption-text ccap">{formData.status}</span>
                 </Col>
                 <Col lg={4}>
-                  <span className="sub-text">Email</span>
-                  <span className="caption-text">{formData.email}</span>
+                  <span className="sub-text">Channels</span>
+                  <span className="caption-text">
+                    {formData?.channels?.map((item, index) => (
+                      <span key={item} className="text-capitalize">
+                        {item}
+                        {index !== 1 && ","}{" "}
+                      </span>
+                    ))}
+                  </span>
                 </Col>
                 <Col lg={4}>
-                  <span className="sub-text">Phone</span>
-                  <span className="caption-text">{formData.phone}</span>
+                  <span className="sub-text">Date created</span>
+                  <span className="caption-text">{formatDateWithTime(formData.dateCreated)}</span>
+                </Col>{" "}
+                <Col lg={4}>
+                  <span className="sub-text">Date dispatch</span>
+                  <span className="caption-text">{formatDateWithTime(formData.dispatchDate)}</span>
                 </Col>
-
-                {formData?.purpose === "electricity" && (
-                  <>
-                    <Col lg={4}>
-                      <span className="sub-text">Meter Number</span>
-                      <span className="caption-text">{formData.meterNumber}</span>
-                    </Col>
-                    <Col lg={4}>
-                      <span className="sub-text">Meter Name</span>
-                      <span className="caption-text">{formData.meterName}</span>
-                    </Col>
-                    <Col lg={4}>
-                      <span className="sub-text">Meter address</span>
-                      <span className="caption-text">{formData.meterAddress}</span>
-                    </Col>
-                  </>
-                )}
-
-                {formData?.purpose === "airtime" && (
-                  <>
-                    <Col lg={4}>
-                      <span className="sub-text">Recharged Number</span>
-                      <span className="caption-text">{formData.customerPhone}</span>
-                    </Col>
-                    <Col lg={4}>
-                      <span className="sub-text">Network</span>
-                      <span className="caption-text">{formData.network}</span>
-                    </Col>
-                  </>
-                )}
-
-                {formData?.purpose === "betting" && (
-                  <>
-                    <Col lg={4}>
-                      <span className="sub-text">Betting ID</span>
-                      <span className="caption-text">{formData.bettingId}</span>
-                    </Col>
-                    <Col lg={4}>
-                      <span className="sub-text">Betting Provider</span>
-                      <span className="caption-text">{formData.bettingProvider}</span>
-                    </Col>
-                  </>
-                )}
               </Row>
             </div>
           </ModalBody>
         </Modal>
+
+        <AddModal
+          closeModal={onFormCancel}
+          formData={formData}
+          modal={view.add || view.edit}
+          isEdit={view.edit}
+          createFunction={createAnnouncement}
+          editFunction={editAnnouncement}
+        />
       </Content>
     </React.Fragment>
   );
 };
 
-export default TransactionsPage;
+export default AnnouncementPage;

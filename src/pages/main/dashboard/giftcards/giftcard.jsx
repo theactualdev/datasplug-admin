@@ -347,7 +347,6 @@ const GiftCardListPage = () => {
                             <DataTableRow>
                               <span>{formatDateWithTime(item.created_at)}</span>
                             </DataTableRow>
-
                             <DataTableRow>
                               <span> {item.trade_type}</span>
                             </DataTableRow>

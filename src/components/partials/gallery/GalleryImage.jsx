@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "reactstrap";
 
-const ImageContainer = ({ img }) => {
+const ImageContainer = ({ img, sm }) => {
   const [open, setOpen] = useState(false);
   const toggle = () => {
     setOpen(!open);
@@ -15,12 +15,19 @@ const ImageContainer = ({ img }) => {
       }}
       href="#gallery"
     >
-      <img className="w-100 h-100" style={{ objectFit: "cover" }} src={img} alt="" />
+      <img
+        className="rounded-top"
+        src={img}
+        alt=""
+        style={{ height: sm ? "50px" : "150px", width: sm ? "70px" : "100px", objectFit: "cover" }}
+      />
       <Modal isOpen={open} toggle={toggle} size="large">
         <button type="button" className="mfp-close" onClick={toggle}>
           ×
         </button>
-        <img className="w-100" style={{ maxHeight: "90svh", objectFit: "contain" }} src={img} alt="" />
+        <div>
+          <img className="w-100" style={{ height: "100%", objectFit: "contain" }} src={img} alt="" />
+        </div>
       </Modal>
     </a>
   );

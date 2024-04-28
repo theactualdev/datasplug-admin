@@ -48,9 +48,9 @@ import GiftCardListPage from "../pages/main/dashboard/giftcards/giftcard";
 import WithdrawalListPage from "../pages/main/dashboard/withdrawals/withdrawals";
 import TransactionsPage from "../pages/main/dashboard/transactions/transactions";
 import ReferralsPage from "../pages/main/dashboard/referrals/ProductList";
-import AnnouncementPage from "../pages/main/dashboard/announcement/ProductList";
-import BannersPage from "../pages/main/dashboard/banners/ProductList";
-import FAQsPage from "../pages/main/dashboard/faqs/ProductList";
+import AnnouncementPage from "../pages/main/dashboard/announcement/announcement";
+import BannersPage from "../pages/main/dashboard/banners/banners";
+// import FAQsPage from "../pages/main/dashboard/faqs/ProductList";
 import AppVersionPage from "../pages/main/dashboard/app-version/ProductList";
 import ReferralTermsPage from "../pages/main/dashboard/referral-terms/ProductList";
 import SystemBankAccountPage from "../pages/main/dashboard/system-bank-account/ProductList";
@@ -59,6 +59,8 @@ import ServiceProviders from "../pages/main/dashboard/service-providers/ProductL
 import TradeSettings from "../pages/main/dashboard/trade-settings/ProductList";
 import AssetDetails from "../pages/main/dashboard/assets/details";
 import GiftcardDetails from "../pages/main/dashboard/giftcards/details";
+import FAQsPage from "../pages/main/dashboard/faq/FaqList";
+import FaqCategoriesPage from "../pages/main/dashboard/faq/CategoriesPage";
 
 const routes = (
   <Route>
@@ -97,6 +99,7 @@ const routes = (
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="announcement" element={<AnnouncementPage />} />
           <Route path="faqs" element={<FAQsPage />} />
+          <Route path="faq-categories" element={<FaqCategoriesPage />}></Route>
           <Route path="banners" element={<BannersPage />} />
           <Route path="app-version" element={<AppVersionPage />} />
           <Route path="referral-terms" element={<ReferralTermsPage />} />
