@@ -4,23 +4,23 @@ import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
 import { TransactionTable } from "./table";
 
-const TransactionsPage = () => {
+const ElectricityTransactionsPage = () => {
   return (
     <React.Fragment>
-      <Head title="All Transaction"></Head>
+      <Head title="Electricity Transactions"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle>Transactions</BlockTitle>
+              <BlockTitle>Electricity Transactions</BlockTitle>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
         {/* PRODUCT TABLE HERE */}
-        <TransactionTable />
+        <TransactionTable purpose={"electricity"} />
       </Content>
     </React.Fragment>
   );
 };
 
-export default TransactionsPage;
+export default ElectricityTransactionsPage;

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback } from "react";
 // import ProductVideo from "../../../images/product/video-a.jpg";
 import Slider from "react-slick";
 import { Badge, Card } from "reactstrap";
@@ -73,74 +73,20 @@ const AssetDetails = ({ match }) => {
   //   const { contextData } = useContext(ProductContext);
   const navigate = useNavigate();
   let { assetId } = useParams();
-  // console.log(assetId);
   const { isLoading, data: asset } = useGetAssetInfo(assetId);
-  // console.log(asset);
-  //   console.log(product);
 
-  //   const [data] = contextData;
+  const statusColor = useCallback((status) => {
+    if (status === "pending") {
+      return "warning";
+    } else if (status === "success") {
+      return "success";
+    } else if (status === "transferred") {
+      return "info";
+    } else {
+      return "danger";
+    }
+  }, []);
 
-  //   const [sliderData, setSliderData] = useState([]);
-  //   const [currentSlide, setCurrentSlide] = useState({});
-  //   const [colorSector, setColorSelector] = useState(1);
-  //   const [sizeSelector, setSizeSelector] = useState(1);
-  //   const [counter, setCounter] = useState(1);
-  //   const [videoOpen, setVideoOpen] = useState(false);
-  //   const [nav1, setNav1] = useState(null);
-  //   const [nav2, setNav2] = useState(null);
-
-  // increases quantity number
-  //   const increaseCounter = () => {
-  //     setCounter((prevState) => prevState + 1);
-  //   };
-
-  //   // decreases quantity number
-  //   const decreaseCounter = () => {
-  //     if (counter !== 0) {
-  //       setCounter((prevState) => prevState - 1);
-  //     }
-  //   };
-
-  // const productImages = useMemo(() => {
-  //   if (!isLoading && product?.images) {
-  //     return product?.images?.map((item, idx) => {
-  //       return { id: idx, img: item };
-  //     });
-  //   } else {
-  //     return [];
-  //   }
-  // }, [isLoading, product]);
-
-  // const description = useMemo(() => {
-  //   if (!isLoading && product) {
-  //     return { __html: product.description };
-  //   }
-  // }, [product]);
-
-  // changes slides
-  //   const slideChange = (index) => {
-  //     var product = productImages.find((item) => item.id === index);
-  //     setCurrentSlide(product);
-  //   };
-
-  //   const slider1 = useRef(null);
-  //   const slider2 = useRef(null);
-
-  //   useEffect(() => {
-  //     setNav1(slider1.current);
-  //     setNav2(slider2.current);
-  //   }, []);
-
-  //   console.log(product);
-
-  //   console.log(productImages);
-
-  //   useEffect(() => {
-  //     if (!isLoading && product?.images) {
-  //       let initalImage = { id: 0, img: product.images[0] };
-  //       setCurrentSlide(initalImage);
-  //     }
-  //   }, [isLoading, product]);
   return (
     <React.Fragment>
       <Head title="Product Detail"></Head>
@@ -186,7 +132,15 @@ const AssetDetails = ({ match }) => {
                   <div className="profile-ud-item">
                     <div className="profile-ud wider">
                       <span className="profile-ud-label">Transaction Status</span>
-                      <span className="profile-ud-value ccap">{asset?.data?.status}</span>
+                      <span className="profile-ud-value ccap">
+                        <Badge
+                          className="badge-sm badge-dot has-bg d-inline-flex"
+                          color={statusColor(asset?.data?.status)}
+                        >
+                          <span className="ccap">{asset?.data?.status}</span>
+                        </Badge>
+                        {/* {asset?.data?.status} */}
+                      </span>
                     </div>
                   </div>
                   <div className="profile-ud-item">
@@ -344,7 +298,7 @@ const AssetDetails = ({ match }) => {
                   </BlockBetween>
                 </BlockHead>
                 {asset?.data?.proof ? (
-                  <div style={{ width: "100px", height: "100px" }}>
+                  <div style={{ width: "100px", height: "100px", overflow: "hidden" }}>
                     <ImageContainer img={asset.data.proof} />
                   </div>
                 ) : (

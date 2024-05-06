@@ -2,9 +2,6 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { instance } from "./httpConfig";
 import toast from "react-hot-toast";
 
-const faq_endpoint = "/faq";
-const faq_category_endpoint = "/bundle";
-
 export const useGetFaqs = (currentPage = 1, size = 100) => {
   const page = `page=${currentPage}`;
   const per_page = `per_page=${size}`;

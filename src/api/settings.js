@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "../atoms/userState";
@@ -110,31 +110,24 @@ export const useUpdateProfile = () => {
   const setUser = useSetRecoilState(userState);
 
   return useMutation(
-    async (data) => {
-      const response = await instance
-        .put("/profile", data)
-        .then((res) => res?.data)
-        .catch((err) => {
-          throw err;
+    (data) => {
+      try {
+        const response = toast.promise(instance.post(`/auth/profile`, data), {
+          success: "Profile Updated.",
+          loading: "Please wait...",
+          error: "Failed: an error occured.",
         });
-      return response;
+        return response;
+      } catch (error) {
+        console.error(error);
+        Promise.reject(error);
+      }
     },
     {
       onSuccess: (data) => {
-        toast.success("Successful");
-        setUser(data);
-
-        return {
-          message: "Successful",
-          status: 200,
-        };
-      },
-      onError: (error) => {
-        toast.error(error?.response?.data);
-        return {
-          message: error?.response?.data,
-          status: error?.response?.status,
-        };
+        // console.log(data?.data?.data);
+        setUser(data?.data?.data);
+        // queryClient.invalidateQueries(["Admin"]);
       },
     }
   );

@@ -1,9 +1,7 @@
-import React, { Suspense, useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import SortToolTip from "../tables/SortTooltip";
-import Search from "../tables/Search";
-import { useGetAllProducts } from "../../../../api/product/products";
+import React, { useCallback, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Badge, Card, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { useGetAssetsTransactions } from "../../../../api/assets";
 import {
   Block,
   BlockBetween,
@@ -18,25 +16,17 @@ import {
   DataTableRow,
   Icon,
   PaginationComponent,
-  RSelect,
   Row,
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
+import { formatDateWithTime, formatter } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
-import ProductTable from "../tables/ProductTable";
-import { useGetAssetsTransactions } from "../../../../api/assets";
-import {
-  Badge,
-  Card,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Modal,
-  ModalBody,
-  UncontrolledDropdown,
-} from "reactstrap";
-import { formatter, formatDateWithTime } from "../../../../utils/Utils";
+import Search from "../tables/Search";
+import SortToolTip from "../tables/SortTooltip";
+import { FilterOptions } from "../tables/filter-select";
+import { assetFilterOptions } from "./data";
+import { StatsCard, StatsDetailsCard } from "./stats-card";
 
 const AssetListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,108 +35,16 @@ const AssetListPage = () => {
   const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
   const search = searchParams.get("search") ?? "";
-  const type = searchParams.get("type") ?? undefined;
-  // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
-  const { isLoading, data, error } = useGetAssetsTransactions(currentPage, itemsPerPage);
-  // console.log(data);
+  const status = searchParams.get("status") ?? "";
+  const type = "buy";
+  const { isLoading, data, error } = useGetAssetsTransactions(currentPage, itemsPerPage, search, status, type);
 
-  const [formData, setFormData] = useState({
-    userName: "",
-    boardingPoint: "",
-    arrivalPoint: "",
-    departureDate: "",
-    arrivalTime: "",
-    ticketPrice: 0,
-    flightType: "",
-    airline: "",
-    flightClass: "",
-    duration: "",
-    refundStatus: false,
-    fullName: "",
-    email: "",
-    phone: "",
-  });
   const [view, setView] = useState({
     edit: false,
     add: false,
     details: false,
   });
   const [onSearch, setonSearch] = useState(false);
-  const [filters, setfilters] = useState({});
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-
-  // function to close the form modal
-  const onFormCancel = () => {
-    setView({ edit: false, add: false, details: false });
-    setTimeout(() => {
-      resetForm();
-    }, 500);
-  };
-
-  const resetForm = () => {
-    setFormData({
-      userName: "",
-      boardingPoint: "",
-      arrivalPoint: "",
-      departureDate: "",
-      arrivalTime: "",
-      ticketPrice: 0,
-      flightType: "",
-      airline: "",
-      flightClass: "",
-      duration: "",
-      refundStatus: false,
-      fullName: "",
-      email: "",
-      phone: "",
-    });
-    reset({});
-  };
-
-  // function that loads the want to editted data
-  const onEditClick = (id) => {
-    data?.data?.forEach((item) => {
-      if (item._id === id) {
-        setFormData({
-          userName: item.userName,
-          boardingPoint: item.boardingPoint,
-          arrivalPoint: item.arrivalPoint,
-          departureDate: item.departureDate,
-          arrivalTime: item.arrivalTime,
-          ticketPrice: item.ticketPrice,
-          flightType: item.flightType,
-          airline: item.Airline,
-          flightClass: item.flightClass,
-          duration: item.duration,
-          refundStatus: item.refundStatus,
-          fullName: item.fullName,
-          email: item.email,
-          phone: item.phone,
-        });
-      }
-    });
-    setEditedId(id);
-    setView({ add: false, edit: true });
-  };
-
-  // function to filter data
-  const filterData = useCallback(() => {
-    return;
-  }, []);
-
-  // toggle function to view product details
-  const toggle = (type) => {
-    setView({
-      edit: type === "edit" ? true : false,
-      add: type === "add" ? true : false,
-      details: type === "details" ? true : false,
-    });
-  };
 
   // Change Page
   //paginate
@@ -158,25 +56,21 @@ const AssetListPage = () => {
   };
 
   const statusColor = useCallback((status) => {
-    if (status === "upcoming") {
+    if (status === "pending") {
       return "warning";
-    } else if (status === "active") {
+    } else if (status === "success") {
       return "success";
-    } else if (status === "completed") {
+    } else if (status === "transferred") {
       return "info";
     } else {
       return "danger";
     }
   }, []);
 
-  useEffect(() => {
-    reset(formData);
-  }, [formData, reset]);
-
   //scroll off when sidebar shows
-  useEffect(() => {
-    view.add ? document.body.classList.add("toggle-shown") : document.body.classList.remove("toggle-shown");
-  }, [view.add]);
+  // useEffect(() => {
+  //   view.add ? document.body.classList.add("toggle-shown") : document.body.classList.remove("toggle-shown");
+  // }, [view.add]);
 
   return (
     <React.Fragment>
@@ -189,6 +83,15 @@ const AssetListPage = () => {
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
+        <Row className="mb-5">
+          <Col lg={4}>
+            <StatsCard data={data?.stat?.buy} />
+          </Col>
+          <Col lg={8}>
+            <StatsDetailsCard data={data?.stat?.buy} />
+            {/* <StatsCard title={"Stats 2"} value={2} /> */}
+          </Col>
+        </Row>
         {/* PRODUCT TABLE HERE */}
         <Block>
           <Card>
@@ -213,61 +116,7 @@ const AssetListPage = () => {
                     </li>
                     <li className="btn-toolbar-sep"></li>
                     <li>
-                      <UncontrolledDropdown>
-                        <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
-                          <div className="dot dot-primary"></div>
-                          <Icon name="filter-alt"></Icon>
-                        </DropdownToggle>
-                        <DropdownMenu end className="filter-wg dropdown-menu-xl" style={{ overflow: "visible" }}>
-                          <div className="dropdown-head">
-                            <span className="sub-title dropdown-title">Advanced Filter</span>
-                          </div>
-                          <div className="dropdown-body dropdown-body-rg">
-                            <Row className="gx-6 gy-4">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="overline-title overline-title-alt">Type</label>
-                                  {/* <RSelect
-                                    options={flightsFilterOptions}
-                                    placeholder="Any flight type"
-                                    value={filters.status && { label: filters.status, value: filters.status }}
-                                    isSearchable={false}
-                                    onChange={(e) => setfilters({ ...filters, status: e.label })}
-                                  /> */}
-                                </div>
-                              </Col>
-                              <Col size="12">
-                                <div className="form-group">
-                                  <Button type="button" onClick={filterData} className="btn btn-secondary ">
-                                    Filter
-                                  </Button>
-                                </div>
-                              </Col>
-                            </Row>
-                          </div>
-                          <div className="dropdown-foot between">
-                            <a
-                              href="#reset"
-                              onClick={(ev) => {
-                                ev.preventDefault();
-                                // setData(couponsData);
-                                setfilters({});
-                              }}
-                              className="clickable"
-                            >
-                              Reset Filter
-                            </a>
-                            <a
-                              href="#save"
-                              onClick={(ev) => {
-                                ev.preventDefault();
-                              }}
-                            >
-                              Save Filter
-                            </a>
-                          </div>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
+                      <FilterOptions options={assetFilterOptions} />
                     </li>
                     <li>
                       <UncontrolledDropdown>
@@ -282,17 +131,20 @@ const AssetListPage = () => {
                   </ul>
                 </div>
                 {/* Search component */}
-                <Search onSearch={onSearch} setonSearch={setonSearch} placeholder="hotel name" />
+                <Search onSearch={onSearch} setonSearch={setonSearch} placeholder="reference" />
               </div>
             </div>
             <div className="card-inner-group">
               <div className="card-inner p-0">
                 {isLoading ? (
                   <LoadingSpinner />
-                ) : 2 > 0 ? (
+                ) : data?.meta?.total > 0 ? (
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">S/N</span>
+                        </DataTableRow>
                         <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Fullname</span>
                         </DataTableRow>
@@ -329,13 +181,16 @@ const AssetListPage = () => {
                           </ul>
                         </DataTableRow>
                       </DataTableHead>
-                      {data?.data?.map((item) => {
+                      {data?.data?.map((item, index) => {
                         return (
                           <DataTableItem key={item.id} className="text-secondary">
+                            <DataTableRow>
+                              <span>{index + 1}</span>
+                            </DataTableRow>
                             <DataTableRow size="sm" className="text-primary fw-bold">
-                              <span className="title">
+                              <Link to={`/user-details/${item?.user?.id}`} className="title">
                                 {item?.user?.firstname} {item?.user?.lastname}
-                              </span>
+                              </Link>
                             </DataTableRow>
                             <DataTableRow>
                               <span>{item.reference}</span>
@@ -351,10 +206,16 @@ const AssetListPage = () => {
                               <span>{formatDate(item.startDate)}</span> - <span>{formatDate(item.endDate)}</span>
                             </DataTableRow> */}
                             <DataTableRow>
-                              <span> {item.trade_type}</span>
+                              <span className="ccap"> {item.trade_type}</span>
                             </DataTableRow>
                             <DataTableRow>
-                              <span>{item.status}</span>
+                              <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
+                              <Badge
+                                className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
+                                color={statusColor(item.status)}
+                              >
+                                <span className="ccap">{item.status}</span>
+                              </Badge>
                             </DataTableRow>
                             <DataTableRow className="nk-tb-col-tools">
                               <ul className="nk-tb-actions gx-1 my-n1">
@@ -395,19 +256,19 @@ const AssetListPage = () => {
                       })}
                     </DataTableBody>
                     <div className="card-inner">
-                      {/* {flightsData?.totalDocuments > 0 && (
+                      {data?.meta?.total > 0 && (
                         <PaginationComponent
                           itemPerPage={itemsPerPage}
-                          totalItems={flightsData?.totalDocuments}
+                          totalItems={data?.meta?.total}
                           paginate={paginate}
                           currentPage={Number(currentPage)}
                         />
-                      )} */}
+                      )}
                     </div>
                   </>
                 ) : (
                   <div className="text-center" style={{ paddingBlock: "1rem" }}>
-                    <span className="text-silent">No bookings record found</span>
+                    <span className="text-silent">No Transaction found</span>
                   </div>
                 )}
               </div>

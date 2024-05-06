@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Icon, UserAvatar } from "../../../../components/Component";
 import { findUpper } from "../../../../utils/Utils";
@@ -11,6 +11,14 @@ const UserProfileAside = ({ updateSm, sm }) => {
   const location = useLocation();
   const user = useRecoilValue(userState);
 
+  const fullname = useMemo(() => {
+    if (user) {
+      return `${user?.firstname} ${user?.lastname}`;
+    } else {
+      return null;
+    }
+  }, [user]);
+
   useEffect(() => {
     sm ? document.body.classList.add("toggle-shown") : document.body.classList.remove("toggle-shown");
   }, [sm]);
@@ -19,9 +27,9 @@ const UserProfileAside = ({ updateSm, sm }) => {
     <div className="card-inner-group">
       <div className="card-inner">
         <div className="user-card">
-          <UserAvatar text={findUpper(user ? user?.name : "")} image={user?.avatar} theme="primary" />
+          <UserAvatar className="sm" text={fullname && findUpper(fullname)} image={user?.avatar} />
           <div className="user-info">
-            <span className="lead-text">{user?.name}</span>
+            <span className="lead-text">{fullname}</span>
             <span className="sub-text">{user?.email}</span>
           </div>
           <div className="user-action">
@@ -90,7 +98,7 @@ const UserProfileAside = ({ updateSm, sm }) => {
               className={location.pathname === `/settings/other-settings` ? "active" : ""}
             >
               <Icon name="sign-kobo-alt"></Icon>
-              <span>Pricing</span>
+              <span>Service</span>
             </Link>
           </li>
         </ul>

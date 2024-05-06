@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -105,12 +105,13 @@ export const useResetPassword = () => {
 };
 
 export const useGetUser = () => {
+  const setUser = useSetRecoilState(userState);
   return useQuery(
-    ["getUser"],
+    ["Admin"],
     async () => {
       const request = instance
-        .get(BACKEND_URLS.auth.me)
-        .then((res) => res?.data)
+        .get("/auth/user")
+        .then((res) => console.log(res?.data))
         .catch((err) => {
           throw err;
         });

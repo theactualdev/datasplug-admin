@@ -42,25 +42,35 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import { RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import ChangePassword from "../pages/auth/ChangePassword";
-import OtherSettingsPage from "../pages/main/dashboard/settings/OtherSettings";
-import AssetListPage from "../pages/main/dashboard/assets/assetsPage";
-import GiftCardListPage from "../pages/main/dashboard/giftcards/giftcard";
-import WithdrawalListPage from "../pages/main/dashboard/withdrawals/withdrawals";
-import TransactionsPage from "../pages/main/dashboard/transactions/transactions";
-import ReferralsPage from "../pages/main/dashboard/referrals/ProductList";
 import AnnouncementPage from "../pages/main/dashboard/announcement/announcement";
+import AssetListPage from "../pages/main/dashboard/assets/assetsPage";
 import BannersPage from "../pages/main/dashboard/banners/banners";
+import GiftCardListPage from "../pages/main/dashboard/giftcards/giftcard";
+import ReferralsPage from "../pages/main/dashboard/referrals/ProductList";
+import OtherSettingsPage from "../pages/main/dashboard/settings/OtherSettings";
+import TransactionsPage from "../pages/main/dashboard/transactions/transactions";
 // import FAQsPage from "../pages/main/dashboard/faqs/ProductList";
 import AppVersionPage from "../pages/main/dashboard/app-version/ProductList";
-import ReferralTermsPage from "../pages/main/dashboard/referral-terms/ProductList";
-import SystemBankAccountPage from "../pages/main/dashboard/system-bank-account/ProductList";
-import ServicesPage from "../pages/main/dashboard/services/ProductList";
-import ServiceProviders from "../pages/main/dashboard/service-providers/ProductList";
-import TradeSettings from "../pages/main/dashboard/trade-settings/ProductList";
+import AssetSellPage from "../pages/main/dashboard/assets/assets-sell";
 import AssetDetails from "../pages/main/dashboard/assets/details";
-import GiftcardDetails from "../pages/main/dashboard/giftcards/details";
-import FAQsPage from "../pages/main/dashboard/faq/FaqList";
 import FaqCategoriesPage from "../pages/main/dashboard/faq/CategoriesPage";
+import FAQsPage from "../pages/main/dashboard/faq/FaqList";
+import GiftcardDetails from "../pages/main/dashboard/giftcards/details";
+import GiftCardSellListPage from "../pages/main/dashboard/giftcards/giftcard-sell";
+import ReferralTermsPage from "../pages/main/dashboard/referral-terms/referral-terms";
+import ServiceProviders from "../pages/main/dashboard/service-providers/service-provider";
+import ServicesPage from "../pages/main/dashboard/services/services";
+import SystemBankAccountPage from "../pages/main/dashboard/system-bank-account/bank-accounts";
+import TradeSettings from "../pages/main/dashboard/trade-settings/ProductList";
+import AirtimeTransactionsPage from "../pages/main/dashboard/transactions/airtime";
+import BettingTransactionsPage from "../pages/main/dashboard/transactions/betting";
+import CableTVTransactionsPage from "../pages/main/dashboard/transactions/cable-tv";
+import DataTransactionsPage from "../pages/main/dashboard/transactions/data";
+import EducationTransactionsPage from "../pages/main/dashboard/transactions/education";
+import ElectricityTransactionsPage from "../pages/main/dashboard/transactions/electricity";
+import WalletWithdrawalListPage from "../pages/main/dashboard/wallet/wallet-debit";
+import WalletDepositListPage from "../pages/main/dashboard/wallet/wallet-deposit";
+import WalletTransferListPage from "../pages/main/dashboard/wallet/wallet-transfer";
 
 const routes = (
   <Route>
@@ -91,12 +101,26 @@ const routes = (
           <Route path="payouts" element={<PayoutPage />}></Route>
           <Route path="coupons" element={<CouponsPage />}></Route>
 
-          <Route path="assets" element={<AssetListPage />} />
+          <Route path="assets/buy" element={<AssetListPage />} />
+          <Route path="assets/sell" element={<AssetSellPage />} />
           <Route path="assets-details/:assetId" element={<AssetDetails />} />
-          <Route path="giftcards" element={<GiftCardListPage />} />
+          <Route path="giftcards/buy" element={<GiftCardListPage />} />
+          <Route path="giftcards/sell" element={<GiftCardSellListPage />} />
           <Route path="giftcards-details/:giftcardId" element={<GiftcardDetails />} />
-          <Route path="withdrawals" element={<WithdrawalListPage />} />
-          <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="wallet/deposit" element={<WalletDepositListPage />} />
+          <Route path="wallet/withdrawal" element={<WalletWithdrawalListPage />} />
+          <Route path="wallet/transfer" element={<WalletTransferListPage />} />
+
+          <Route path="transactions/all" element={<TransactionsPage />} />
+          <Route path="transactions/bettings" element={<BettingTransactionsPage />} />
+          <Route path="transactions/data" element={<DataTransactionsPage />} />
+          <Route path="transactions/airtime" element={<AirtimeTransactionsPage />} />
+          <Route path="transactions/electricity" element={<ElectricityTransactionsPage />} />
+          <Route path="transactions/cable-tv" element={<CableTVTransactionsPage />} />
+          <Route path="transactions/education" element={<EducationTransactionsPage />} />
+
+          {/* <Route path="transactions/flights" element={<TransactionsPage />} /> */}
+          {/* <Route path="transactions/giftcards" element={<TransactionsPage />} /> */}
           <Route path="announcement" element={<AnnouncementPage />} />
           <Route path="faqs" element={<FAQsPage />} />
           <Route path="faq-categories" element={<FaqCategoriesPage />}></Route>

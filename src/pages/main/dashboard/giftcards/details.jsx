@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 // import ProductVideo from "../../../images/product/video-a.jpg";
 import Slider from "react-slick";
 import { Badge, Card } from "reactstrap";
@@ -76,71 +76,18 @@ const GiftcardDetails = ({ match }) => {
   // console.log(giftcardId);
   const { isLoading, data: giftcard } = useGetGiftcardInfo(giftcardId);
   console.log(giftcard);
-  //   console.log(product);
 
-  //   const [data] = contextData;
-
-  //   const [sliderData, setSliderData] = useState([]);
-  //   const [currentSlide, setCurrentSlide] = useState({});
-  //   const [colorSector, setColorSelector] = useState(1);
-  //   const [sizeSelector, setSizeSelector] = useState(1);
-  //   const [counter, setCounter] = useState(1);
-  //   const [videoOpen, setVideoOpen] = useState(false);
-  //   const [nav1, setNav1] = useState(null);
-  //   const [nav2, setNav2] = useState(null);
-
-  // increases quantity number
-  //   const increaseCounter = () => {
-  //     setCounter((prevState) => prevState + 1);
-  //   };
-
-  //   // decreases quantity number
-  //   const decreaseCounter = () => {
-  //     if (counter !== 0) {
-  //       setCounter((prevState) => prevState - 1);
-  //     }
-  //   };
-
-  // const productImages = useMemo(() => {
-  //   if (!isLoading && product?.images) {
-  //     return product?.images?.map((item, idx) => {
-  //       return { id: idx, img: item };
-  //     });
-  //   } else {
-  //     return [];
-  //   }
-  // }, [isLoading, product]);
-
-  // const description = useMemo(() => {
-  //   if (!isLoading && product) {
-  //     return { __html: product.description };
-  //   }
-  // }, [product]);
-
-  // changes slides
-  //   const slideChange = (index) => {
-  //     var product = productImages.find((item) => item.id === index);
-  //     setCurrentSlide(product);
-  //   };
-
-  //   const slider1 = useRef(null);
-  //   const slider2 = useRef(null);
-
-  //   useEffect(() => {
-  //     setNav1(slider1.current);
-  //     setNav2(slider2.current);
-  //   }, []);
-
-  //   console.log(product);
-
-  //   console.log(productImages);
-
-  //   useEffect(() => {
-  //     if (!isLoading && product?.images) {
-  //       let initalImage = { id: 0, img: product.images[0] };
-  //       setCurrentSlide(initalImage);
-  //     }
-  //   }, [isLoading, product]);
+  const statusColor = useCallback((status) => {
+    if (status === "pending") {
+      return "warning";
+    } else if (status === "approved") {
+      return "success";
+    } else if (status === "transferred") {
+      return "info";
+    } else {
+      return "danger";
+    }
+  }, []);
   return (
     <React.Fragment>
       <Head title="Product Detail"></Head>
@@ -186,7 +133,14 @@ const GiftcardDetails = ({ match }) => {
                   <div className="profile-ud-item">
                     <div className="profile-ud wider">
                       <span className="profile-ud-label">Transaction Status</span>
-                      <span className="profile-ud-value ccap">{giftcard?.data?.status}</span>
+                      <span className="profile-ud-value ccap">
+                        <Badge
+                          className="badge-sm badge-dot has-bg d-inline-flex"
+                          color={statusColor(giftcard?.data?.status)}
+                        >
+                          <span className="ccap">{giftcard?.data?.status}</span>
+                        </Badge>
+                      </span>
                     </div>
                   </div>
                   <div className="profile-ud-item">
@@ -205,7 +159,7 @@ const GiftcardDetails = ({ match }) => {
                   </div>
                   <div className="profile-ud-item">
                     <div className="profile-ud wider">
-                      <span className="profile-ud-label">giftcard Rate</span>
+                      <span className="profile-ud-label">Giftcard Rate</span>
                       <span className="profile-ud-value">
                         {giftcard?.data?.rate ? formatter("NGN").format(giftcard.data.rate) : 0}
                       </span>
@@ -299,17 +253,23 @@ const GiftcardDetails = ({ match }) => {
                   <div className="profile-ud-item">
                     <div className="profile-ud wider">
                       <span className="profile-ud-label">Giftcard Price</span>
-                      <span className="profile-ud-value">
-                        {formatter("NGN").format(giftcard?.data?.gift_card?.ngn_price_list[0])}
-                      </span>
+                      {giftcard?.data?.trade_type === "sell" ? (
+                        <span className="profile-ud-value">
+                          {formatter("NGN").format(giftcard?.data?.gift_card?.sell_rate)}
+                        </span>
+                      ) : (
+                        <span className="profile-ud-value">
+                          {formatter("NGN").format(giftcard?.data?.gift_card?.ngn_price_list[0])}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
               </Block>
 
-              <div className="nk-divider divider md"></div>
+              {/* <div className="nk-divider divider md"></div> */}
 
-              <Block>
+              {/* <Block>
                 <BlockHead size="sm">
                   <BlockBetween>
                     <BlockTitle tag="h5">Bank Information</BlockTitle>
@@ -341,7 +301,7 @@ const GiftcardDetails = ({ match }) => {
                     </div>
                   </div>
                 </div>
-              </Block>
+              </Block> */}
 
               {/* <div className="nk-divider divider md"></div> */}
               {/* 

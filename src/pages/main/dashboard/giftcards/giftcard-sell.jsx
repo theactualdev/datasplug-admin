@@ -1,7 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { Suspense, useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Badge, Card, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
-import { useGetGiftcardTransactions } from "../../../../api/giftcard";
+import { useForm } from "react-hook-form";
+import SortToolTip from "../tables/SortTooltip";
+import Search from "../tables/Search";
+import { useGetAllProducts } from "../../../../api/product/products";
 import {
   Block,
   BlockBetween,
@@ -16,19 +18,31 @@ import {
   DataTableRow,
   Icon,
   PaginationComponent,
+  RSelect,
   Row,
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { formatDateWithTime, formatter } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
-import Search from "../tables/Search";
-import SortToolTip from "../tables/SortTooltip";
+import ProductTable from "../tables/ProductTable";
+import { useGetAssetsTransactions } from "../../../../api/assets";
+import {
+  Badge,
+  Card,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Modal,
+  ModalBody,
+  UncontrolledDropdown,
+} from "reactstrap";
+import { formatter, formatDateWithTime } from "../../../../utils/Utils";
+import { useGetGiftcardTransactions } from "../../../../api/giftcard";
 import { FilterOptions } from "../tables/filter-select";
-import { giftcardFilterOptions } from "./data";
 import { AmountStatsCard, StatsDetailsCard } from "./stats-card";
+import { giftcardFilterOptions } from "./data";
 
-const GiftCardListPage = () => {
+const GiftCardSellListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -36,7 +50,7 @@ const GiftCardListPage = () => {
   const currentPage = searchParams.get("page") ?? 1;
   const search = searchParams.get("search") ?? "";
   const status = searchParams.get("status") ?? "";
-  const type = "buy";
+  const type = "sell";
   // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
   const { isLoading, data, error } = useGetGiftcardTransactions(currentPage, itemsPerPage, search, status, type);
   // console.log(data);
@@ -90,10 +104,10 @@ const GiftCardListPage = () => {
 
         <Row className="mb-5">
           <Col lg={4}>
-            <AmountStatsCard data={data?.stat?.buy} />
+            <AmountStatsCard data={data?.stat?.sell} />
           </Col>
           <Col lg={8}>
-            <StatsDetailsCard data={data?.stat?.buy} />
+            <StatsDetailsCard data={data?.stat?.sell} />
             {/* <StatsCard title={"Stats 2"} value={2} /> */}
           </Col>
         </Row>
@@ -281,4 +295,4 @@ const GiftCardListPage = () => {
   );
 };
 
-export default GiftCardListPage;
+export default GiftCardSellListPage;

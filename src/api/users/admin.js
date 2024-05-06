@@ -243,7 +243,7 @@ export const useGetServiceCharge = () => {
     ["useGetOtherSettings"],
     async () => {
       const request = await instance
-        .get(BACKEND_URLS.auth.me + "additional-charges")
+        .get("/service-charges")
         .then((res) => res?.data)
         .catch((err) => {
           throw err;
@@ -260,20 +260,20 @@ export const useGetServiceCharge = () => {
   );
 };
 
-export const useUpdateServiceCharge = () => {
+export const useUpdateServiceCharge = (id) => {
   const queryClient = useQueryClient();
 
   return useMutation(
     (data) =>
       toast.promise(
         instance
-          .put(BACKEND_URLS.auth.me + "additional-charges", data)
+          .post(`/service-charges/${id}`, data)
           .then((res) => res.data)
           .catch((err) => {
             throw err;
           }),
         {
-          success: "Charges updated",
+          success: "Charge updated",
           // success: `Store status updated.`,
           loading: "Please wait...",
           error: "Something happened",

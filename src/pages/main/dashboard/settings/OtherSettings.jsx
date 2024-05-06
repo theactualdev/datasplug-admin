@@ -11,6 +11,7 @@ import {
   Button,
   Col,
   Icon,
+  RSelect,
   Row,
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
@@ -19,20 +20,49 @@ import UserProfileAside from "./UserProfileAside";
 import { formatter } from "../../../../utils/Utils";
 const OtherSettingsPage = () => {
   const [sm, updateSm] = useState(false);
+  const [editedId, setEditedId] = useState();
   const [mobileView, setMobileView] = useState(false);
   const { data, isLoading } = useGetServiceCharge();
-  const { mutate: updateCharges } = useUpdateServiceCharge();
+  const { mutate: updateCharges } = useUpdateServiceCharge(editedId);
   const [modalTab, setModalTab] = useState("1");
   const [modal, setModal] = useState(false);
+  // console.log(data);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    code: "",
+    details: "",
+    value: "",
+    type: "",
+  });
 
   const submitForm = (e) => {
     e.preventDefault();
+
     let data = {
-      serviceCharge: Number(e.target.service_charge.value),
-      currency: "NGN",
+      value: Number(e.target.value.value),
+      type: formData.type,
+      details: e.target.details.value,
     };
+    // console.log(data);
     updateCharges(data);
     setModal(false);
+  };
+
+  const onEditClick = (id) => {
+    data?.data?.forEach((item) => {
+      if (item.id === id) {
+        setFormData({
+          name: item.name,
+          code: item.code,
+          details: item.details,
+          value: item.value,
+          type: item.type,
+        });
+      }
+    });
+    setEditedId(id);
+    setModal(true);
   };
 
   // function to change the design view under 990 px
@@ -76,9 +106,9 @@ const OtherSettingsPage = () => {
               <BlockHead size="lg">
                 <BlockBetween>
                   <BlockHeadContent>
-                    <BlockTitle tag="h4">Pricing</BlockTitle>
+                    <BlockTitle tag="h4">Service Charges</BlockTitle>
                     <BlockDes>
-                      <p>Details associated with Niteon Pricing.</p>
+                      <p>Details associated with BillPadi Services.</p>
                     </BlockDes>
                   </BlockHeadContent>
                   <BlockHeadContent className="align-self-start d-lg-none">
@@ -96,31 +126,33 @@ const OtherSettingsPage = () => {
                 <div className="nk-data data-list">
                   <div className="data-head">
                     <BlockBetween>
-                      <h6 className="overline-title mb-0">Niteon Charges</h6>
-                      <div onClick={() => setModal(true)}>
+                      <h6 className="overline-title mb-0">BillPadi Charges</h6>
+                      {/* <div onClick={() => setModal(true)}>
                         <a href="#edit" onClick={(e) => e.preventDefault()} className="text-primary">
                           Edit
                         </a>
-                      </div>
+                      </div> */}
                     </BlockBetween>
                   </div>
-                  <div className="data-item" onClick={() => setModal(true)}>
-                    <div className="data-col">
-                      <span className="data-label">Service Charge</span>
-                      {isLoading ? (
-                        <span className="data-value">Loading...</span>
-                      ) : (
-                        <span className="data-value">{formatter(data.currency).format(data.serviceCharge)}</span>
-                      )}
-                    </div>
-                  </div>
 
-                  {/* <div className="data-item">
-                    <div className="data-col">
-                      <span className="data-label">VAT</span>
-                      <span className="data-value">{data?.VAT}%</span>
+                  {data?.data?.map((item, index) => (
+                    <div key={index} className="data-item" onClick={() => onEditClick(item.id)}>
+                      <div className="data-col">
+                        <span className="data-label fw-bold">
+                          {item?.name}
+                          <br />
+                          <span className="fw-normal" style={{ fontSize: "12px" }}>
+                            {item?.details}
+                          </span>
+                        </span>
+                        {item?.type === "flat" ? (
+                          <span className="data-value">{formatter("NGN").format(item?.value)}</span>
+                        ) : (
+                          <span className="data-value">{item?.value}%</span>
+                        )}
+                      </div>
                     </div>
-                  </div> */}
+                  ))}
                 </div>
               </Block>
 
@@ -137,36 +169,57 @@ const OtherSettingsPage = () => {
                 </a>
                 <ModalBody>
                   <div className="p-2">
-                    <h5 className="title">Update Charges</h5>
-                    <ul className="nk-nav nav nav-tabs">
-                      <li className="nav-item">
-                        <a
-                          className={`nav-link ${modalTab === "1" && "active"}`}
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            setModalTab("1");
-                          }}
-                          href="#charges"
-                        >
-                          Charges
-                        </a>
-                      </li>
-                    </ul>
-                    <div className="tab-content">
+                    <h5 className="title">Update {formData?.name}</h5>
+                    <div className="tab-content mt-4">
                       <div className={`tab-pane ${modalTab === "1" ? "active" : ""}`} id="personal">
                         <form onSubmit={submitForm}>
                           <Row className="gy-4">
                             <Col md="6">
                               <div className="form-group">
-                                <label className="form-label" htmlFor="full-name">
-                                  Service Charge
+                                <label className="form-label" htmlFor="value">
+                                  Value
                                 </label>
                                 <input
                                   type="number"
-                                  id="service_charge"
+                                  id="value"
                                   className="form-control"
-                                  name="service_charge"
-                                  defaultValue={data?.serviceCharge}
+                                  name="value"
+                                  defaultValue={formData.value}
+                                  placeholder="Enter Service Value"
+                                />
+                              </div>
+                            </Col>
+                            <Col md="6">
+                              <div className="form-group">
+                                <label className="form-label" htmlFor="full-name">
+                                  Type
+                                </label>
+                                <RSelect
+                                  options={[
+                                    { label: "Flat", value: "flat" },
+                                    { label: "Percentage", value: "percentage" },
+                                  ]}
+                                  value={{
+                                    label: formData.type.charAt(0).toUpperCase() + formData.type.slice(1),
+                                    value: formData.type,
+                                  }}
+                                  onChange={(e) => setFormData({ ...formData, type: e.value })}
+                                  placeholder="Select Type"
+                                  isSearchable={false}
+                                />
+                              </div>
+                            </Col>
+                            <Col md="12">
+                              <div className="form-group">
+                                <label className="form-label" htmlFor="details">
+                                  Details
+                                </label>
+                                <input
+                                  type="text"
+                                  id="details"
+                                  className="form-control"
+                                  name="details"
+                                  defaultValue={formData?.details}
                                   placeholder="Enter Service Charge"
                                 />
                               </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Card, Modal, ModalBody } from "reactstrap";
 import { useRecoilValue } from "recoil";
 import { userState } from "../../../../atoms/userState";
@@ -27,10 +27,18 @@ const UserInfoPage = () => {
   const user = useRecoilValue(userState);
   const { mutate: updateProfile } = useUpdateProfile();
   // console.log(user);
+  const fullname = useMemo(() => {
+    if (user) {
+      return `${user?.firstname} ${user?.lastname}`;
+    } else {
+      return null;
+    }
+  }, [user]);
 
   const [modalTab, setModalTab] = useState("1");
   const [formData, setFormData] = useState({
-    name: user?.name,
+    firstname: user?.firstname,
+    lastname: user?.lastname,
     // displayName: "",
     phone: user?.phone,
     // dob: "1980-08-10",
@@ -50,9 +58,8 @@ const UserInfoPage = () => {
     let submitData = {
       ...formData,
     };
-    // console.log(submitData);
+
     updateProfile(submitData);
-    // setUserInfo(submitData);
     setModal(false);
   };
 
@@ -128,7 +135,7 @@ const UserInfoPage = () => {
                   <div className="data-item" onClick={() => setModal(true)}>
                     <div className="data-col">
                       <span className="data-label">Full Name</span>
-                      <span className="data-value">{user?.name}</span>
+                      <span className="data-value">{fullname}</span>
                     </div>
                   </div>
                   {/* <div className="data-item" onClick={() => setModal(true)}>
@@ -146,7 +153,7 @@ const UserInfoPage = () => {
                   <div className="data-item" onClick={() => setModal(true)}>
                     <div className="data-col">
                       <span className="data-label">Phone Number</span>
-                      <span className="data-value text-soft">{user?.phone}</span>
+                      <span className="data-value text-soft">{user?.phone ?? "Not Set"}</span>
                     </div>
                   </div>
 
@@ -208,17 +215,33 @@ const UserInfoPage = () => {
                         <Row className="gy-4">
                           <Col md="6">
                             <div className="form-group">
-                              <label className="form-label" htmlFor="full-name">
-                                Full Name
+                              <label className="form-label" htmlFor="firstname">
+                                Firstname
                               </label>
                               <input
                                 type="text"
-                                id="full-name"
+                                id="firstname"
                                 className="form-control"
-                                name="name"
+                                name="firstname"
                                 onChange={(e) => onInputChange(e)}
-                                defaultValue={formData.name}
-                                placeholder="Enter Full name"
+                                defaultValue={formData.firstname}
+                                placeholder="Enter First name"
+                              />
+                            </div>
+                          </Col>
+                          <Col md="6">
+                            <div className="form-group">
+                              <label className="form-label" htmlFor="lastname">
+                                Lastname
+                              </label>
+                              <input
+                                type="text"
+                                id="lastname"
+                                className="form-control"
+                                name="lastname"
+                                onChange={(e) => onInputChange(e)}
+                                defaultValue={formData.lastname}
+                                placeholder="Enter Last name"
                               />
                             </div>
                           </Col>

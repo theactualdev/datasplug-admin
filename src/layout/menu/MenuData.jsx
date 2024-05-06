@@ -13,24 +13,110 @@ const menu = [
     text: "Assets Transactions",
     permission: "all",
     link: "/assets",
+    subMenu: [
+      {
+        text: "Buy",
+        link: "/assets/buy",
+        permission: "all",
+      },
+      {
+        text: "Sell",
+        link: "/assets/sell",
+        permission: "all",
+      },
+    ],
   },
   {
     icon: "cc-jcb",
     text: "Giftcard Transactions",
     permission: "all",
     link: "/giftcards",
+    subMenu: [
+      {
+        text: "Buy",
+        link: "/giftcards/buy",
+        permission: "all",
+      },
+      {
+        text: "Sell",
+        link: "/giftcards/sell",
+        permission: "all",
+      },
+    ],
   },
   {
     icon: "coins",
-    text: "Withdrawals",
+    text: "Wallet Transactions",
     permission: "all",
-    link: "/withdrawals",
+    // link: "/withdrawals",
+    subMenu: [
+      {
+        text: "Deposit",
+        link: "/wallet/deposit",
+        permission: "all",
+      },
+      {
+        text: "Transfer",
+        link: "/wallet/transfer",
+        permission: "all",
+      },
+      {
+        text: "Withdrawal",
+        link: "/wallet/withdrawal",
+        permission: "all",
+      },
+    ],
   },
   {
     icon: "swap",
-    text: "Transactions",
+    text: "Services Transactions",
     permission: "all",
-    link: "/transactions",
+    // link: "/transactions",
+    subMenu: [
+      {
+        text: "All Transactions",
+        link: "/transactions/all",
+        permission: "all",
+      },
+
+      {
+        text: "Airtime Transactions",
+        link: "/transactions/airtime",
+        permission: "all",
+      },
+      {
+        text: "Data Transactions",
+        link: "/transactions/data",
+        permission: "all",
+      },
+      {
+        text: "Betting Transactions",
+        link: "/transactions/bettings",
+        permission: "all",
+      },
+
+      {
+        text: "Cable TV Transactions",
+        link: "/transactions/cable-tv",
+        permission: "all",
+      },
+      {
+        text: "Electricity Transactions",
+        link: "/transactions/electricity",
+        permission: "all",
+      },
+      {
+        text: "Education",
+        link: "/transactions/education",
+        permission: "all",
+      },
+
+      // {
+      //   text: "Services Transactions",
+      //   link: "/transactions/services",
+      //   permission: "all",
+      // },
+    ],
   },
 
   {
@@ -54,12 +140,12 @@ const menu = [
     link: "/roles-management",
     permission: "all",
   },
-  {
-    icon: "user-list-fill",
-    text: "Referrals",
-    link: "/referral-management",
-    permission: "all",
-  },
+  // {
+  //   icon: "user-list-fill",
+  //   text: "Referrals",
+  //   link: "/referral-management",
+  //   permission: "all",
+  // },
 
   {
     heading: "New & updates",
@@ -93,12 +179,12 @@ const menu = [
       },
     ],
   },
-  {
-    icon: "mobile",
-    text: "App Version",
-    link: "/app-version",
-    permission: "all",
-  },
+  // {
+  //   icon: "mobile",
+  //   text: "App Version",
+  //   link: "/app-version",
+  //   permission: "all",
+  // },
 
   {
     icon: "notes",
@@ -128,12 +214,12 @@ const menu = [
     link: "/services",
     permission: "all",
   },
-  {
-    icon: "shield-star-fill",
-    text: "Trade Settings",
-    link: "/trades-info",
-    permission: "all",
-  },
+  // {
+  //   icon: "shield-star-fill",
+  //   text: "Trade Settings",
+  //   link: "/trades-info",
+  //   permission: "all",
+  // },
 
   {
     heading: "preferences",

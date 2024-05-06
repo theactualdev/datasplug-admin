@@ -18,6 +18,10 @@ const BACKEND_URLS = {
   wallet: "/wallet/transactions",
   annoucement: "/alerts",
   banners: "/banners",
+  referralTerms: "/referral-terms",
+  systemAccount: "/bank-accounts",
+  providers: "/providers",
+  service: "/services",
   product: {
     all: "/products",
     productReview: "/review",
