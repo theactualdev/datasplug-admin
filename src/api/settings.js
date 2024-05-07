@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "../atoms/userState";
@@ -128,6 +128,92 @@ export const useUpdateProfile = () => {
         // console.log(data?.data?.data);
         setUser(data?.data?.data);
         // queryClient.invalidateQueries(["Admin"]);
+      },
+    }
+  );
+};
+
+export const useGetAppVersion = () => {
+  return useQuery(
+    ["useGetAppVersion"],
+    async () => {
+      const request = await instance
+        .get("/app-configs")
+        .then((res) => res?.data)
+        .catch((err) => {
+          throw err;
+        });
+
+      //   console.log(request);
+      return request;
+    },
+    {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      retryDelay: 3000,
+    }
+  );
+};
+
+export const useCreateAppVersion = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post("/updates/create", data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: "App version created",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (error) => (error?.response?.data?.message ? error?.response?.data?.message : "Something happened"),
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["useGetAppVersion"]);
+      },
+    }
+  );
+};
+
+export const useEditAppVersion = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post("/app-configs" + `/${id}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: "App version updated",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (error) => (error?.response?.data?.message ? error?.response?.data?.message : "Something happened"),
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["useGetAppVersion"]);
       },
     }
   );

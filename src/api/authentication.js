@@ -149,9 +149,7 @@ export const useLogout = () => {
   return useMutation(
     async () => {
       return instance
-        .post(BACKEND_URLS.auth.logout, {
-          refreshToken: Cookies.get("refresh_token"),
-        })
+        .post(BACKEND_URLS.auth.logout)
         .then((res) => res.data)
         .catch((err) => {
           throw err;

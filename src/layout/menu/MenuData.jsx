@@ -196,12 +196,12 @@ const menu = [
   {
     heading: "configuration",
   },
-  {
-    icon: "wallet",
-    text: "System bank account",
-    link: "/system-bank-account",
-    permission: "all",
-  },
+  // {
+  //   icon: "wallet",
+  //   text: "System bank account",
+  //   link: "/system-bank-account",
+  //   permission: "all",
+  // },
   {
     icon: "rss",
     text: "Service Providers",

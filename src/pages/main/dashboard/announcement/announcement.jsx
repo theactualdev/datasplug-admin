@@ -1,7 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
-import { Card, DropdownItem, DropdownMenu, DropdownToggle, Modal, ModalBody, UncontrolledDropdown } from "reactstrap";
+import {
+  Card,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Modal,
+  ModalBody,
+  UncontrolledDropdown,
+  Badge,
+} from "reactstrap";
 import {
   useCreateAnnouncement,
   useDeleteAnnouncement,
@@ -154,8 +163,6 @@ const AnnouncementPage = () => {
       return "warning";
     } else if (status === "successful") {
       return "success";
-    } else if (status === "") {
-      return "info";
     } else {
       return "danger";
     }
@@ -246,6 +253,7 @@ const AnnouncementPage = () => {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="overline-title overline-title-alt">Type</label>
+
                                   {/* <RSelect
                                     options={flightsFilterOptions}
                                     placeholder="Any flight type"
@@ -373,7 +381,13 @@ const AnnouncementPage = () => {
                               <span>{item.user_count}</span>
                             </DataTableRow>
                             <DataTableRow>
-                              <span className="text-capitalize">{item.status}</span>
+                              <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
+                              <Badge
+                                className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
+                                color={statusColor(item.status)}
+                              >
+                                <span className="ccap">{item.status}</span>
+                              </Badge>
                             </DataTableRow>
                             <DataTableRow className="tb-odr-action">
                               <div className="tb-odr-btns d-none d-md-inline">

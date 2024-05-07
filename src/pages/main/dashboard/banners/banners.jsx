@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
-import { Card, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { Card, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown, Badge } from "reactstrap";
 import { useDeleteBanners, useGetBanners, useToggleBanners } from "../../../../api/banners";
 import {
   Block,
@@ -270,7 +270,13 @@ const BannersPage = () => {
                             </DataTableRow>
 
                             <DataTableRow>
-                              <span className="text-capitalize">{item.activated ? "Active" : "Inactive"}</span>
+                              <span className={`dot bg-${item.activated ? "success" : "pending"} d-sm-none`}></span>
+                              <Badge
+                                className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
+                                color={item.activated ? "success" : "pending"}
+                              >
+                                <span className="ccap">{item.activated ? "Active" : "Inactive"}</span>
+                              </Badge>
                             </DataTableRow>
 
                             <DataTableRow>

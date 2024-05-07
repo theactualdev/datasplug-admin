@@ -72,7 +72,6 @@ const User = () => {
         <div className="dropdown-inner">
           <LinkList>
             <a
-              href={`/signout`}
               onClick={(ev) => {
                 ev.preventDefault();
                 handleSignout();

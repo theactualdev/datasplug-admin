@@ -19,7 +19,7 @@ import ProductH from "../../../../images/product/h.png";
 import LoadingSpinner from "../../../components/spinner";
 import SortToolTip from "../tables/SortTooltip";
 import { faqStatusType } from "./faqData";
-import { formatDateWithTime } from "../../../../utils/Utils";
+import { formatDateWithTime, truncateText } from "../../../../utils/Utils";
 
 const FaqTable = ({ faqTitle, data, headers, dataKeys, isLoading, defaultData, action: Action }) => {
   const [onSearch, setonSearch] = useState(false);
@@ -239,6 +239,13 @@ const FaqTable = ({ faqTitle, data, headers, dataKeys, isLoading, defaultData, a
                         return (
                           <DataTableRow key={idx}>
                             <span>{formatDateWithTime(item.created_at)}</span>
+                          </DataTableRow>
+                        );
+
+                      if (key === "answer")
+                        return (
+                          <DataTableRow key={idx}>
+                            <span>{truncateText(item.answer, 80)}</span>
                           </DataTableRow>
                         );
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import NoIcon from "../../../../images/no-image-icon.png";
 import {
   Badge,
@@ -31,13 +31,14 @@ import {
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { formatDateWithTime } from "../../../../utils/Utils";
+import { formatDateWithTime, formatDate } from "../../../../utils/Utils";
 import FaqTable from "../faq/faqTable";
 import {
   useCreateProviders,
   useDeleteProviders,
   useGetProviders,
   useToggleProviders,
+  useUpdateProviderProduct,
   useUpdateProviders,
 } from "../../../../api/service-providers";
 import SortToolTip from "../tables/SortTooltip";
@@ -46,6 +47,7 @@ import LoadingSpinner from "../../../components/spinner";
 
 const ServiceProviders = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
@@ -61,6 +63,7 @@ const ServiceProviders = () => {
   const { mutate: updateProvider } = useUpdateProviders(editId);
   const { mutate: deleteProvider } = useDeleteProviders(editId);
   const { mutate: updateStatus } = useToggleProviders(editId);
+  const { mutate: updateProduct } = useUpdateProviderProduct(editId);
   // console.log(providers);
 
   // console.log(accounts);
@@ -120,6 +123,7 @@ const ServiceProviders = () => {
 
   // function that loads the want to editted data
   const onEditClick = (id) => {
+    console.log(id);
     providers?.data?.forEach((item) => {
       if (item.id === id) {
         setFormData({
@@ -309,7 +313,10 @@ const ServiceProviders = () => {
                           <span className="tb-tnx-head bg-white text-secondary">Product Type</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span className="tb-tnx-head bg-white text-secondary">Date</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Service Count</span>
+                        </DataTableRow>
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">Date Added</span>
                         </DataTableRow>
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
@@ -350,14 +357,22 @@ const ServiceProviders = () => {
                               <span className="text-capitalize"> {item?.purpose}</span>
                             </DataTableRow> */}
                             <DataTableRow>
-                              {item?.product_type.map((type, index) => (
-                                <span key={index} className="ccap pe-1">
-                                  {type}
-                                </span>
-                              ))}
+                              {item?.product_type?.map((type, index) => {
+                                if (index <= 1) {
+                                  return (
+                                    <span key={index} className="ccap pe-1">
+                                      {type}
+                                    </span>
+                                  );
+                                }
+                              })}
+                              {item?.product_type?.length > 2 && <span>& {item?.product_type?.length - 2} more.</span>}
                             </DataTableRow>
                             <DataTableRow>
-                              <span>{formatDateWithTime(item.created_at)}</span>
+                              <span className="text-capitalize"> 0</span>
+                            </DataTableRow>
+                            <DataTableRow>
+                              <span>{formatDate(item.created_at)}</span>
                             </DataTableRow>
                             <DataTableRow>
                               <span className={`dot bg-${item.active ? "success" : "warning"} d-sm-none`}></span>
@@ -368,62 +383,91 @@ const ServiceProviders = () => {
                                 <span className="ccap">{item.active ? "active" : "inactive"}</span>
                               </Badge>
                             </DataTableRow>
-                            <DataTableRow className="nk-tb-col-tools">
-                              <ul className="nk-tb-actions gx-1 my-n1">
-                                <li>
-                                  <UncontrolledDropdown>
-                                    <DropdownToggle tag="a" className="btn btn-trigger dropdown-toggle btn-icon me-n1">
-                                      <Icon name="more-h"></Icon>
-                                    </DropdownToggle>
-                                    <DropdownMenu end>
-                                      <ul className="link-list-opt no-bdr">
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              onEditClick(item.id);
-                                              setView({ add: false, edit: false, details: true });
-                                            }}
-                                          >
-                                            <Icon name="eye"></Icon>
-                                            <span>View</span>
-                                          </DropdownItem>
-                                        </li>
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              onEditClick(item.id);
-                                              updateStatus();
-                                            }}
-                                          >
-                                            <Icon name={item.active ? "cross" : "check"}></Icon>
-                                            <span>{item.active ? "Deactivate" : "Activate"}</span>
-                                          </DropdownItem>
-                                        </li>
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              setEditedId(id);
-                                              deleteProvider();
-                                            }}
-                                          >
-                                            <Icon name="trash"></Icon>
-                                            <span>Delete</span>
-                                          </DropdownItem>
-                                        </li>
-                                      </ul>
-                                    </DropdownMenu>
-                                  </UncontrolledDropdown>
-                                </li>
-                              </ul>
+
+                            <DataTableRow className="tb-odr-action">
+                              <div className="tb-odr-btns d-none d-md-inline">
+                                <Button
+                                  color="primary"
+                                  className="btn-sm"
+                                  onClick={(ev) => {
+                                    navigate(`/service-providers/${item.id}`);
+                                  }}
+                                >
+                                  View services
+                                </Button>
+
+                                <UncontrolledDropdown>
+                                  <DropdownToggle
+                                    tag="a"
+                                    href="#more"
+                                    onClick={(ev) => ev.preventDefault()}
+                                    className="text-soft dropdown-toggle btn btn-icon btn-trigger ms-1"
+                                  >
+                                    <Icon name="more-h"></Icon>
+                                  </DropdownToggle>
+                                  <DropdownMenu end>
+                                    <ul className="link-list-plain">
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            setEditedId(item.id);
+                                            onEditClick(item.id);
+                                            toggle("details");
+                                          }}
+                                        >
+                                          <Icon name="eye"></Icon>
+                                          <span>View Details</span>
+                                        </DropdownItem>
+                                      </li>
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            onEditClick(item.id);
+                                            updateStatus();
+                                          }}
+                                        >
+                                          <Icon name={item.active ? "cross" : "check"}></Icon>
+                                          <span>{item.active ? "Deactivate" : "Activate"}</span>
+                                        </DropdownItem>
+                                      </li>
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            // setEditedId(id);
+                                            // deleteProvider();
+                                          }}
+                                        >
+                                          <Icon name="clock"></Icon>
+                                          <span>Make coming soon</span>
+                                        </DropdownItem>
+                                      </li>
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            // setEditedId(id);
+                                            // deleteProvider();
+                                          }}
+                                        >
+                                          <Icon name="thumbs-up"></Icon>
+                                          <span>Make available</span>
+                                        </DropdownItem>
+                                      </li>
+                                    </ul>
+                                  </DropdownMenu>
+                                </UncontrolledDropdown>
+                              </div>
                             </DataTableRow>
                           </DataTableItem>
                         );
@@ -556,7 +600,9 @@ const ServiceProviders = () => {
             <div className="p-2">
               <div className="nk-modal-head">
                 <h5 className="title">View Provider</h5>
-                <img src={formData.logo} alt="logo" />
+                <div>
+                  <img src={formData.logo} alt="logo" />
+                </div>
               </div>
               <div className="mt-4">
                 <Row className="gy-3">

@@ -30,6 +30,19 @@ export const useGetProviders = (currentPage = 1, size = 100) => {
   );
 };
 
+// Get product Info
+export const useGetProviderInfo = (id) => {
+  return useQuery(["Providers", id], async () => {
+    const request = instance
+      .get(BACKEND_URLS.providers + `/${id}`)
+      .then((res) => res?.data)
+      .catch((err) => {
+        throw err;
+      });
+    return request;
+  });
+};
+
 export const useCreateProviders = () => {
   const queryClient = useQueryClient();
 
@@ -62,6 +75,30 @@ export const useUpdateProviders = (id) => {
     (values) => {
       try {
         const response = toast.promise(instance.post(BACKEND_URLS.providers + `/${id}`, values), {
+          success: (data) => data.message || "Update Successful",
+          loading: "Please wait...",
+          error: (error) => error?.response?.data?.message || "Failed. Something happened.",
+        });
+        return response;
+      } catch (error) {
+        console.error(error);
+        Promise.reject(error);
+      }
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["Providers"]);
+      },
+    }
+  );
+};
+export const useUpdateProviderProduct = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (values) => {
+      try {
+        const response = toast.promise(instance.post(BACKEND_URLS.product + `/${id}`, values), {
           success: (data) => data.message || "Update Successful",
           loading: "Please wait...",
           error: (error) => error?.response?.data?.message || "Failed. Something happened.",

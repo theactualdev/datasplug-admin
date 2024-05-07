@@ -185,6 +185,66 @@ const FAQsPage = () => {
     </ul>
   );
 
+  // const ActionOptionsnew = ({ id }) => (
+  //   <div className="tb-odr-action">
+  //     <div className="tb-odr-btns d-none d-md-flex">
+  //       <Button
+  //         color="primary"
+  //         className="btn-sm"
+  //         onClick={(ev) => {
+  //           onEditClick(id);
+  //           setView({ add: false, edit: false, details: true });
+  //         }}
+  //       >
+  //         View
+  //       </Button>
+
+  //       <UncontrolledDropdown>
+  //         <DropdownToggle
+  //           tag="a"
+  //           href="#more"
+  //           onClick={(ev) => ev.preventDefault()}
+  //           className="text-soft dropdown-toggle btn btn-icon btn-trigger ms-1"
+  //         >
+  //           <Icon name="more-h"></Icon>
+  //         </DropdownToggle>
+  //         <DropdownMenu end>
+  //           <ul className="link-list-plain">
+  //             <li>
+  //               <DropdownItem
+  //                 tag="a"
+  //                 href="#"
+  //                 onClick={(ev) => {
+  //                   ev.preventDefault();
+  //                   onEditClick(id);
+  //                   setView({ add: false, edit: true, details: false });
+  //                 }}
+  //               >
+  //                 <Icon name="edit"></Icon>
+  //                 <span>Edit</span>
+  //               </DropdownItem>
+  //             </li>{" "}
+  //             <li>
+  //               <DropdownItem
+  //                 tag="a"
+  //                 href="#"
+  //                 onClick={(ev) => {
+  //                   ev.preventDefault();
+  //                   setEditedId(id);
+  //                   deleteFaq();
+  //                 }}
+  //               >
+  //                 <Icon name="trash"></Icon>
+  //                 <span>Delete</span>
+  //               </DropdownItem>
+  //             </li>
+  //           </ul>
+  //         </DropdownMenu>
+  //       </UncontrolledDropdown>
+  //     </div>
+  //   </div>
+  // );
+
   return (
     <React.Fragment>
       <Head title="FAQs"></Head>

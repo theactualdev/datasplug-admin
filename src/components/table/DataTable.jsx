@@ -45,6 +45,10 @@ export const DataTableRow = ({ className, size, ...props }) => {
   return <div className={rowClass}>{props.children}</div>;
 };
 
-export const DataTableItem = ({ className, ...props }) => {
-  return <div className={`nk-tb-item ${className ? className : ""}`}>{props.children}</div>;
+export const DataTableItem = ({ className, onClick, style, ...props }) => {
+  return (
+    <div className={`nk-tb-item ${className ? className : ""}`} onClick={onClick} style={style}>
+      {props.children}
+    </div>
+  );
 };

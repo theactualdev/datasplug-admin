@@ -8,7 +8,7 @@ const AuthFooter = () => {
         <Row className="g-3">
           <Col>
             <div className="nk-block-content text-center text-lg-end">
-              <p className="text-soft">&copy; 2023 Niteon. All Rights Reserved.</p>
+              <p className="text-soft">Powered by Soft-Web Digital.</p>
             </div>
           </Col>
         </Row>

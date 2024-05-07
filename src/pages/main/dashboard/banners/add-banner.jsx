@@ -9,8 +9,8 @@ const AddBanner = ({ modal, closeModal }) => {
 
   const [previewImage, setPreviewImage] = useState([]);
   const [featuredImage, setFeaturedImage] = useState([]);
-
-  //   console.log(featuredImage);
+  const [rejectedFiles, setRejectedFile] = useState([]);
+  const [rejectedFeature, setRejectedFeature] = useState([]);
 
   const submitForm = (e) => {
     e.preventDefault();
@@ -22,6 +22,8 @@ const AddBanner = ({ modal, closeModal }) => {
     closeModal();
     setFeaturedImage([]);
     setPreviewImage([]);
+    setRejectedFile([]);
+    setRejectedFeature([]);
   };
 
   // handles ondrop function of dropzone
@@ -30,15 +32,31 @@ const AddBanner = ({ modal, closeModal }) => {
       set([file]);
       // console.log(file);
     });
+    if (rejectedFiles || rejectedFeature) {
+      setRejectedFeature([]);
+      setRejectedFile([]);
+    }
+  };
+
+  const handleOnReject = (rejectedFile, set) => {
+    set(rejectedFile);
+  };
+
+  const close = () => {
+    closeModal();
+    setFeaturedImage([]);
+    setPreviewImage([]);
+    setRejectedFile([]);
+    setRejectedFeature([]);
   };
   return (
-    <Modal isOpen={modal} toggle={() => closeModal()} className="modal-dialog-centered" size="lg">
+    <Modal isOpen={modal} toggle={close} className="modal-dialog-centered" size="lg">
       <ModalBody>
         <a
           href="#cancel"
           onClick={(ev) => {
             ev.preventDefault();
-            closeModal();
+            close();
           }}
           className="close"
         >
@@ -52,8 +70,9 @@ const AddBanner = ({ modal, closeModal }) => {
                 <label className="form-label">Preview Image</label>
                 <Dropzone
                   onDrop={(acceptedFiles) => handleDropChange(acceptedFiles, setPreviewImage)}
-                  accept={[".jpg", ".png", ".svg"]}
+                  accept={[".jpg", ".png", ".jpeg"]}
                   maxFiles={1}
+                  onDropRejected={(file) => handleOnReject(file, setRejectedFile)}
                 >
                   {({ getRootProps, getInputProps }) => (
                     <section>
@@ -61,11 +80,12 @@ const AddBanner = ({ modal, closeModal }) => {
                         <input {...getInputProps()} />
                         {previewImage.length === 0 && (
                           <div className="dz-message">
-                            <span className="dz-message-text">Drag and drop file</span>
+                            <span className="dz-message-text">Drag 'n' drop some files here</span>
                             <span className="dz-message-or">or</span>
                             <Button type="button" color="primary">
                               SELECT
                             </Button>
+                            <p>(Only *.jpg, *.png and *.jpeg will be accepted) </p>
                           </div>
                         )}
                         {previewImage.map((file) => (
@@ -82,12 +102,23 @@ const AddBanner = ({ modal, closeModal }) => {
                     </section>
                   )}
                 </Dropzone>
+                {rejectedFiles.map(({ file, errors }) => (
+                  <div key={file.path}>
+                    {errors.map((error) => (
+                      <p key={error.code} className="text-danger">
+                        {error.message}
+                      </p>
+                    ))}
+                  </div>
+                ))}
               </Col>
               <Col>
                 <label className="form-label">Featured Image</label>
                 <Dropzone
                   onDrop={(acceptedFiles) => handleDropChange(acceptedFiles, setFeaturedImage)}
-                  accept={[".jpg", ".png", ".svg"]}
+                  accept={[".jpg", ".png", ".jpeg"]}
+                  maxFiles={1}
+                  onDropRejected={(file) => handleOnReject(file, setRejectedFeature)}
                 >
                   {({ getRootProps, getInputProps }) => (
                     <section>
@@ -100,6 +131,7 @@ const AddBanner = ({ modal, closeModal }) => {
                             <Button type="button" color="primary">
                               SELECT
                             </Button>
+                            <p>(Only *.jpg, *.png and *.jpeg will be accepted) </p>
                           </div>
                         )}
                         {featuredImage.map((file) => (
@@ -116,6 +148,15 @@ const AddBanner = ({ modal, closeModal }) => {
                     </section>
                   )}
                 </Dropzone>
+                {rejectedFeature.map(({ file, errors }) => (
+                  <div key={file.path}>
+                    {errors.map((error) => (
+                      <p key={error.code} className="text-danger">
+                        {error.message}
+                      </p>
+                    ))}
+                  </div>
+                ))}
               </Col>
 
               <Col size="12">
@@ -130,7 +171,7 @@ const AddBanner = ({ modal, closeModal }) => {
                       href="#cancel"
                       onClick={(ev) => {
                         ev.preventDefault();
-                        closeModal();
+                        close();
                       }}
                       className="link link-light"
                     >

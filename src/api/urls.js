@@ -9,7 +9,7 @@ const BACKEND_URLS = {
     forgotPassword: "/forgot-password",
     resetPassword: "/reset-password/",
     // verifyEmail: "/users/verify/",
-    logout: "/logout",
+    logout: "/auth/logout",
     refreshToken: "/refresh-access-token/",
   },
   crypto: "/crypto-transactions",
@@ -22,10 +22,11 @@ const BACKEND_URLS = {
   systemAccount: "/bank-accounts",
   providers: "/providers",
   service: "/services",
-  product: {
-    all: "/products",
-    productReview: "/review",
-  },
+  product: "/products",
+  // product: {
+  //   all: "/products",
+  //   productReview: "/review",
+  // },
   stores: "/store",
   catalog: {
     brands: "/catalog/brands",

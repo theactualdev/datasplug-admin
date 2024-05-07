@@ -101,6 +101,21 @@ const UserProfileAside = ({ updateSm, sm }) => {
               <span>Service</span>
             </Link>
           </li>
+          <li onClick={() => updateSm(false)}>
+            <Link
+              to="/settings/system-bank-accounts"
+              className={location.pathname === `/settings/system-bank-accounts` ? "active" : ""}
+            >
+              <Icon name="wallet"></Icon>
+              <span>System bank account</span>
+            </Link>
+          </li>
+          <li onClick={() => updateSm(false)}>
+            <Link to="/settings/app-update" className={location.pathname === `/settings/app-update` ? "active" : ""}>
+              <Icon name="info"></Icon>
+              <span>App update</span>
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

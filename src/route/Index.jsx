@@ -71,6 +71,9 @@ import ElectricityTransactionsPage from "../pages/main/dashboard/transactions/el
 import WalletWithdrawalListPage from "../pages/main/dashboard/wallet/wallet-debit";
 import WalletDepositListPage from "../pages/main/dashboard/wallet/wallet-deposit";
 import WalletTransferListPage from "../pages/main/dashboard/wallet/wallet-transfer";
+import ServiceProvidersServices from "../pages/main/dashboard/service-providers/provider-products";
+import AppUpdatePage from "../pages/main/dashboard/settings/AppUpdate";
+import SystemAccountPage from "../pages/main/dashboard/settings/SystemAccount";
 
 const routes = (
   <Route>
@@ -129,6 +132,7 @@ const routes = (
           <Route path="referral-terms" element={<ReferralTermsPage />} />
           <Route path="system-bank-account" element={<SystemBankAccountPage />} />
           <Route path="service-providers" element={<ServiceProviders />} />
+          <Route path="service-providers/:providerId" element={<ServiceProvidersServices />} />
           <Route path="services" element={<ServicesPage />} />
           <Route path="trades-info" element={<TradeSettings />} />
 
@@ -144,6 +148,8 @@ const routes = (
             <Route index element={<UserInfoPage />} />
             <Route path="user-security" element={<UserSecurityPage />} />
             <Route path="other-settings" element={<OtherSettingsPage />} />
+            <Route path="app-update" element={<AppUpdatePage />} />
+            <Route path="system-bank-accounts" element={<SystemAccountPage />} />
           </Route>
         </Route>
       </Route>

@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Button, Card, Nav, NavItem, NavLink } from "reactstrap";
 import { Block, BlockBetween, BlockHead, BlockHeadContent, BlockTitle, Icon } from "../../../../components/Component";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useGetSingleUser } from "../../../../api/users/user";
 import { UserAvatar } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
@@ -13,9 +13,13 @@ import LoadingSpinner from "../../../components/spinner";
 const UserDetailsPage = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const itemsPerPage = searchParams.get("limit") ?? 7;
+  const currentPage = searchParams.get("page") ?? 1;
+  const activeTab = searchParams.get("tab") ?? "details";
   const { data: user, isLoading } = useGetSingleUser(userId);
-  const [activeTab] = useState("1");
-  // console.log(user);
+  console.log(user);
 
   const activeTabStyle = useCallback(
     (value) => {
@@ -69,28 +73,67 @@ const UserDetailsPage = () => {
                   <NavLink
                     tag="a"
                     href="#tab"
-                    className={`${activeTabStyle("1")}`}
+                    className={activeTab === "details" ? "active" : ""}
                     onClick={(ev) => {
                       ev.preventDefault();
-                      // toggle("1");
+                      setSearchParams({ tab: "details" });
                     }}
                   >
                     Personal Information
                   </NavLink>
                 </NavItem>
-                {/* <NavItem>
+                <NavItem>
                   <NavLink
                     tag="a"
                     href="#tab"
-                    className={`${activeTabStyle("2")}`}
+                    className={activeTab === "wallet" ? "active" : ""}
                     onClick={(ev) => {
                       ev.preventDefault();
-                      // toggle("2");
+                      setSearchParams({ tab: "wallet" });
                     }}
                   >
-                    Account Information
+                    Wallet Transactions
                   </NavLink>
-                </NavItem> */}
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={activeTab === "services" ? "active" : ""}
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      setSearchParams({ tab: "services" });
+                    }}
+                  >
+                    Service Transactions
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={activeTab === "referral" ? "active" : ""}
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      setSearchParams({ tab: "referral" });
+                    }}
+                  >
+                    Referrals
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={activeTab === "accounts" ? "active" : ""}
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      setSearchParams({ tab: "accounts" });
+                    }}
+                  >
+                    Bank Account
+                  </NavLink>
+                </NavItem>
               </Nav>
               <div className="card-inner">
                 {isLoading ? (
@@ -103,7 +146,7 @@ const UserDetailsPage = () => {
                           <BlockTitle tag="h5">Profile Information</BlockTitle>
                           <div className="user-card">
                             <UserAvatar
-                              // theme={user?.avatar}
+                              theme={user?.avatar}
                               className="md"
                               text={user && findUpper(`${user?.data?.firstname} ${user?.data?.lastname}`)}
                               image={user?.data?.avatar}
@@ -118,6 +161,12 @@ const UserDetailsPage = () => {
                             <span className="profile-ud-value">
                               {user?.data?.firstname} {user?.data?.lastname}
                             </span>
+                          </div>
+                        </div>
+                        <div className="profile-ud-item">
+                          <div className="profile-ud wider">
+                            <span className="profile-ud-label">Username</span>
+                            <span className="profile-ud-value">{user?.data?.username ?? "Not set"}</span>
                           </div>
                         </div>
                         <div className="profile-ud-item">
@@ -167,7 +216,7 @@ const UserDetailsPage = () => {
                         </div>
                         <div className="profile-ud-item">
                           <div className="profile-ud wider">
-                            <span className="profile-ud-label">Joining Date</span>
+                            <span className="profile-ud-label">Date Joined</span>
                             <span className="profile-ud-value">{formatDateWithTime(user?.data?.created_at)}</span>
                           </div>
                         </div>

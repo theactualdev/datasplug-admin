@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import { Controller, useForm } from "react-hook-form";
 import { Form, Modal, ModalBody } from "reactstrap";
 import { Button, Col, Icon, RSelect } from "../../../../components/Component";
 import { formatDateTimeNumeric } from "../../../../utils/Utils";
+import { useGetAllUsers } from "../../../../api/users/user";
 
 const channelOption = [
   { label: "Push", value: "push" },
@@ -23,12 +24,27 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm();
+  const { isLoading, data: users } = useGetAllUsers(1, 100);
+  const usersOptions = useMemo(() => {
+    if (!isLoading && users) {
+      return users.data.map((item) => ({
+        id: item.id,
+        label: `${item.firstname} ${item.firstname}`,
+        value: `${item.firstname} ${item.firstname}`,
+      }));
+    }
+  }, [isLoading, users]);
+
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  // console.log(usersOptions);
 
   const onSubmit = (data) => {
     //Assign apporiate values to the channel prop
     let channels;
+    let submittedData;
     if (data.channels.value) {
       if (data.channels.value === "both") {
         channels = ["Email", "Push"];
@@ -38,22 +54,36 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
     } else {
       channels = data.channels;
     }
+    let target_users = selectedUsers.map((item) => item.id);
+    let target = data.target.value ? data.target.value : data.target;
 
-    let submittedData = {
-      title: data.title,
-      body: data.body,
-      target: data.target.value ? data.target.value : data.target,
-      channels,
-      dispatch_datetime:
-        data.dispatchDate instanceof Date ? formatDateTimeNumeric(data.dispatchDate) : data.dispatchDate,
-    };
+    if (target === "specific") {
+      submittedData = {
+        title: data.title,
+        body: data.body,
+        target: data.target.value ? data.target.value : data.target,
+        channels,
+        dispatch_datetime:
+          data.dispatchDate instanceof Date ? formatDateTimeNumeric(data.dispatchDate) : data.dispatchDate,
+        users: target_users,
+      };
+    } else {
+      submittedData = {
+        title: data.title,
+        body: data.body,
+        target: data.target.value ? data.target.value : data.target,
+        channels,
+        dispatch_datetime:
+          data.dispatchDate instanceof Date ? formatDateTimeNumeric(data.dispatchDate) : data.dispatchDate,
+      };
+    }
     // console.log(submittedData);
     if (isEdit) {
       editFunction(submittedData);
     } else {
       createFunction(submittedData);
     }
-    closeModal();
+    // closeModal();
   };
 
   const defaultChannel = useMemo(() => {
@@ -71,6 +101,8 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
       }
     }
   }, [formData]);
+
+  const targetType = watch("target");
 
   // console.log(formData.channels);
 
@@ -160,6 +192,19 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
                   </div>
                 </div>
               </Col>
+              {targetType?.value === "specific" && (
+                <Col>
+                  <label className="form-label">Select Users</label>
+                  <RSelect
+                    isMulti
+                    options={usersOptions}
+                    defaultValue={selectedUsers}
+                    placeholder={"Select Users"}
+                    onChange={(e) => setSelectedUsers(e)}
+                  />
+                </Col>
+              )}
+
               <Col md="6">
                 <div className="form-group">
                   <label className="form-label">Select Date</label>

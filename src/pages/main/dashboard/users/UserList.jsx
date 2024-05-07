@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown, Badge } from "reactstrap";
 import { useGetAllUsers, useUpdateUserStatus } from "../../../../api/users/user";
 import {
   Block,
@@ -70,6 +70,16 @@ const UserList = () => {
   // function to filter data
   const filterData = useCallback(() => {
     return;
+  }, []);
+
+  const statusColor = useCallback((status) => {
+    if (status === "pending") {
+      return "warning";
+    } else if (status === "active") {
+      return "success";
+    } else {
+      return "danger";
+    }
   }, []);
 
   return (
@@ -225,6 +235,9 @@ const UserList = () => {
                     <DataTableRow>
                       <span className="sub-text ">User</span>
                     </DataTableRow>
+                    <DataTableRow>
+                      <span className="sub-text ">Username</span>
+                    </DataTableRow>
 
                     <DataTableRow size="sm">
                       <span className="sub-text">Phone</span>
@@ -249,7 +262,11 @@ const UserList = () => {
                   {/*Head*/}
                   {users?.data?.map((item, idx) => {
                     return (
-                      <DataTableItem key={idx}>
+                      <DataTableItem
+                        key={idx}
+                        onClick={() => navigate(`/user-details/${item.id}`)}
+                        style={{ cursor: "pointer" }}
+                      >
                         <DataTableRow className="nk-tb-col-check">
                           <div className="custom-control custom-control-sm custom-checkbox notext">{idx + 1}</div>
                         </DataTableRow>
@@ -273,6 +290,10 @@ const UserList = () => {
                           {/* </Link> */}
                         </DataTableRow>
 
+                        <DataTableRow size="lg">
+                          <span className="ccap">{item?.username || "Not set"}</span>
+                        </DataTableRow>
+
                         <DataTableRow size="sm">
                           {item.phone ? (
                             <span>
@@ -289,13 +310,13 @@ const UserList = () => {
                           <span>{formatDateWithTime(item.created_at)}</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span
-                            className={`tb-status text-${
-                              item.status === "active" ? "success" : item.status === "pending" ? "warning" : "danger"
-                            } text-capitalize`}
+                          <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
+                          <Badge
+                            className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
+                            color={statusColor(item.status)}
                           >
-                            {item.status}
-                          </span>
+                            <span className="ccap">{item.status}</span>
+                          </Badge>
                         </DataTableRow>
                         <DataTableRow className="nk-tb-col-tools">
                           <ul className="nk-tb-actions gx-1">

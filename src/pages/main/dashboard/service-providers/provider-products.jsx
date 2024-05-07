@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import NoIcon from "../../../../images/no-image-icon.png";
 import {
   Badge,
@@ -31,11 +31,12 @@ import {
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { formatDateWithTime } from "../../../../utils/Utils";
+import { formatDateWithTime, formatter } from "../../../../utils/Utils";
 import FaqTable from "../faq/faqTable";
 import {
   useCreateProviders,
   useDeleteProviders,
+  useGetProviderInfo,
   useGetProviders,
   useToggleProviders,
   useUpdateProviders,
@@ -43,10 +44,12 @@ import {
 import SortToolTip from "../tables/SortTooltip";
 import Search from "../tables/Search";
 import LoadingSpinner from "../../../components/spinner";
-import { useDeleteServices, useGetServices, useToggleServices } from "../../../../api/services";
+import { FilterOptions } from "../tables/filter-select";
 
-const Services = () => {
+const ServiceProvidersServices = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { providerId } = useParams();
+  const navigate = useNavigate();
 
   const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
@@ -55,12 +58,16 @@ const Services = () => {
   const [editId, setEditedId] = useState();
   const [onSearch, setonSearch] = useState(false);
 
-  const { isLoading, data: services } = useGetServices(currentPage, itemsPerPage);
+  // const { isLoading, data: faqs } = useGetFaqs();
+  // const { isLoading, data: accounts } = useGetSystemAccount(currentPage, itemsPerPage);
+  const { loading, data: providers } = useGetProviders(currentPage, itemsPerPage);
+  const { isLoading, data: provider } = useGetProviderInfo(providerId);
   const { mutate: addProvider } = useCreateProviders();
-  const { mutate: updateStatus } = useToggleServices(editId);
-  const { mutate: deleteServices } = useDeleteServices(editId);
   const { mutate: updateProvider } = useUpdateProviders(editId);
-  console.log(services);
+  //   const { mutate: deleteProvider } = useDeleteProviders(editId);
+  //   const { mutate: updateStatus } = useToggleProviders(editId);
+  //   console.log(provider);
+  // console.log(providers);
 
   // console.log(accounts);
 
@@ -119,7 +126,7 @@ const Services = () => {
 
   // function that loads the want to editted data
   const onEditClick = (id) => {
-    services?.data?.forEach((item) => {
+    providers?.data?.forEach((item) => {
       if (item.id === id) {
         setFormData({
           name: item?.name,
@@ -165,36 +172,29 @@ const Services = () => {
 
   return (
     <React.Fragment>
-      <Head title="Services"></Head>
+      <Head title={`${provider?.data?.name || ""} Service`}></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle page>Services</BlockTitle>
+              <BlockTitle page>{provider?.data?.name} Services</BlockTitle>
             </BlockHeadContent>
-            {/* <BlockHeadContent>
-              <div className="toggle-wrap nk-block-tools-toggle">
-                <Button
-                  className="toggle btn-icon d-md-none"
-                  color="primary"
-                  onClick={() => {
-                    toggle("add");
-                  }}
-                >
-                  <Icon name="plus"></Icon>
-                </Button>
-                <Button
-                  className="toggle d-none d-md-inline-flex"
-                  color="primary"
-                  onClick={() => {
-                    toggle("add");
-                  }}
-                >
-                  <Icon name="plus"></Icon>
-                  <span>Add Provider</span>
-                </Button>
-              </div>
-            </BlockHeadContent> */}
+            <BlockHeadContent>
+              <Button color="light" outline className="bg-white d-none d-sm-inline-flex" onClick={() => navigate(-1)}>
+                <Icon name="arrow-left"></Icon>
+                <span>Back to Providers</span>
+              </Button>
+              <a
+                href="#back"
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  navigate(-1);
+                }}
+                className="btn btn-icon btn-outline-light bg-white d-inline-flex d-sm-none"
+              >
+                <Icon name="arrow-left"></Icon>
+              </a>
+            </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
 
@@ -207,7 +207,7 @@ const Services = () => {
                 </div>
                 <div className="card-tools me-n1">
                   <ul className="btn-toolbar gx-1">
-                    <li>
+                    {/* <li>
                       <Button
                         href="#search"
                         onClick={(ev) => {
@@ -218,66 +218,12 @@ const Services = () => {
                       >
                         <Icon name="search"></Icon>
                       </Button>
-                    </li>
-                    <li className="btn-toolbar-sep"></li>
-                    <li>
-                      <UncontrolledDropdown>
-                        <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
-                          <div className="dot dot-primary"></div>
-                          <Icon name="filter-alt"></Icon>
-                        </DropdownToggle>
-                        <DropdownMenu end className="filter-wg dropdown-menu-xl" style={{ overflow: "visible" }}>
-                          <div className="dropdown-head">
-                            <span className="sub-title dropdown-title">Advanced Filter</span>
-                          </div>
-                          <div className="dropdown-body dropdown-body-rg">
-                            <Row className="gx-6 gy-4">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="overline-title overline-title-alt">Type</label>
-                                  {/* <RSelect
-                                    options={flightsFilterOptions}
-                                    placeholder="Any flight type"
-                                    value={filters.status && { label: filters.status, value: filters.status }}
-                                    isSearchable={false}
-                                    onChange={(e) => setfilters({ ...filters, status: e.label })}
-                                  /> */}
-                                </div>
-                              </Col>
-                              <Col size="12">
-                                <div className="form-group">
-                                  <Button type="button" onClick={filterData} className="btn btn-secondary ">
-                                    Filter
-                                  </Button>
-                                </div>
-                              </Col>
-                            </Row>
-                          </div>
-                          <div className="dropdown-foot between">
-                            <a
-                              href="#reset"
-                              onClick={(ev) => {
-                                ev.preventDefault();
-                                // setData(couponsData);
-                                setfilters({});
-                              }}
-                              className="clickable"
-                            >
-                              Reset Filter
-                            </a>
-                            <a
-                              href="#save"
-                              onClick={(ev) => {
-                                ev.preventDefault();
-                              }}
-                            >
-                              Save Filter
-                            </a>
-                          </div>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </li>
-                    <li>
+                    </li> */}
+                    {/* <li className="btn-toolbar-sep"></li> */}
+                    {/* <li>
+                      <FilterOptions options={} />
+                    </li> */}
+                    {/* <li>
                       <UncontrolledDropdown>
                         <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
                           <Icon name="setting"></Icon>
@@ -286,7 +232,7 @@ const Services = () => {
                           <SortToolTip />
                         </DropdownMenu>
                       </UncontrolledDropdown>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
                 {/* Search component */}
@@ -297,24 +243,28 @@ const Services = () => {
               <div className="card-inner p-0">
                 {isLoading ? (
                   <LoadingSpinner />
-                ) : 2 > 0 ? (
+                ) : provider?.data?.products?.length > 0 ? (
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">S/N</span>
+                        </DataTableRow>
                         <DataTableRow size="sm">
-                          <span className="tb-tnx-head bg-white text-secondary">Provider Name</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Name</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span className="tb-tnx-head bg-white text-secondary">Product Type</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Amount</span>
                         </DataTableRow>
-                        {/* <DataTableRow>
-                          <span className="tb-tnx-head bg-white text-secondary">Service Category</span>
-                        </DataTableRow> */}
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">Type</span>
+                        </DataTableRow>
+                        {/* 
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
-                        </DataTableRow>
+                        </DataTableRow> */}
 
-                        <DataTableRow className="nk-tb-col-tools">
+                        {/* <DataTableRow className="nk-tb-col-tools">
                           <ul className="nk-tb-actions gx-1 my-n1">
                             <li className="me-n1">
                               <UncontrolledDropdown>
@@ -329,12 +279,15 @@ const Services = () => {
                               </UncontrolledDropdown>
                             </li>
                           </ul>
-                        </DataTableRow>
+                        </DataTableRow> */}
                       </DataTableHead>
-                      {services?.data?.map((item, idx) => {
+                      {provider?.data?.products?.map((item, idx) => {
                         return (
                           <DataTableItem key={item.id} className="text-secondary">
-                            <DataTableRow className="w-max-100px">
+                            <DataTableRow>
+                              <span>{idx + 1}</span>
+                            </DataTableRow>
+                            <DataTableRow>
                               <span className="tb-product">
                                 <img
                                   src={item.logo ? item.logo : NoIcon}
@@ -344,21 +297,14 @@ const Services = () => {
                                 <span className="title">{item.name}</span>
                               </span>
                             </DataTableRow>
+                            <DataTableRow>
+                              <span>{formatter("NGN").format(item.amount)}</span>
+                            </DataTableRow>
+                            <DataTableRow>
+                              <span className="ccap">{item.type}</span>
+                            </DataTableRow>
 
                             {/* <DataTableRow>
-                              <span className="text-capitalize"> {item?.purpose}</span>
-                            </DataTableRow> */}
-                            <DataTableRow>
-                              {item?.product_type.map((type, index) => (
-                                <span key={index} className="ccap pe-1">
-                                  {type}
-                                </span>
-                              ))}
-                            </DataTableRow>
-                            {/* <DataTableRow>
-                              <span>{formatDateWithTime(item.created_at)}</span>
-                            </DataTableRow> */}
-                            <DataTableRow>
                               <span className={`dot bg-${item.active ? "success" : "warning"} d-sm-none`}></span>
                               <Badge
                                 className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
@@ -366,8 +312,8 @@ const Services = () => {
                               >
                                 <span className="ccap">{item.active ? "active" : "inactive"}</span>
                               </Badge>
-                            </DataTableRow>
-                            <DataTableRow className="nk-tb-col-tools">
+                            </DataTableRow> */}
+                            {/* <DataTableRow className="nk-tb-col-tools">
                               <ul className="nk-tb-actions gx-1 my-n1">
                                 <li>
                                   <UncontrolledDropdown>
@@ -411,7 +357,7 @@ const Services = () => {
                                             onClick={(ev) => {
                                               ev.preventDefault();
                                               setEditedId(id);
-                                              deleteServices();
+                                              deleteProvider();
                                             }}
                                           >
                                             <Icon name="trash"></Icon>
@@ -423,16 +369,16 @@ const Services = () => {
                                   </UncontrolledDropdown>
                                 </li>
                               </ul>
-                            </DataTableRow>
+                            </DataTableRow> */}
                           </DataTableItem>
                         );
                       })}
                     </DataTableBody>
                     <div className="card-inner">
-                      {services?.meta?.total > 0 && (
+                      {provider?.data?.products?.length > 0 && (
                         <PaginationComponent
                           itemPerPage={itemsPerPage}
-                          totalItems={services?.meta?.total}
+                          totalItems={provider?.data?.products?.length}
                           paginate={paginate}
                           currentPage={Number(currentPage)}
                         />
@@ -441,7 +387,7 @@ const Services = () => {
                   </>
                 ) : (
                   <div className="text-center" style={{ paddingBlock: "1rem" }}>
-                    <span className="text-silent">No Provider record found</span>
+                    <span className="text-silent">No Services found</span>
                   </div>
                 )}
               </div>
@@ -555,17 +501,15 @@ const Services = () => {
             <div className="p-2">
               <div className="nk-modal-head">
                 <h5 className="title">View Provider</h5>
-                <div style={{ width: "100px" }}>
-                  <img src={formData.logo} alt="logo" />
-                </div>
+                <img src={formData.logo} alt="logo" />
               </div>
               <div className="mt-4">
                 <Row className="gy-3">
-                  <Col lg={6}>
+                  <Col>
                     <span className="sub-text">Provider Name</span>
                     <span className="caption-text text-primary">{formData.name}</span>
                   </Col>
-                  <Col lg={6}>
+                  <Col>
                     <span className="sub-text">Product Type</span>
                     <span className="caption-text">
                       {formData.product_type?.map((item, index) => (
@@ -582,10 +526,10 @@ const Services = () => {
                     </span>
                   </Col>
 
-                  {/* <Col lg={6}>
+                  <Col lg={6}>
                     <span className="sub-text">Date Created</span>
                     <span className="caption-text">{formatDateWithTime(formData.created_at)}</span>
-                  </Col> */}
+                  </Col>
                 </Row>
               </div>
             </div>
@@ -596,4 +540,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default ServiceProvidersServices;
