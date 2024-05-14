@@ -40,6 +40,7 @@ import {
   useToggleProviders,
   useUpdateProviderProduct,
   useUpdateProviders,
+  useGetRoutes,
 } from "../../../../api/service-providers";
 import SortToolTip from "../tables/SortTooltip";
 import Search from "../tables/Search";
@@ -64,6 +65,8 @@ const ServiceProviders = () => {
   const { mutate: deleteProvider } = useDeleteProviders(editId);
   const { mutate: updateStatus } = useToggleProviders(editId);
   const { mutate: updateProduct } = useUpdateProviderProduct(editId);
+  const { data } = useGetRoutes();
+  console.log(data);
   // console.log(providers);
 
   // console.log(accounts);
@@ -436,7 +439,7 @@ const ServiceProviders = () => {
                                           <span>{item.active ? "Deactivate" : "Activate"}</span>
                                         </DropdownItem>
                                       </li>
-                                      <li>
+                                      {/* <li>
                                         <DropdownItem
                                           tag="a"
                                           href="#"
@@ -449,8 +452,8 @@ const ServiceProviders = () => {
                                           <Icon name="clock"></Icon>
                                           <span>Make coming soon</span>
                                         </DropdownItem>
-                                      </li>
-                                      <li>
+                                      </li> */}
+                                      {/* <li>
                                         <DropdownItem
                                           tag="a"
                                           href="#"
@@ -463,7 +466,7 @@ const ServiceProviders = () => {
                                           <Icon name="thumbs-up"></Icon>
                                           <span>Make available</span>
                                         </DropdownItem>
-                                      </li>
+                                      </li> */}
                                     </ul>
                                   </DropdownMenu>
                                 </UncontrolledDropdown>

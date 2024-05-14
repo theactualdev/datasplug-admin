@@ -197,3 +197,64 @@ export const useToggleProviders = (id) => {
     }
   );
 };
+
+export const useGetRoutes = (currentPage = 1, size = 100) => {
+  const page = `page=${currentPage}`;
+  const per_page = `per_page=${size}`;
+  return useQuery(
+    ["Routes", page, size],
+    async () => {
+      try {
+        const response = await instance.get(BACKEND_URLS.route);
+        // console.log(response.data.data);
+        // toast.success(response.data.message);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        Promise.reject(error);
+      }
+    },
+    {
+      // initialData: [],
+      retry: 1,
+      retryDelay: 3000,
+      refetchOnWindowFocus: false,
+      keepPreviousData: true,
+      staleTime: 5000,
+    }
+  );
+};
+
+export const useToggleRoutes = (id, status) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .put(BACKEND_URLS.route + `/${id}/${status}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err.response.data;
+          }),
+        {
+          success: (data) => data.message,
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (error) => error?.message || "Something happened",
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["Routes"]);
+      },
+    }
+  );
+};
+
+// + `?${page}&${per_page}`

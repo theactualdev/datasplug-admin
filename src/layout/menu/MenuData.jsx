@@ -214,12 +214,12 @@ const menu = [
     link: "/services",
     permission: "all",
   },
-  // {
-  //   icon: "shield-star-fill",
-  //   text: "Trade Settings",
-  //   link: "/trades-info",
-  //   permission: "all",
-  // },
+  {
+    icon: "shield-star-fill",
+    text: "Service Types",
+    link: "/service-types",
+    permission: "all",
+  },
 
   {
     heading: "preferences",

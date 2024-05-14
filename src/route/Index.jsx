@@ -74,6 +74,7 @@ import WalletTransferListPage from "../pages/main/dashboard/wallet/wallet-transf
 import ServiceProvidersServices from "../pages/main/dashboard/service-providers/provider-products";
 import AppUpdatePage from "../pages/main/dashboard/settings/AppUpdate";
 import SystemAccountPage from "../pages/main/dashboard/settings/SystemAccount";
+import ServicesTypes from "../pages/main/dashboard/service-types/service-types";
 
 const routes = (
   <Route>
@@ -134,6 +135,7 @@ const routes = (
           <Route path="service-providers" element={<ServiceProviders />} />
           <Route path="service-providers/:providerId" element={<ServiceProvidersServices />} />
           <Route path="services" element={<ServicesPage />} />
+          <Route path="service-types" element={<ServicesTypes />} />
           <Route path="trades-info" element={<TradeSettings />} />
 
           <Route path="user-management" element={<UserList />}></Route>
