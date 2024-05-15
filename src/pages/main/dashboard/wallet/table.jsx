@@ -42,7 +42,7 @@ import { FilterOptions } from "../tables/filter-select";
 import { WalletFilterOptions } from "./data";
 import { WalletStatsCard } from "./stats-card";
 
-const WithdrawalTable = ({ type }) => {
+const WithdrawalTable = ({ type, userId }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -55,8 +55,15 @@ const WithdrawalTable = ({ type }) => {
 
   //   const type = searchParams.get("type") ?? undefined;
   // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
-  const { isLoading, data, error } = useGetWithdrawalTransactions(currentPage, itemsPerPage, status, search, type);
-  console.log(data?.stat);
+  const { isLoading, data, error } = useGetWithdrawalTransactions(
+    currentPage,
+    itemsPerPage,
+    status,
+    search,
+    type,
+    userId
+  );
+  // console.log(data?.stat);
 
   const [formData, setFormData] = useState({
     reference: "",

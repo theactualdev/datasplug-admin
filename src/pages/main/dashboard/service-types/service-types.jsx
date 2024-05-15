@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import NoIcon from "../../../../images/no-image-icon.png";
@@ -37,6 +37,7 @@ import {
   useCreateProviders,
   useDeleteProviders,
   useGetProviders,
+  useGetRouteStatuses,
   useGetRoutes,
   useToggleProviders,
   useToggleRoutes,
@@ -64,19 +65,22 @@ const ServicesTypes = () => {
   const { mutate: deleteServices } = useDeleteServices(editId);
   const { mutate: updateProvider } = useUpdateProviders(editId);
   const { isLoading, data: serviceType } = useGetRoutes();
+  const { data: routeStatuses } = useGetRouteStatuses();
   const { mutate: toggleStatus } = useToggleRoutes(editId, status);
-
-  //   console.log(serviceType);
+  // console.log(routeStatuses);
+  // console.log(serviceType);
   //   console.log(services);
 
   // console.log(accounts);
-
+  const statuses = useMemo(() => {
+    if (routeStatuses) {
+      return routeStatuses.data.map((item) => ({ label: item, value: item }));
+    } else return [];
+  }, [routeStatuses]);
+  // console.log(statuses);
   const [formData, setFormData] = useState({
     name: "",
-    logo: "",
-    active: false,
-    product_type: [],
-    created_at: "",
+    status: "",
   });
 
   const [view, setView] = useState({
@@ -99,26 +103,13 @@ const ServicesTypes = () => {
   const resetForm = () => {
     setFormData({
       name: "",
-      logo: "",
-      active: false,
-      product_type: [],
-      created_at: "",
+      status: "",
     });
   };
 
   // Submits form data
-  const onFormSubmit = (form) => {
-    // console.log(form);
-    let submittedData = {
-      question: form.question,
-      answer: form.answer,
-      faq_category_id: form.categoryId,
-    };
-    if (view.add) {
-      addProvider(submittedData);
-    } else {
-      updateProvider(submittedData);
-    }
+  const onFormSubmit = () => {
+    toggleStatus();
 
     setView({ add: false, details: false, edit: false });
     resetForm();
@@ -130,10 +121,7 @@ const ServicesTypes = () => {
       if (item.id === id) {
         setFormData({
           name: item?.name,
-          logo: item?.logo,
-          active: item?.active,
-          product_type: item?.product_type,
-          created_at: item?.created_at,
+          status: item?.status,
         });
       }
     });
@@ -304,7 +292,7 @@ const ServicesTypes = () => {
               <div className="card-inner p-0">
                 {isLoading ? (
                   <LoadingSpinner />
-                ) : 2 > 0 ? (
+                ) : serviceType?.data?.length > 0 ? (
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
@@ -366,13 +354,11 @@ const ServicesTypes = () => {
                                             onClick={(ev) => {
                                               ev.preventDefault();
                                               onEditClick(item.id);
-                                              let status = item.status === "active" ? "coming-soon" : "active";
-                                              setStatus(status);
-                                              toggleStatus();
+                                              toggle("edit");
                                             }}
                                           >
-                                            <Icon name={item.status === "active" ? "clock" : "check"}></Icon>
-                                            <span>{item.status === "active" ? "Make coming soon" : "Activate"}</span>
+                                            <Icon name="edit"></Icon>
+                                            <span>Edit Status</span>
                                           </DropdownItem>
                                         </li>
                                       </ul>
@@ -420,65 +406,22 @@ const ServicesTypes = () => {
               ></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">{view.add ? "Add" : "Edit"} Account</h5>
+              <h5 className="title">{view.add ? "Add" : "Edit"} Status</h5>
               <div className="mt-4">
                 <form onSubmit={handleSubmit(onFormSubmit)}>
                   <Row className="g-3">
                     <Col md="12">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="bank_code">
-                          Bank ID
+                        <label className="form-label" htmlFor="status">
+                          Select Status
                         </label>
                         <div className="form-control-wrap">
-                          <input
-                            type="text"
-                            className="form-control"
-                            {...register("bank_code", {
-                              required: "This field is required",
-                            })}
-                            onChange={(e) => setFormData({ ...formData, bank_code: e.target.value })}
-                            value={formData.bank_code}
+                          <RSelect
+                            options={statuses}
+                            defaultValue={{ label: formData.status, value: formData.status }}
+                            onChange={(e) => setStatus(e.value)}
                           />
-                          {errors.bank_code && <span className="invalid">{errors.bank_code.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-
-                    <Col md="12">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="account_number">
-                          Account Number
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="number"
-                            className="form-control"
-                            {...register("account_number", {
-                              required: "This field is required",
-                            })}
-                            onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
-                            value={formData.account_number}
-                          />
-                          {errors.account_number && <span className="invalid">{errors.account_number.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-
-                    <Col md="12">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="account_name">
-                          Account Name
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="text"
-                            className="form-control"
-                            {...register("account_name")}
-                            onChange={(e) => setFormData({ ...formData, account_name: e.target.value })}
-                            value={formData.account_name}
-                            disabled
-                          />
-                          {errors.account_name && <span className="invalid">{errors.account_name.message}</span>}
+                          {/* {errors.bank_code && <span className="invalid">{errors.bank_code.message}</span>} */}
                         </div>
                       </div>
                     </Col>
@@ -486,7 +429,7 @@ const ServicesTypes = () => {
                     <Col size="12">
                       <Button color="primary" type="submit">
                         <Icon className="plus"></Icon>
-                        <span>{view.add ? "Add" : "Verify"} Account</span>
+                        <span>Update Status</span>
                       </Button>
                     </Col>
                   </Row>

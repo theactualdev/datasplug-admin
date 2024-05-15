@@ -60,7 +60,7 @@ const Login = () => {
           {error && (
             <div className="mb-3">
               <Alert color="danger" className="alert-icon">
-                <Icon name="alert-circle" /> {error.error}
+                <Icon name="alert-circle" /> {error}
               </Alert>
             </div>
           )}
@@ -76,7 +76,7 @@ const Login = () => {
                   type="text"
                   id="default-01"
                   {...register("name", { required: "This field is required" })}
-                  defaultValue="admin@fabpay.com"
+                  defaultValue="admin@billpadi.com"
                   placeholder="Enter your email address or username"
                   className="form-control-lg form-control"
                 />

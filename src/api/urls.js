@@ -24,6 +24,7 @@ const BACKEND_URLS = {
   service: "/services",
   product: "/products",
   route: "/route-actions",
+
   // product: {
   //   all: "/products",
   //   productReview: "/review",

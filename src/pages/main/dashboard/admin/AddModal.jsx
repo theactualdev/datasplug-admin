@@ -18,7 +18,7 @@ const AddModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterSt
   //ROLE Options
   const rolesOptions = useMemo(() => {
     if (!isLoading) {
-      return roles.data?.map((role, idx) => {
+      return roles?.data?.map((role, idx) => {
         return {
           id: role._id,
           label: role.title,

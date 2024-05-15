@@ -132,7 +132,7 @@ const AnnouncementPage = () => {
   };
 
   const onSubmit = (data) => {
-    console.log(data);
+    // console.log(data);
   };
 
   // function to filter data

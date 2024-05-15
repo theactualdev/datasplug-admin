@@ -33,3 +33,14 @@ export const useGetAllCountries = () => {
     }
   });
 };
+
+export const useGetProductTypes = () => {
+  return useQuery(["product-types"], async () => {
+    try {
+      const response = await instance.get("/products/types/all");
+      return response.data;
+    } catch (e) {
+      throw new Error(e);
+    }
+  });
+};

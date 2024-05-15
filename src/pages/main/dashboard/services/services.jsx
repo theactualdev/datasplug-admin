@@ -43,7 +43,8 @@ import {
 import SortToolTip from "../tables/SortTooltip";
 import Search from "../tables/Search";
 import LoadingSpinner from "../../../components/spinner";
-import { useDeleteServices, useGetServices, useToggleServices } from "../../../../api/services";
+import { useDeleteServices, useGetServices, useToggleServices, useUpdateServices } from "../../../../api/services";
+import EditServiceProductTypes from "./edit-product-types";
 
 const Services = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -59,8 +60,9 @@ const Services = () => {
   const { mutate: addProvider } = useCreateProviders();
   const { mutate: updateStatus } = useToggleServices(editId);
   const { mutate: deleteServices } = useDeleteServices(editId);
-  const { mutate: updateProvider } = useUpdateProviders(editId);
-  console.log(services);
+  // const { mutate: updateProvider } = useUpdateProviders(editId);
+  const { mutate: updateService } = useUpdateServices(editId);
+  // console.log(services);
 
   // console.log(accounts);
 
@@ -76,6 +78,7 @@ const Services = () => {
     add: false,
     details: false,
     edit: false,
+    types: false,
   });
 
   // toggle function to view order details
@@ -85,6 +88,7 @@ const Services = () => {
       add: type === "add" ? true : false,
       details: type === "details" ? true : false,
       edit: type === "edit" ? true : false,
+      types: type === "types" ? true : false,
     });
   };
 
@@ -113,7 +117,7 @@ const Services = () => {
       updateProvider(submittedData);
     }
 
-    setView({ add: false, details: false, edit: false });
+    setView({ add: false, details: false, edit: false, types: false });
     resetForm();
   };
 
@@ -139,9 +143,10 @@ const Services = () => {
 
   // function to close the form modal
   const onFormCancel = () => {
-    setView({ add: false, details: false, edit: false });
+    setView({ add: false, details: false, edit: false, types: false });
     resetForm();
   };
+  // console.log(services);
 
   //paginate
   const paginate = (pageNumber) => {
@@ -397,6 +402,20 @@ const Services = () => {
                                             onClick={(ev) => {
                                               ev.preventDefault();
                                               onEditClick(item.id);
+                                              toggle("types");
+                                            }}
+                                          >
+                                            <Icon name="unarchive"></Icon>
+                                            <span>Edit Product Types</span>
+                                          </DropdownItem>
+                                        </li>
+                                        <li>
+                                          <DropdownItem
+                                            tag="a"
+                                            href="#"
+                                            onClick={(ev) => {
+                                              ev.preventDefault();
+                                              onEditClick(item.id);
                                               updateStatus();
                                             }}
                                           >
@@ -538,6 +557,15 @@ const Services = () => {
             </div>
           </ModalBody>
         </Modal>
+
+        {/* EDIT SERVICE TYPES */}
+
+        <EditServiceProductTypes
+          modal={view.types}
+          closeModal={() => onFormCancel()}
+          formData={formData}
+          editFunction={updateService}
+        />
 
         {/* View */}
         <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">

@@ -40,6 +40,7 @@ import {
   useGetProviders,
   useGetRoutes,
   useToggleProviders,
+  useUpdateProviderProduct,
   useUpdateProviders,
 } from "../../../../api/service-providers";
 import SortToolTip from "../tables/SortTooltip";
@@ -59,12 +60,10 @@ const ServiceProvidersServices = () => {
   const [editId, setEditedId] = useState();
   const [onSearch, setonSearch] = useState(false);
 
-  // const { isLoading, data: faqs } = useGetFaqs();
-  // const { isLoading, data: accounts } = useGetSystemAccount(currentPage, itemsPerPage);
-  const { loading, data: providers } = useGetProviders(currentPage, itemsPerPage);
   const { isLoading, data: provider } = useGetProviderInfo(providerId);
-  const { mutate: addProvider } = useCreateProviders();
-  const { mutate: updateProvider } = useUpdateProviders(editId);
+  const { mutate: updateProduct } = useUpdateProviderProduct(editId);
+
+  // console.log(provider);
 
   //   const { mutate: deleteProvider } = useDeleteProviders(editId);
   //   const { mutate: updateStatus } = useToggleProviders(editId);
@@ -75,10 +74,7 @@ const ServiceProvidersServices = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    logo: "",
-    active: false,
-    product_type: [],
-    created_at: "",
+    amount: "",
   });
 
   const [view, setView] = useState({
@@ -101,26 +97,14 @@ const ServiceProvidersServices = () => {
   const resetForm = () => {
     setFormData({
       name: "",
-      logo: "",
-      active: false,
-      product_type: [],
-      created_at: "",
+      amount: "",
     });
   };
 
   // Submits form data
   const onFormSubmit = (form) => {
     // console.log(form);
-    let submittedData = {
-      question: form.question,
-      answer: form.answer,
-      faq_category_id: form.categoryId,
-    };
-    if (view.add) {
-      addProvider(submittedData);
-    } else {
-      updateProvider(submittedData);
-    }
+    updateProduct(form);
 
     setView({ add: false, details: false, edit: false });
     resetForm();
@@ -128,14 +112,11 @@ const ServiceProvidersServices = () => {
 
   // function that loads the want to editted data
   const onEditClick = (id) => {
-    providers?.data?.forEach((item) => {
+    provider?.data?.products?.forEach((item) => {
       if (item.id === id) {
         setFormData({
           name: item?.name,
-          logo: item?.logo,
-          active: item?.active,
-          product_type: item?.product_type,
-          created_at: item?.created_at,
+          amount: item.amount,
         });
       }
     });
@@ -266,7 +247,7 @@ const ServiceProvidersServices = () => {
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
                         </DataTableRow> */}
 
-                        {/* <DataTableRow className="nk-tb-col-tools">
+                        <DataTableRow className="nk-tb-col-tools">
                           <ul className="nk-tb-actions gx-1 my-n1">
                             <li className="me-n1">
                               <UncontrolledDropdown>
@@ -281,7 +262,7 @@ const ServiceProvidersServices = () => {
                               </UncontrolledDropdown>
                             </li>
                           </ul>
-                        </DataTableRow> */}
+                        </DataTableRow>
                       </DataTableHead>
                       {provider?.data?.products?.map((item, idx) => {
                         return (
@@ -315,7 +296,7 @@ const ServiceProvidersServices = () => {
                                 <span className="ccap">{item.active ? "active" : "inactive"}</span>
                               </Badge>
                             </DataTableRow> */}
-                            {/* <DataTableRow className="nk-tb-col-tools">
+                            <DataTableRow className="nk-tb-col-tools">
                               <ul className="nk-tb-actions gx-1 my-n1">
                                 <li>
                                   <UncontrolledDropdown>
@@ -331,39 +312,11 @@ const ServiceProvidersServices = () => {
                                             onClick={(ev) => {
                                               ev.preventDefault();
                                               onEditClick(item.id);
-                                              setView({ add: false, edit: false, details: true });
+                                              setView({ add: false, edit: true, details: false });
                                             }}
                                           >
-                                            <Icon name="eye"></Icon>
-                                            <span>View</span>
-                                          </DropdownItem>
-                                        </li>
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              onEditClick(item.id);
-                                              updateStatus();
-                                            }}
-                                          >
-                                            <Icon name={item.active ? "cross" : "check"}></Icon>
-                                            <span>{item.active ? "Deactivate" : "Activate"}</span>
-                                          </DropdownItem>
-                                        </li>
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              setEditedId(id);
-                                              deleteProvider();
-                                            }}
-                                          >
-                                            <Icon name="trash"></Icon>
-                                            <span>Delete</span>
+                                            <Icon name="edit"></Icon>
+                                            <span>Edit Price</span>
                                           </DropdownItem>
                                         </li>
                                       </ul>
@@ -371,7 +324,7 @@ const ServiceProvidersServices = () => {
                                   </UncontrolledDropdown>
                                 </li>
                               </ul>
-                            </DataTableRow> */}
+                            </DataTableRow>
                           </DataTableItem>
                         );
                       })}
@@ -411,26 +364,25 @@ const ServiceProvidersServices = () => {
               ></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">{view.add ? "Add" : "Edit"} Account</h5>
+              <h5 className="title">Edit Product Price</h5>
               <div className="mt-4">
                 <form onSubmit={handleSubmit(onFormSubmit)}>
                   <Row className="g-3">
                     <Col md="12">
                       <div className="form-group">
                         <label className="form-label" htmlFor="bank_code">
-                          Bank ID
+                          Product Name
                         </label>
                         <div className="form-control-wrap">
                           <input
                             type="text"
                             className="form-control"
-                            {...register("bank_code", {
+                            {...register("name", {
                               required: "This field is required",
                             })}
-                            onChange={(e) => setFormData({ ...formData, bank_code: e.target.value })}
-                            value={formData.bank_code}
+                            defaultValue={formData.name}
                           />
-                          {errors.bank_code && <span className="invalid">{errors.bank_code.message}</span>}
+                          {errors.name && <span className="invalid">{errors.name.message}</span>}
                         </div>
                       </div>
                     </Col>
@@ -438,38 +390,18 @@ const ServiceProvidersServices = () => {
                     <Col md="12">
                       <div className="form-group">
                         <label className="form-label" htmlFor="account_number">
-                          Account Number
+                          Amount
                         </label>
                         <div className="form-control-wrap">
                           <input
                             type="number"
                             className="form-control"
-                            {...register("account_number", {
+                            {...register("amount", {
                               required: "This field is required",
                             })}
-                            onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
-                            value={formData.account_number}
+                            defaultValue={formData.amount}
                           />
-                          {errors.account_number && <span className="invalid">{errors.account_number.message}</span>}
-                        </div>
-                      </div>
-                    </Col>
-
-                    <Col md="12">
-                      <div className="form-group">
-                        <label className="form-label" htmlFor="account_name">
-                          Account Name
-                        </label>
-                        <div className="form-control-wrap">
-                          <input
-                            type="text"
-                            className="form-control"
-                            {...register("account_name")}
-                            onChange={(e) => setFormData({ ...formData, account_name: e.target.value })}
-                            value={formData.account_name}
-                            disabled
-                          />
-                          {errors.account_name && <span className="invalid">{errors.account_name.message}</span>}
+                          {errors.amount && <span className="invalid">{errors.amount.message}</span>}
                         </div>
                       </div>
                     </Col>
@@ -477,7 +409,7 @@ const ServiceProvidersServices = () => {
                     <Col size="12">
                       <Button color="primary" type="submit">
                         <Icon className="plus"></Icon>
-                        <span>{view.add ? "Add" : "Verify"} Account</span>
+                        <span>Proceed</span>
                       </Button>
                     </Col>
                   </Row>

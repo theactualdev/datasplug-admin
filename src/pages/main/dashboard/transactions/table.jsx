@@ -32,7 +32,7 @@ import { FilterOptions } from "../tables/filter-select";
 import { ServicesFilterOptions } from "./static-data";
 import { ServicesStatsCard } from "./stats-card";
 
-export const TransactionTable = ({ purpose }) => {
+export const TransactionTable = ({ purpose, userId }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -43,7 +43,9 @@ export const TransactionTable = ({ purpose }) => {
   const search = searchParams.get("search") ?? "";
   const status = searchParams.get("status") ?? "";
   // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
-  const { isLoading, data, error } = useGetAllTransactions(currentPage, itemsPerPage, purpose, status, search);
+  const { isLoading, data, error } = useGetAllTransactions(currentPage, itemsPerPage, purpose, status, search, userId);
+
+  // console.log(data);
 
   const [formData, setFormData] = useState({
     reference: "",
@@ -196,7 +198,7 @@ export const TransactionTable = ({ purpose }) => {
       {purpose && (
         <Row className="mb-5">
           <Col>
-            <ServicesStatsCard data={data?.stat[purpose]} />
+            <ServicesStatsCard data={data?.stat ? data?.stat[purpose] : null} />
             {/* <StatsCard title={"Stats 2"} value={2} /> */}
           </Col>
         </Row>

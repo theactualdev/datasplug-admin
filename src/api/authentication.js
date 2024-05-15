@@ -21,8 +21,7 @@ export const useLogin = () => {
         .post(BACKEND_URLS.auth.login, values)
         .then((res) => res.data)
         .catch((err) => {
-          console.log(err);
-          throw err.response.data;
+          throw err?.response?.data?.message;
         });
       return request;
     },
