@@ -21,7 +21,17 @@ import SortToolTip from "../tables/SortTooltip";
 import { faqStatusType } from "./faqData";
 import { formatDateWithTime, truncateText } from "../../../../utils/Utils";
 
-const FaqTable = ({ faqTitle, data, headers, dataKeys, isLoading, defaultData, action: Action }) => {
+const FaqTable = ({
+  faqTitle,
+  data,
+  headers,
+  dataKeys,
+  isLoading,
+  defaultData,
+  action: Action,
+  hidePagination,
+  hideFilters,
+}) => {
   const [onSearch, setonSearch] = useState(false);
   const [onSearchText, setSearchText] = useState("");
 
@@ -55,91 +65,93 @@ const FaqTable = ({ faqTitle, data, headers, dataKeys, isLoading, defaultData, a
           <div className="card-title">
             <h5 className="title">All {faqTitle}</h5>
           </div>
-          <div className="card-tools me-n1">
-            <ul className="btn-toolbar gx-1">
-              <li>
-                <Button
-                  href="#search"
-                  onClick={(ev) => {
-                    ev.preventDefault();
-                    setonSearch(true);
-                  }}
-                  className="btn-icon search-toggle toggle-search"
-                >
-                  <Icon name="search"></Icon>
-                </Button>
-              </li>
-              <li className="btn-toolbar-sep"></li>
-              <li>
-                <UncontrolledDropdown>
-                  <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
-                    <div className="dot dot-primary"></div>
-                    <Icon name="filter-alt"></Icon>
-                  </DropdownToggle>
-                  <DropdownMenu end className="filter-wg dropdown-menu-xl" style={{ overflow: "visible" }}>
-                    <div className="dropdown-head">
-                      <span className="sub-title dropdown-title">Advanced Filter</span>
-                    </div>
-                    <div className="dropdown-body dropdown-body-rg">
-                      <Row className="gx-6 gy-4">
-                        <Col size="12">
-                          <div className="form-group">
-                            <label className="overline-title overline-title-alt">Status</label>
-                            <RSelect
-                              options={faqStatusType}
-                              placeholder="Any Status"
-                              value={filters.status && { label: filters.status, value: filters.status }}
-                              isSearchable={false}
-                              onChange={(e) => setfilters({ ...filters, status: e.value })}
-                            />
-                          </div>
-                        </Col>
+          {!hideFilters && (
+            <div className="card-tools me-n1">
+              <ul className="btn-toolbar gx-1">
+                <li>
+                  <Button
+                    href="#search"
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      setonSearch(true);
+                    }}
+                    className="btn-icon search-toggle toggle-search"
+                  >
+                    <Icon name="search"></Icon>
+                  </Button>
+                </li>
+                <li className="btn-toolbar-sep"></li>
+                <li>
+                  <UncontrolledDropdown>
+                    <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
+                      <div className="dot dot-primary"></div>
+                      <Icon name="filter-alt"></Icon>
+                    </DropdownToggle>
+                    <DropdownMenu end className="filter-wg dropdown-menu-xl" style={{ overflow: "visible" }}>
+                      <div className="dropdown-head">
+                        <span className="sub-title dropdown-title">Advanced Filter</span>
+                      </div>
+                      <div className="dropdown-body dropdown-body-rg">
+                        <Row className="gx-6 gy-4">
+                          <Col size="12">
+                            <div className="form-group">
+                              <label className="overline-title overline-title-alt">Status</label>
+                              <RSelect
+                                options={faqStatusType}
+                                placeholder="Any Status"
+                                value={filters.status && { label: filters.status, value: filters.status }}
+                                isSearchable={false}
+                                onChange={(e) => setfilters({ ...filters, status: e.value })}
+                              />
+                            </div>
+                          </Col>
 
-                        <Col size="12">
-                          <div className="form-group">
-                            <Button type="button" onClick={filterData} className="btn btn-secondary">
-                              Filter
-                            </Button>
-                          </div>
-                        </Col>
-                      </Row>
-                    </div>
-                    <div className="dropdown-foot between">
-                      <a
-                        href="#reset"
-                        onClick={(ev) => {
-                          ev.preventDefault();
-                          setData(defaultData);
-                          setfilters({});
-                        }}
-                        className="clickable"
-                      >
-                        Reset Filter
-                      </a>
-                      <a
-                        href="#save"
-                        onClick={(ev) => {
-                          ev.preventDefault();
-                        }}
-                      >
-                        Save Filter
-                      </a>
-                    </div>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </li>
-              <li>
-                <UncontrolledDropdown>
-                  <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
-                    <Icon name="setting"></Icon>
-                  </DropdownToggle>
-                  <DropdownMenu end className="dropdown-menu-xs">
-                    <SortToolTip />
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </li>
-            </ul>
-          </div>
+                          <Col size="12">
+                            <div className="form-group">
+                              <Button type="button" onClick={filterData} className="btn btn-secondary">
+                                Filter
+                              </Button>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                      <div className="dropdown-foot between">
+                        <a
+                          href="#reset"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            setData(defaultData);
+                            setfilters({});
+                          }}
+                          className="clickable"
+                        >
+                          Reset Filter
+                        </a>
+                        <a
+                          href="#save"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                          }}
+                        >
+                          Save Filter
+                        </a>
+                      </div>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </li>
+                <li>
+                  <UncontrolledDropdown>
+                    <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
+                      <Icon name="setting"></Icon>
+                    </DropdownToggle>
+                    <DropdownMenu end className="dropdown-menu-xs">
+                      <SortToolTip />
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </li>
+              </ul>
+            </div>
+          )}
           <div className={`card-search search-wrap ${onSearch && "active"}`}>
             <div className="search-content">
               <Button
@@ -174,7 +186,7 @@ const FaqTable = ({ faqTitle, data, headers, dataKeys, isLoading, defaultData, a
               <DataTableRow className="nk-tb-col-check">
                 <span>S/N</span>
               </DataTableRow>
-              {headers.map((header, idx) => (
+              {headers?.map((header, idx) => (
                 <DataTableRow key={idx}>
                   <span className="tb-tnx-head bg-white text-secondary">{header}</span>
                 </DataTableRow>
@@ -199,7 +211,7 @@ const FaqTable = ({ faqTitle, data, headers, dataKeys, isLoading, defaultData, a
                     <DataTableRow className="nk-tb-col-check">
                       <span>{idx + 1}</span>
                     </DataTableRow>
-                    {dataKeys.map((key, idx) => {
+                    {dataKeys?.map((key, idx) => {
                       if (item.image && key === "name")
                         return (
                           <DataTableRow key={idx}>
@@ -264,20 +276,22 @@ const FaqTable = ({ faqTitle, data, headers, dataKeys, isLoading, defaultData, a
                 ))
               : null}
           </DataTableBody>
-          <PreviewAltCard>
-            {data?.length > 0 ? (
-              <PaginationComponent
-                itemPerPage={itemsPerPage}
-                totalItems={data.length}
-                paginate={paginate}
-                currentPage={currentPage}
-              />
-            ) : (
-              <div className="text-center">
-                <span className="text-silent">No {faqTitle} found</span>
-              </div>
-            )}
-          </PreviewAltCard>
+          {!hidePagination && (
+            <PreviewAltCard>
+              {data?.length > 0 ? (
+                <PaginationComponent
+                  itemPerPage={itemsPerPage}
+                  totalItems={data.length}
+                  paginate={paginate}
+                  currentPage={currentPage}
+                />
+              ) : (
+                <div className="text-center">
+                  <span className="text-silent">No {faqTitle} found</span>
+                </div>
+              )}
+            </PreviewAltCard>
+          )}
         </>
       )}
     </DataTable>

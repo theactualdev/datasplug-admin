@@ -9,14 +9,17 @@ const Details = ({ user }) => {
         <BlockHead className="nk-block-head-line">
           <BlockBetween>
             <BlockTitle tag="h5">Profile Information</BlockTitle>
-            <div className="user-card">
-              <UserAvatar
-                theme={user?.avatar}
-                className="md"
-                text={user && findUpper(`${user?.data?.firstname} ${user?.data?.lastname}`)}
-                image={user?.data?.avatar}
-              ></UserAvatar>
-            </div>
+            {/* <div className="user-card"> */}
+            {/* <div className="wide-sm">
+                <img src={user?.data?.avatar} />
+              </div> */}
+            <UserAvatar
+              theme={user?.avatar}
+              className="md"
+              text={user && findUpper(`${user?.data?.firstname} ${user?.data?.lastname}`)}
+              image={user?.data?.avatar}
+            ></UserAvatar>
+            {/* </div> */}
           </BlockBetween>
         </BlockHead>
         <div className="profile-ud-list">

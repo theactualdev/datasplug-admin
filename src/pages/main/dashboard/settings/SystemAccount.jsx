@@ -12,6 +12,7 @@ import {
   Button,
   Col,
   Icon,
+  RSelect,
   Row,
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
@@ -24,6 +25,7 @@ import {
   useDeletesystemAccount,
   useCreateSystemAccount,
 } from "../../../../api/system-bank-account";
+import { useGetBanks } from "../../../../api/generics";
 const SystemAccountPage = () => {
   const [sm, updateSm] = useState(false);
   const [mobileView, setMobileView] = useState(false);
@@ -31,8 +33,17 @@ const SystemAccountPage = () => {
   const { isLoading, data } = useGetSystemAccount(1, 7);
   const { mutate: addAccount, isLoading: creating } = useCreateSystemAccount();
   const { mutate: deleteAccount } = useDeletesystemAccount(editedId);
+  const { data: banks } = useGetBanks();
+  // console.log(banks);
 
   //   console.log(data);
+
+  const bankOptions = useMemo(() => {
+    if (banks) {
+      return banks?.data?.map((item) => ({ code: item.code, label: item.name, value: item.name }));
+    } else return [];
+  }, [banks]);
+  // console.log(bankOptions)
 
   const {
     handleSubmit,
@@ -98,6 +109,7 @@ const SystemAccountPage = () => {
       account_name: form.account_name,
       account_number: form.account_number,
     };
+    // console.log(submittedData);
     if (formData.account_name) {
       addAccount(submittedData);
       resetForm();
@@ -268,18 +280,14 @@ const SystemAccountPage = () => {
                         <Col md="12">
                           <div className="form-group">
                             <label className="form-label" htmlFor="bank_code">
-                              Bank ID
+                              Banks
                             </label>
                             <div className="form-control-wrap">
-                              <input
-                                type="text"
-                                className="form-control"
-                                {...register("bank_code", {
-                                  required: "This field is required",
-                                })}
-                                onChange={(e) => setFormData({ ...formData, bank_code: e.target.value })}
-                                value={formData.bank_code}
+                              <RSelect
+                                options={bankOptions}
+                                onChange={(e) => setFormData({ ...formData, bank_code: e.code })}
                               />
+
                               {errors.bank_code && <span className="invalid">{errors.bank_code.message}</span>}
                             </div>
                           </div>

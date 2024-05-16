@@ -44,3 +44,14 @@ export const useGetProductTypes = () => {
     }
   });
 };
+
+export const useGetBanks = () => {
+  return useQuery(["banks"], async () => {
+    try {
+      const response = await axios.get("https://api.billpadi.com/banks");
+      return response.data;
+    } catch (e) {
+      throw new Error(e);
+    }
+  });
+};

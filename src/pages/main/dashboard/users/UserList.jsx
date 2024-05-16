@@ -258,7 +258,7 @@ const UserList = () => {
                                 theme={item?.avatar}
                                 className="xs"
                                 text={findUpper(`${item?.firstname} ${item?.lastname}`)}
-                                image={item?.profilePicture}
+                                image={item?.avatar}
                               />
                               <div className="user-name">
                                 <span className="tb-lead">

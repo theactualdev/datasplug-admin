@@ -48,6 +48,7 @@ import LoadingSpinner from "../../../components/spinner";
 import { useUploadImages, generateSignature } from "../../../../api/uploadimage";
 import Dropzone from "react-dropzone";
 import EditProductTypes from "./edit-product-types";
+import EditProviderLogo from "./edit-logo";
 
 const ServiceProviders = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -654,7 +655,14 @@ const ServiceProviders = () => {
           formData={formData}
           editFunction={updateProvider}
         />
-        {/* Update logo */}
+
+        <EditProviderLogo
+          modal={view.logo}
+          closeModal={() => onFormCancel()}
+          formData={formData}
+          editFunction={updateProvider}
+        />
+        {/* Update logo
         <Modal isOpen={view.logo} toggle={() => onFormCancel()} className="modal-dialog-centered" size="md">
           <ModalBody className="bg-white rounded">
             <a href="#cancel" className="close">
@@ -745,7 +753,7 @@ const ServiceProviders = () => {
               </div>
             </div>
           </ModalBody>
-        </Modal>
+        </Modal> */}
 
         {/* View */}
         <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">

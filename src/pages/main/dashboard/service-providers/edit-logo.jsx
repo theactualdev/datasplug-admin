@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Form, Modal, ModalBody } from "reactstrap";
-import { Row, Button, Col, Icon, RSelect } from "../../../../components/Component";
-import { formatDateTimeNumeric } from "../../../../utils/Utils";
-import { useGetProductTypes } from "../../../../api/generics";
+import React, { useState } from "react";
 import Dropzone from "react-dropzone";
+import { useForm } from "react-hook-form";
+import { Form, Modal, ModalBody } from "reactstrap";
+import { Button, Col, Icon } from "../../../../components/Component";
 
-const EditServiceProductTypes = ({ modal, closeModal, formData, isEdit, editFunction, data }) => {
+const EditProviderLogo = ({ modal, closeModal, formData, isEdit, editFunction, data }) => {
   const {
     reset,
     register,
@@ -64,7 +62,7 @@ const EditServiceProductTypes = ({ modal, closeModal, formData, isEdit, editFunc
           <Icon name="cross-sm"></Icon>
         </a>
         <div className="p-2">
-          <h5 className="title">Edit Product Logo</h5>
+          <h5 className="title">Edit Provider Logo</h5>
           <div className="mt-4">
             <Form className="row gy-4" noValidate onSubmit={handleSubmit(onSubmit)}>
               {/* <Col md="12" className="">
@@ -90,7 +88,7 @@ const EditServiceProductTypes = ({ modal, closeModal, formData, isEdit, editFunc
               </Col> */}
 
               <Col>
-                <label className="form-label">Logo</label>
+                <label className="form-label">Add Logo</label>
                 <Dropzone
                   onDrop={(acceptedFiles) => handleDropChange(acceptedFiles, setPreviewImage)}
                   accept={[".jpg", ".png", ".jpeg"]}
@@ -164,4 +162,4 @@ const EditServiceProductTypes = ({ modal, closeModal, formData, isEdit, editFunc
     </Modal>
   );
 };
-export default EditServiceProductTypes;
+export default EditProviderLogo;

@@ -1,5 +1,17 @@
 import React, { useCallback, useState } from "react";
-import { Button, Card, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import {
+  Button,
+  Card,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+  UncontrolledDropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+} from "reactstrap";
 import { Block, BlockBetween, BlockHead, BlockHeadContent, BlockTitle, Icon } from "../../../../components/Component";
 
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -14,6 +26,8 @@ import WithdrawalTable from "../wallet/table";
 import { TransactionTable } from "../transactions/table";
 import AddModal from "./AddModal";
 import { useFinanceUser } from "../../../../api/users/user";
+import FaqTable from "../faq/faqTable";
+import toast from "react-hot-toast";
 
 const UserDetailsPage = () => {
   const { userId } = useParams();
@@ -29,16 +43,48 @@ const UserDetailsPage = () => {
 
   // console.log(user);
 
-  const activeTabStyle = useCallback(
-    (value) => {
-      if (value === activeTab) {
-        return "active";
-      }
-      return;
-    },
-    [activeTab]
-  );
+  const copyAccountDetails = (id) => {
+    let account = user?.data?.bank_accounts?.find((item) => item.id === id);
+    if (account) {
+      let text = `Account Name: ${account?.account_name}
+                  Account Number: ${account?.account_number}
+                  Bank Name: ${account.bank_name}`;
+      console.log(text);
+      navigator.clipboard.writeText(text);
+      toast("Copied to clipboard");
+    }
 
+    // console.log(account);
+  };
+
+  const ActionOptions = ({ id }) => (
+    <ul className="nk-tb-actions gx-1 my-n1">
+      <li>
+        <UncontrolledDropdown>
+          <DropdownToggle tag="a" className="btn btn-trigger dropdown-toggle btn-icon me-n1">
+            <Icon name="more-h"></Icon>
+          </DropdownToggle>
+          <DropdownMenu end>
+            <ul className="link-list-opt no-bdr">
+              <li>
+                <DropdownItem
+                  tag="a"
+                  href="#"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    copyAccountDetails(id);
+                  }}
+                >
+                  <Icon name="copy"></Icon>
+                  <span>Copy details</span>
+                </DropdownItem>
+              </li>
+            </ul>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </li>
+    </ul>
+  );
   const onFormSubmit = (data) => {
     let submittedData = {
       ...data,
@@ -210,6 +256,18 @@ const UserDetailsPage = () => {
                   <TabPane tabId="services">
                     <TransactionTable userId={userId} />
                     {/* <WithdrawalTable userId={userId} /> */}
+                  </TabPane>
+                  <TabPane tabId="accounts">
+                    <FaqTable
+                      faqTitle={"Accounts"}
+                      headers={["Account Name", "Account Number", "Bank Name"]}
+                      dataKeys={["account_name", "account_number", "bank_name"]}
+                      defaultData={user?.data?.bank_accounts}
+                      data={user?.data?.bank_accounts}
+                      hidePagination={true}
+                      hideFilters={true}
+                      action={ActionOptions}
+                    />
                   </TabPane>
                 </TabContent>
               </div>

@@ -114,7 +114,7 @@ const Services = () => {
     if (view.add) {
       addProvider(submittedData);
     } else {
-      updateProvider(submittedData);
+      // updateProvider(submittedData);
     }
 
     setView({ add: false, details: false, edit: false, types: false });
@@ -406,7 +406,7 @@ const Services = () => {
                                             }}
                                           >
                                             <Icon name="unarchive"></Icon>
-                                            <span>Edit Product Types</span>
+                                            <span>Edit Logo</span>
                                           </DropdownItem>
                                         </li>
                                         <li>
