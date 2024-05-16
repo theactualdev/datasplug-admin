@@ -40,7 +40,7 @@ const SystemAccountPage = () => {
 
   const bankOptions = useMemo(() => {
     if (banks) {
-      return banks?.data?.map((item) => ({ code: item.code, label: item.name, value: item.name }));
+      return banks?.data?.map((item) => ({ code: item.id, label: item.name, value: item.name }));
     } else return [];
   }, [banks]);
   // console.log(bankOptions)
