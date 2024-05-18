@@ -52,7 +52,7 @@ const EditRoles = () => {
     if (checked === true) {
       setSelectedPermissions([...selectedPermissions, Number(id)]);
     } else {
-      let newData = data.filter((item) => item !== id);
+      let newData = data?.filter((item) => item !== Number(id));
       setSelectedPermissions(newData);
     }
   };
