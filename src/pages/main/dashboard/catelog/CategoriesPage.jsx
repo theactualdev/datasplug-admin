@@ -138,7 +138,7 @@ const CategoriesPage = () => {
       if (item._id === id) {
         if (item.status === "active") {
           newStatus = "inactive";
-          console.log(newStatus);
+          // console.log(newStatus);
         } else {
           newStatus = "active";
         }

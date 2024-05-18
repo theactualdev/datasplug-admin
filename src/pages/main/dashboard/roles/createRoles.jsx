@@ -22,6 +22,7 @@ const CreateRoles = () => {
   const navigate = useNavigate();
   const { data: permissions } = useGetAllPermissions();
   const { mutate } = useCreateRole();
+  // console.log(permissions);
 
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [formData, setFormData] = useState({
@@ -42,7 +43,7 @@ const CreateRoles = () => {
     const data = selectedPermissions;
     const { id, checked } = e.currentTarget;
     if (checked === true) {
-      setSelectedPermissions([...selectedPermissions, id]);
+      setSelectedPermissions([...selectedPermissions, Number(id)]);
     } else {
       let newData = data.filter((item) => item !== id);
       setSelectedPermissions(newData);
@@ -51,10 +52,9 @@ const CreateRoles = () => {
   //   USER NAME
   const onFormSubmit = async (data) => {
     let submittedData = {
-      title: data.name,
+      name: data.name,
       permissions: selectedPermissions,
     };
-
     mutate(submittedData);
   };
 
@@ -115,16 +115,16 @@ const CreateRoles = () => {
                   <Col md="12" className="">
                     <span className="text-primary fw-bold fs-16px">Permissions</span>
                     <Row className="g-2 align-center mt-1">
-                      {permissions.map((item, idx) => (
+                      {permissions?.data?.map((item, idx) => (
                         <Col key={idx} size="4">
-                          <div key={item.code} className="custom-control custom-control-sm custom-checkbox">
+                          <div key={item.id} className="custom-control custom-control-sm custom-checkbox">
                             <input
                               type="checkbox"
                               className="custom-control-input"
-                              id={item.code}
+                              id={item.id}
                               onChange={(e) => handleChange(e)}
                             />
-                            <label className="custom-control-label" htmlFor={item.code}>
+                            <label className="custom-control-label" htmlFor={item.id}>
                               <span className="text-secondary fs-14px text-capitalize">{item.name}</span>
                             </label>
                           </div>

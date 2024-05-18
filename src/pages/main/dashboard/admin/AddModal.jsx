@@ -6,6 +6,7 @@ import { useGetRoles } from "../../../../api/users/admin";
 
 const AddModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterStatus }) => {
   const { data: roles, isLoading } = useGetRoles();
+  // console.log(roles);
 
   const {
     reset,
@@ -18,11 +19,11 @@ const AddModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterSt
   //ROLE Options
   const rolesOptions = useMemo(() => {
     if (!isLoading) {
-      return roles?.data?.map((role, idx) => {
+      return roles?.data?.map((role) => {
         return {
-          id: role._id,
-          label: role.title,
-          value: role.title,
+          id: role.id,
+          label: role.name,
+          value: role.name,
         };
       });
     }
@@ -30,7 +31,7 @@ const AddModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterSt
 
   const selectRole = (e) => {
     setselectedRole(e.value);
-    setFormData({ ...formData, role: e.id });
+    setFormData({ ...formData, role: e.value });
   };
   // console.log(rolesOptions);
 
@@ -57,18 +58,33 @@ const AddModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterSt
             <Form className="row gy-4" noValidate onSubmit={handleSubmit(onSubmit)}>
               <Col md="6">
                 <div className="form-group">
-                  <label className="form-label">Name</label>
+                  <label className="form-label">Firstname</label>
                   <input
                     className="form-control"
                     type="text"
-                    {...register("name", { required: "This field is required" })}
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    {...register("firstname", { required: "This field is required" })}
+                    value={formData.firstname}
+                    onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
                     placeholder="Enter name"
                   />
-                  {errors.name && <span className="invalid">{errors.name.message}</span>}
+                  {errors.firstname && <span className="invalid">{errors.firstname.message}</span>}
                 </div>
               </Col>
+              <Col md="6">
+                <div className="form-group">
+                  <label className="form-label">Lastname</label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    {...register("lastname", { required: "This field is required" })}
+                    value={formData.lastname}
+                    onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
+                    placeholder="Enter name"
+                  />
+                  {errors.lastname && <span className="invalid">{errors.lastname.message}</span>}
+                </div>
+              </Col>
+
               <Col md="6">
                 <div className="form-group">
                   <label className="form-label">Email </label>
@@ -112,20 +128,7 @@ const AddModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterSt
                   </div>
                 </div>
               </Col>
-              <Col md="6">
-                <div className="form-group">
-                  <label className="form-label">Phone</label>
-                  <input
-                    className="form-control"
-                    type="number"
-                    {...register("phone", { required: "This field is required" })}
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
 
-                  {errors.phone && <span className="invalid">{errors.phone.message}</span>}
-                </div>
-              </Col>
               <Col size="12">
                 <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                   <li>

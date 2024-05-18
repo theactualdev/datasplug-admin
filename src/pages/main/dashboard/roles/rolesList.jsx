@@ -20,7 +20,7 @@ import {
 } from "../../../../components/Component";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useGetAllRoles } from "../../../../api/users/admin";
+import { useDeleteRole, useGetAllRoles } from "../../../../api/users/admin";
 import LoadingSpinner from "../../../components/spinner";
 import SortToolTip from "../tables/SortTooltip";
 
@@ -29,8 +29,10 @@ const RolesList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const itemsPerPage = searchParams.get("limit") ?? 7;
   const currentPage = searchParams.get("page") ?? 1;
-
+  const [editedId, setEditedId] = useState(null);
   const { data: roles, isLoading } = useGetAllRoles(currentPage, itemsPerPage);
+  const { mutate: deleteRole } = useDeleteRole(editedId);
+  // console.log(roles);
 
   const [sm, updateSm] = useState(false);
   const [tablesm, updateTableSm] = useState(false);
@@ -168,7 +170,7 @@ const RolesList = () => {
             </div>
             {isLoading ? (
               <LoadingSpinner />
-            ) : roles?.totalDocuments > 0 ? (
+            ) : roles?.data?.length > 0 ? (
               <>
                 <DataTableBody compact>
                   <DataTableHead>
@@ -176,9 +178,9 @@ const RolesList = () => {
                     <DataTableRow>
                       <span className="text-secondary tb-tnx-head bg-white">Name</span>
                     </DataTableRow>
-                    <DataTableRow size="sm">
+                    {/* <DataTableRow size="sm">
                       <span className="text-secondary tb-tnx-head bg-white">No of Admins</span>
-                    </DataTableRow>
+                    </DataTableRow> */}
                     <DataTableRow size="sm">
                       <span className="text-secondary tb-tnx-head bg-white">No of Permissions</span>
                     </DataTableRow>
@@ -196,21 +198,21 @@ const RolesList = () => {
                   {/*Head*/}
                   {roles?.data?.map((item, idx) => {
                     return (
-                      <DataTableItem key={item._id}>
+                      <DataTableItem key={item.id}>
                         <DataTableRow className="nk-tb-col-check">
                           <span>{idx + 1}</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span className="text-capitalize text-secondary">{item?.title}</span>
+                          <span className="text-capitalize text-secondary">{item?.name}</span>
                         </DataTableRow>
-                        <DataTableRow size="sm">
+                        {/* <DataTableRow size="sm">
                           <span>{item?.admins}</span>
-                        </DataTableRow>
+                        </DataTableRow> */}
                         <DataTableRow size="sm">
                           <span>{item?.permissions?.length}</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span>{formatDate(item?.createdAt)}</span>
+                          <span>{formatDate(item?.created_at)}</span>
                         </DataTableRow>
                         <DataTableRow className="nk-tb-col-tools">
                           <ul className="nk-tb-actions gx-1">
@@ -227,26 +229,27 @@ const RolesList = () => {
                                         href="#view"
                                         onClick={(ev) => {
                                           ev.preventDefault();
-                                          navigate(`/edit-roles/${item?._id}`);
+                                          navigate(`/edit-roles/${item?.id}`);
                                         }}
                                       >
                                         <Icon name="edit"></Icon>
                                         <span>Edit role</span>
                                       </DropdownItem>
                                     </li>
-                                    {/* <li>
+                                    <li>
                                       <DropdownItem
                                         tag="a"
                                         href="#view"
                                         onClick={(ev) => {
                                           ev.preventDefault();
-                                          onEditClick(item?.id);
+                                          setEditedId(item.id);
+                                          deleteRole(item);
                                         }}
                                       >
                                         <Icon name="trash"></Icon>
                                         <span>Delete</span>
                                       </DropdownItem>
-                                    </li> */}
+                                    </li>
                                   </ul>
                                 </DropdownMenu>
                               </UncontrolledDropdown>

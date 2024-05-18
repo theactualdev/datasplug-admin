@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import {
@@ -25,7 +25,9 @@ const EditRoles = () => {
 
   const { data: role, isLoading } = useGetRoleById(roleId);
   const { data: permissions } = useGetAllPermissions();
-  const { mutate: updateRole } = useUpdateRole();
+  const { mutate: updateRole } = useUpdateRole(roleId);
+
+  // console.log(permissions);
 
   // const [permissions, setPermissions] = useState(permissionsData);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
@@ -48,7 +50,7 @@ const EditRoles = () => {
     const data = selectedPermissions;
     const { id, checked } = e.currentTarget;
     if (checked === true) {
-      setSelectedPermissions([...selectedPermissions, id]);
+      setSelectedPermissions([...selectedPermissions, Number(id)]);
     } else {
       let newData = data.filter((item) => item !== id);
       setSelectedPermissions(newData);
@@ -58,8 +60,7 @@ const EditRoles = () => {
   //   USER NAME
   const onFormSubmit = (data) => {
     let submittedData = {
-      roleId: role._id,
-      title: data.name,
+      name: data?.name,
       permissions: selectedPermissions,
     };
     // API HERE
@@ -68,13 +69,18 @@ const EditRoles = () => {
     updateRole(submittedData);
   };
 
+  const perms = useMemo(() => {
+    return role?.data?.permissions.map((item) => item.id);
+  }, [role]);
+
   useEffect(() => {
     if (!isLoading && role) {
+      let perm = role?.data?.permissions.map((item) => item.id);
       reset({
-        name: role.title,
-        permissions: role.permissions,
+        name: role?.data?.name,
+        permissions: role?.data?.permissions,
       });
-      setSelectedPermissions(role.permissions);
+      setSelectedPermissions(perm);
     }
   }, [isLoading, role, reset]);
 
@@ -139,17 +145,17 @@ const EditRoles = () => {
                       <Col md="12" className="">
                         <span className="text-primary fw-bold fs-16px">Permissions</span>
                         <Row className="g-2 align-center mt-1">
-                          {permissions.map((item, idx) => (
+                          {permissions?.data?.map((item, idx) => (
                             <Col key={idx} size="4">
                               <div key={item} className="custom-control custom-control-sm custom-checkbox">
                                 <input
                                   type="checkbox"
                                   className="custom-control-input"
-                                  defaultChecked={role.permissions && role.permissions.includes(item.code)} //returns true if it's in the array
-                                  id={item.code}
+                                  defaultChecked={perms && perms.includes(item.id)} //returns true if it's in the array
+                                  id={item.id}
                                   onChange={(e) => handleChange(e)}
                                 />
-                                <label className="custom-control-label" htmlFor={item.code}>
+                                <label className="custom-control-label" htmlFor={item.id}>
                                   <span className="text-secondary fs-14px text-capitalize">{item.name}</span>
                                 </label>
                               </div>

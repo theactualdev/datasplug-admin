@@ -14,7 +14,7 @@ import {
 import { Link, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useResetPassword } from "../../api/authentication";
-import NiteonLogo from "../../images/niteon-real.png";
+import BillPadiLogo from "../../images/billpadi-logo.png";
 
 const passcode_regex = new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$/);
 
@@ -35,9 +35,8 @@ const ChangePassword = () => {
   const onFormSubmit = (formData) => {
     let submittedData = {
       email,
-      otp: formData.otp,
+      token: formData.otp,
       password: formData.passcode,
-      confirmPassword: formData.confirm_passcode,
     };
     resetPassword(submittedData);
     // console.log(submittedData);
@@ -50,9 +49,9 @@ const ChangePassword = () => {
       <Head title="Change-Password" />
       <Block className="nk-block-middle nk-auth-body  wide-xs">
         <div className="brand-logo pb-4 text-center">
-          <Link to={import.meta.env.PUBLIC_URL + "/"} className="logo-link">
-            <img className="logo-light logo-img logo-img-lg" src={NiteonLogo} alt="logo" />
-            <img className="logo-dark logo-img logo-img-lg" src={NiteonLogo} alt="logo-dark" />
+          <Link to={"/"} className="logo-link">
+            <img className="logo-light logo-img logo-img-lg" src={BillPadiLogo} alt="logo" />
+            <img className="logo-dark logo-img logo-img-lg" src={BillPadiLogo} alt="logo-dark" />
           </Link>
         </div>
         <PreviewCard className="card-bordered" bodyClass="card-inner-lg">
@@ -77,7 +76,7 @@ const ChangePassword = () => {
                 name="otp"
                 {...register("otp", {
                   required: "This field is required",
-                  minLength: { value: 6, message: "OTP must have 6 or more character" },
+                  minLength: { value: 4, message: "Invalid OTP format" },
                 })}
                 placeholder="Enter OTP"
                 className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
@@ -110,11 +109,11 @@ const ChangePassword = () => {
                   name="passcode"
                   {...register("passcode", {
                     required: "This field is required",
-                    pattern: {
-                      value: passcode_regex,
-                      message:
-                        "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special character",
-                    },
+                    // pattern: {
+                    //   value: passcode_regex,
+                    //   message:
+                    //     "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special character",
+                    // },
                   })}
                   placeholder="Enter your passcode"
                   className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}

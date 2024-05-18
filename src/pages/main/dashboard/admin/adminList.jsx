@@ -1,7 +1,13 @@
 import React, { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
-import { useCreateAdmin, useGetAllAdmin, useUpdateAdmin } from "../../../../api/users/admin";
+import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown, Badge } from "reactstrap";
+import {
+  useCreateAdmin,
+  useGetAllAdmin,
+  useUpdateAdmin,
+  useUpdateAdminRole,
+  useToggleAdminStatus,
+} from "../../../../api/users/admin";
 import {
   Block,
   BlockBetween,
@@ -38,6 +44,11 @@ const AdminList = () => {
   const { data: admin, isLoading } = useGetAllAdmin(currentPage, itemsPerPage);
   const { mutate: addAdmin } = useCreateAdmin();
   const { mutate: updateAdmin } = useUpdateAdmin();
+  const [editId, setEditedId] = useState();
+  const [roleId, setRoleId] = useState();
+  const { mutate: updateAdminRole } = useUpdateAdminRole(editId, roleId);
+
+  // console.log(admin);
 
   const [sm, updateSm] = useState(false);
   const [tablesm, updateTableSm] = useState(false);
@@ -48,18 +59,19 @@ const AdminList = () => {
     edit: false,
     add: false,
   });
-  const [editId, setEditedId] = useState();
+  const { mutate: toggleStatus } = useToggleAdminStatus(editId);
+
   const [formData, setFormData] = useState({
-    name: "",
+    firstname: "",
+    lastname: "",
     email: "",
     role: "", //role id
-    phone: "",
   });
   const [editFormData, setEditFormData] = useState({
-    name: "",
+    firstname: "",
+    lastname: "",
     email: "",
-    role: "", //role id
-    phone: "",
+    role: "",
   });
 
   const [updateRole, setUpdateRole] = useState(false);
@@ -73,10 +85,10 @@ const AdminList = () => {
   // function to reset the form
   const resetForm = () => {
     setFormData({
-      name: "",
+      firstname: "",
+      lastname: "",
       email: "",
       role: "",
-      phone: "",
     });
     setTimeout(() => {
       setUpdateRole(false);
@@ -95,6 +107,7 @@ const AdminList = () => {
 
   // submit function to add a new item
   const onFormSubmit = (submitData) => {
+    // console.log(submitData);
     addAdmin(submitData);
     resetForm();
     setModal({ edit: false }, { add: false });
@@ -102,12 +115,12 @@ const AdminList = () => {
 
   // submit function to update a new item
   const onEditSubmit = (submitData) => {
-    const { name, email, phone, role } = submitData;
+    const { firtname, lastname, email, role } = submitData;
     let submittedData = {
       adminId: editId,
-      name,
+      firtname,
+      lastname,
       email,
-      phone,
       role,
     };
     updateAdmin(submittedData);
@@ -115,6 +128,11 @@ const AdminList = () => {
     resetForm();
   };
 
+  const editRole = () => {
+    updateAdminRole();
+    setModal({ edit: false });
+    resetForm();
+  };
   // function that loads the want to editted data
   const onEditClick = (id) => {
     admin?.data.forEach((item) => {
@@ -320,7 +338,7 @@ const AdminList = () => {
             </div>
             {isLoading ? (
               <LoadingSpinner />
-            ) : admin?.totalDocuments > 0 ? (
+            ) : admin?.meta?.total > 0 ? (
               <>
                 <DataTableBody compact>
                   <DataTableHead>
@@ -338,6 +356,9 @@ const AdminList = () => {
                     </DataTableRow>
                     <DataTableRow>
                       <span className="sub-text">Role</span>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span className="sub-text">Status</span>
                     </DataTableRow>
                     <DataTableRow className="nk-tb-col-tools text-end">
                       <UncontrolledDropdown>
@@ -360,11 +381,13 @@ const AdminList = () => {
                             <UserAvatar
                               theme={item.avatarBg}
                               className="xs"
-                              text={findUpper(item.name)}
+                              text={findUpper(`${item?.firstname} ${item?.lastname}`)}
                               image={item.image}
                             ></UserAvatar>
                             <div className="user-name">
-                              <span className="tb-lead">{item.name}</span>
+                              <span className="tb-lead">
+                                {item.firstname} {item.lastname}
+                              </span>
                             </div>
                           </div>
                           {/* </Link> */}
@@ -373,10 +396,21 @@ const AdminList = () => {
                           <span>{item.email}</span>
                         </DataTableRow>
                         <DataTableRow size="sm">
-                          <span>{formatDate(item.createdAt)}</span>
+                          <span>{formatDate(item.created_at)}</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span>{item.role.title}</span>
+                          <span>{item.role.name || "All"}</span>
+                        </DataTableRow>
+                        <DataTableRow>
+                          <span
+                            className={`dot bg-${item.status === "active" ? "success" : "warning"} d-sm-none`}
+                          ></span>
+                          <Badge
+                            className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
+                            color={item.status === "active" ? "success" : "warning"}
+                          >
+                            <span className="ccap">{item.status}</span>
+                          </Badge>
                         </DataTableRow>
                         <DataTableRow className="nk-tb-col-tools">
                           <ul className="nk-tb-actions gx-1">
@@ -396,6 +430,7 @@ const AdminList = () => {
                                           setUpdateRole(true);
                                           setEditedId(item.id);
                                           onEditClick(item.id);
+                                          setSelectedRole(item.role.name || "All");
                                           //   navigate(`/user-details/${item.id}`);
                                         }}
                                       >
@@ -403,7 +438,7 @@ const AdminList = () => {
                                         <span>Change role</span>
                                       </DropdownItem>
                                     </li>
-                                    <li>
+                                    {/* <li>
                                       <DropdownItem
                                         tag="a"
                                         href="#view"
@@ -418,26 +453,23 @@ const AdminList = () => {
                                         <Icon name="edit"></Icon>
                                         <span>Edit admin</span>
                                       </DropdownItem>
+                                    </li> */}
+
+                                    <li className="divider"></li>
+                                    <li>
+                                      <DropdownItem
+                                        tag="a"
+                                        href="#suspend"
+                                        onClick={(ev) => {
+                                          ev.preventDefault();
+                                          setEditedId(item.id);
+                                          toggleStatus();
+                                        }}
+                                      >
+                                        <Icon name={item.status === "active" ? "na" : "check"}></Icon>
+                                        <span>{item.status === "active" ? "Suspend" : "Activate"} Admin</span>
+                                      </DropdownItem>
                                     </li>
-                                    {/* {item.status !== "Suspend" && (
-                                      <React.Fragment>
-                                        <li className="divider"></li>
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#suspend"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              setEditedId(item.id);
-                                              suspendUser(item.id);
-                                            }}
-                                          >
-                                            <Icon name="na"></Icon>
-                                            <span>Suspend Admin</span>
-                                          </DropdownItem>
-                                        </li>
-                                      </React.Fragment>
-                                    )} */}
                                   </ul>
                                 </DropdownMenu>
                               </UncontrolledDropdown>
@@ -481,10 +513,11 @@ const AdminList = () => {
           role={updateRole}
           setFormData={setEditFormData}
           closeModal={closeEditModal}
-          onSubmit={onEditSubmit}
+          onSubmit={editRole}
           filterStatus={filterStatus}
           selectedRole={selectedRole}
           setSelectedRole={setSelectedRole}
+          setRoleId={setRoleId}
         />
       </Content>
     </React.Fragment>

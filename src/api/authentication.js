@@ -80,7 +80,7 @@ export const useResetPassword = () => {
   return useMutation(
     async (values) => {
       const request = await instance
-        .patch(BACKEND_URLS.auth.resetPassword, values)
+        .post(BACKEND_URLS.auth.resetPassword, values)
         .then((res) => res.data)
         .catch((err) => {
           throw err.response.data;
@@ -91,6 +91,70 @@ export const useResetPassword = () => {
       onSuccess: (data) => {
         toast.success(data?.message);
         navigate("/auth-login");
+      },
+      onError: (error) => {
+        if (error) {
+          toast.error(error.message);
+          console.error(error);
+          Promise.reject(error);
+        }
+      },
+    }
+  );
+};
+
+export const useChangePassword = () => {
+  return useMutation(
+    async (values) => {
+      const request = await instance
+        .post(BACKEND_URLS.auth.changePassword, values)
+        .then((res) => res.data)
+        .catch((err) => {
+          throw err.response.data;
+        });
+      return request;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        // navigate("/auth-login");
+      },
+      onError: (error) => {
+        if (error) {
+          toast.error(error.message);
+          console.error(error);
+          Promise.reject(error);
+        }
+      },
+    }
+  );
+};
+
+export const useSendResetOtp = (email) => {
+  const navigate = useNavigate();
+  // const setUser = useSetRecoilState(userState);
+
+  return useMutation(
+    async (data) => {
+      const response = await instance
+        .post("/auth/password/resend", data)
+        .then((res) => res?.data)
+        .catch((err) => {
+          throw err;
+        });
+      return response;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        navigate(`/auth-change-password?email=${email}`);
+        // setUser(data);
+        // openModal(false);
+
+        // return {
+        //   message: "Successful",
+        //   status: 200,
+        // };
       },
       onError: (error) => {
         if (error) {
