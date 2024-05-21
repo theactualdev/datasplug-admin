@@ -6,12 +6,32 @@ import { NavLink, Link, useLocation } from "react-router-dom";
 import { userState } from "../../atoms/userState";
 import { useRecoilValue } from "recoil";
 
-const MenuHeading = ({ heading }) => {
-  return (
-    <li className="nk-menu-heading">
-      <h6 className="overline-title text-primary-alt">{heading}</h6>
-    </li>
-  );
+const MenuHeading = ({ heading, user, show }) => {
+  // console.log(user);
+  const assignPermissions = useMemo(() => {
+    if (user?.role?.permissions) {
+      return user?.role?.permissions?.map((item) => item.group);
+    } else {
+      return [];
+    }
+  }, [user]);
+
+  // console.log(assignPermissions.some((item) => ["transactions"].includes(item)));
+  if (user?.id === 1) {
+    return (
+      <li className="nk-menu-heading">
+        <h6 className="overline-title text-primary-alt">{heading}</h6>
+      </li>
+    );
+  }
+
+  if (user?.id !== 1 && assignPermissions.some((item) => show.includes(item))) {
+    return (
+      <li className="nk-menu-heading">
+        <h6 className="overline-title text-primary-alt">{heading}</h6>
+      </li>
+    );
+  } else return null;
 };
 
 const MenuItem = ({
@@ -25,10 +45,11 @@ const MenuItem = ({
   newTab,
   mobileView,
   permission,
+  user,
   ...props
 }) => {
   const { pathname } = useLocation();
-  const user = useRecoilValue(userState);
+  // console.log(user);
 
   // console.log(props.permission);
 
@@ -38,10 +59,20 @@ const MenuItem = ({
     }
   };
 
+  const assignPermissions = useMemo(() => {
+    if (user?.role?.permissions) {
+      return user?.role?.permissions?.map((item) => item.group);
+    } else {
+      return [];
+    }
+  }, [user]);
+
   const hideSideBarLink = useMemo(() => {
     if (permission === "all") {
       return false;
-    } else if (user?.role?.permissions?.includes(permission)) {
+    } else if (assignPermissions.includes(permission)) {
+      return false;
+    } else if (user?.id === 1) {
       return false;
     } else {
       return true;
@@ -214,14 +245,26 @@ const MenuItem = ({
       )}
       {sub ? (
         <div className="nk-menu-wrap">
-          <MenuSub sub={sub} sidebarToggle={sidebarToggle} mobileView={mobileView} />
+          <MenuSub sub={sub} sidebarToggle={sidebarToggle} mobileView={mobileView} user={user} />
         </div>
       ) : null}
     </li>
   );
 };
 
-const PanelItem = ({ icon, link, text, subPanel, index, data, sidebarToggle, mobileView, setMenuData, ...props }) => {
+const PanelItem = ({
+  icon,
+  link,
+  text,
+  subPanel,
+  index,
+  data,
+  sidebarToggle,
+  mobileView,
+  setMenuData,
+  user,
+  ...props
+}) => {
   const menuItemClass = classNames({
     "nk-menu-item": true,
   });
@@ -251,6 +294,7 @@ const PanelItem = ({ icon, link, text, subPanel, index, data, sidebarToggle, mob
             sidebarToggle={sidebarToggle}
             sub={item.subMenu}
             mobileView={mobileView}
+            user={user}
           />
         ))}
         <MenuHeading heading="Return to" />
@@ -275,7 +319,7 @@ const PanelItem = ({ icon, link, text, subPanel, index, data, sidebarToggle, mob
   }
 };
 
-const MenuSub = ({ icon, link, text, sub, sidebarToggle, mobileView, ...props }) => {
+const MenuSub = ({ icon, link, text, sub, sidebarToggle, mobileView, user, ...props }) => {
   return (
     <ul className="nk-menu-sub" style={props.style}>
       {sub.map((item) => (
@@ -289,6 +333,7 @@ const MenuSub = ({ icon, link, text, sub, sidebarToggle, mobileView, ...props })
           sidebarToggle={sidebarToggle}
           mobileView={mobileView}
           permission={item.permission}
+          user={user}
         />
       ))}
     </ul>
@@ -297,6 +342,8 @@ const MenuSub = ({ icon, link, text, sub, sidebarToggle, mobileView, ...props })
 
 const Menu = ({ sidebarToggle, mobileView }) => {
   const [data, setMenuData] = useState(menu);
+
+  const user = useRecoilValue(userState);
 
   useEffect(() => {
     data.forEach((item, index) => {
@@ -313,7 +360,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
     <ul className="nk-menu">
       {data.map((item, index) =>
         item.heading ? (
-          <MenuHeading heading={item.heading} key={item.heading} />
+          <MenuHeading heading={item.heading} user={user} show={item.show} key={item.heading} />
         ) : item.panel ? (
           <PanelItem
             key={item.text}
@@ -327,6 +374,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
             setMenuData={setMenuData}
             sidebarToggle={sidebarToggle}
             mobileView={mobileView}
+            user={user}
           />
         ) : (
           <MenuItem
@@ -340,6 +388,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
             sidebarToggle={sidebarToggle}
             mobileView={mobileView}
             permission={item.permission}
+            user={user}
           />
         )
       )}

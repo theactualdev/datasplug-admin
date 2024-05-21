@@ -1,17 +1,18 @@
 const menu = [
   {
     heading: "Welcome",
+    show: ["dashboard", "crypto-transactions", "giftcard-transactions", "wallet-transactions", "transactions"],
   },
   {
     icon: "dashboard-fill",
     text: "Dashboard",
     link: "/",
-    permission: "all",
+    permission: "dashboard",
   },
   {
     icon: "sign-btc-alt",
     text: "Assets Transactions",
-    permission: "all",
+    permission: "crypto-transactions",
     link: "/assets",
     subMenu: [
       {
@@ -29,7 +30,7 @@ const menu = [
   {
     icon: "cc-jcb",
     text: "Giftcard Transactions",
-    permission: "all",
+    permission: "giftcard-transactions",
     link: "/giftcards",
     subMenu: [
       {
@@ -47,7 +48,7 @@ const menu = [
   {
     icon: "coins",
     text: "Wallet Transactions",
-    permission: "all",
+    permission: "wallet-transactions",
     // link: "/withdrawals",
     subMenu: [
       {
@@ -70,7 +71,7 @@ const menu = [
   {
     icon: "swap",
     text: "Services Transactions",
-    permission: "all",
+    permission: "transactions",
     // link: "/transactions",
     subMenu: [
       {
@@ -120,25 +121,45 @@ const menu = [
   },
 
   {
+    icon: "invest",
+    text: "Requests",
+    permission: "all",
+    // link: "/withdrawals",
+    subMenu: [
+      {
+        text: "Deposit Requests",
+        link: "/requests/deposit",
+        permission: "all",
+      },
+      {
+        text: "Withdrawal Requests",
+        link: "/requests/withdrawal",
+        permission: "all",
+      },
+    ],
+  },
+
+  {
     heading: "Manage Users",
+    show: ["users", "admins", "roles"],
   },
   {
     icon: "users-fill",
     text: "Users",
     link: "/user-management",
-    permission: "all",
+    permission: "users",
   },
   {
     icon: "user-alt-fill",
     text: "Admin",
     link: "/admin-management",
-    permission: "all",
+    permission: "admins",
   },
   {
     icon: "layers-fill",
     text: "Roles",
     link: "/roles-management",
-    permission: "all",
+    permission: "roles",
   },
   // {
   //   icon: "user-list-fill",
@@ -149,33 +170,34 @@ const menu = [
 
   {
     heading: "New & updates",
+    show: ["alerts", "announcement", "faqs", "referral-terms", "all"],
   },
   {
     icon: "inbox-fill",
     text: "Announcement",
     link: "/announcement",
-    permission: "all",
+    permission: "alerts",
   },
   {
     icon: "view-x7",
     text: "Banners",
     link: "/banners",
-    permission: "all",
+    permission: "banners",
   },
   {
     icon: "question",
     text: "FAQ",
-    permission: "all",
+    permission: "faq",
     subMenu: [
       {
         text: "FAQ Categories",
         link: "/faq-categories",
-        permission: "all",
+        permission: "faq-categories",
       },
       {
         text: "FAQs",
         link: "/faqs",
-        permission: "all",
+        permission: "faqs",
       },
     ],
   },
@@ -190,11 +212,12 @@ const menu = [
     icon: "notes",
     text: "Referral Terms",
     link: "/referral-terms",
-    permission: "all",
+    permission: "referral-terms",
   },
 
   {
     heading: "configuration",
+    show: ["providers", "services", "route-actions"],
   },
   // {
   //   icon: "wallet",
@@ -206,23 +229,24 @@ const menu = [
     icon: "rss",
     text: "Service Providers",
     link: "/service-providers",
-    permission: "all",
+    permission: "providers",
   },
   {
     icon: "network",
     text: "Services",
     link: "/services",
-    permission: "all",
+    permission: "services",
   },
   {
     icon: "shield-star-fill",
     text: "Service Types",
     link: "/service-types",
-    permission: "all",
+    permission: "route-actions",
   },
 
   {
     heading: "preferences",
+    show: ["all"],
   },
   // {
   //   icon: "account-setting",

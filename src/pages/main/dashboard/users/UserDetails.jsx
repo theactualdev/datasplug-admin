@@ -1,14 +1,33 @@
 import React, { useCallback, useState } from "react";
-import { Button, Card, Nav, NavItem, NavLink } from "reactstrap";
+import {
+  Button,
+  Card,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+  UncontrolledDropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+} from "reactstrap";
 import { Block, BlockBetween, BlockHead, BlockHeadContent, BlockTitle, Icon } from "../../../../components/Component";
 
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useGetSingleUser } from "../../../../api/users/user";
+import { useGetSingleUser, useUpdateUserStatus } from "../../../../api/users/user";
 import { UserAvatar } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
 import { findUpper, formatDateWithTime, formatter } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
+import Details from "./details/details";
+import WithdrawalTable from "../wallet/table";
+import { TransactionTable } from "../transactions/table";
+import AddModal from "./AddModal";
+import { useFinanceUser } from "../../../../api/users/user";
+import FaqTable from "../faq/faqTable";
+import toast from "react-hot-toast";
 
 const UserDetailsPage = () => {
   const { userId } = useParams();
@@ -19,17 +38,84 @@ const UserDetailsPage = () => {
   const currentPage = searchParams.get("page") ?? 1;
   const activeTab = searchParams.get("tab") ?? "details";
   const { data: user, isLoading } = useGetSingleUser(userId);
-  console.log(user);
+  const { mutate: financeUser } = useFinanceUser(userId);
+  const { mutate: updateUserStatus } = useUpdateUserStatus(userId);
 
-  const activeTabStyle = useCallback(
-    (value) => {
-      if (value === activeTab) {
-        return "active";
-      }
-      return;
-    },
-    [activeTab]
+  // console.log(user);
+
+  const copyAccountDetails = (id) => {
+    let account = user?.data?.bank_accounts?.find((item) => item.id === id);
+    if (account) {
+      let text = `Account Name: ${account?.account_name}
+                  Account Number: ${account?.account_number}
+                  Bank Name: ${account.bank_name}`;
+      console.log(text);
+      navigator.clipboard.writeText(text);
+      toast("Copied to clipboard");
+    }
+
+    // console.log(account);
+  };
+
+  const ActionOptions = ({ id }) => (
+    <ul className="nk-tb-actions gx-1 my-n1">
+      <li>
+        <UncontrolledDropdown>
+          <DropdownToggle tag="a" className="btn btn-trigger dropdown-toggle btn-icon me-n1">
+            <Icon name="more-h"></Icon>
+          </DropdownToggle>
+          <DropdownMenu end>
+            <ul className="link-list-opt no-bdr">
+              <li>
+                <DropdownItem
+                  tag="a"
+                  href="#"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    copyAccountDetails(id);
+                  }}
+                >
+                  <Icon name="copy"></Icon>
+                  <span>Copy details</span>
+                </DropdownItem>
+              </li>
+            </ul>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </li>
+    </ul>
   );
+  const onFormSubmit = (data) => {
+    let submittedData = {
+      ...data,
+      type: data.type.value,
+    };
+    financeUser(submittedData);
+    closeModal();
+  };
+
+  const [view, setView] = useState({
+    finance: false,
+  });
+
+  const toggleModal = (type) => {
+    setView({
+      finance: type === "finance" ? true : false,
+    });
+  };
+
+  // resets forms
+  const resetForm = () => {
+    // setFormData({
+    //   name: "",
+    //   status: "",
+    // });
+  };
+
+  const closeModal = () => {
+    setView({ finance: false });
+    resetForm();
+  };
 
   return (
     <>
@@ -134,170 +220,63 @@ const UserDetailsPage = () => {
                     Bank Account
                   </NavLink>
                 </NavItem>
+
+                <NavItem className="nav-item nav-item-trigger">
+                  <Button
+                    // outline={storeDetail?.store?.adminAction !== "approved"}
+                    onClick={() => toggleModal("finance")}
+                    className="me-2"
+                    // color={storeDetail?.store?.adminAction !== "approved" ? "primary" : "danger"}
+                  >
+                    <span>Finance</span>
+                  </Button>
+
+                  <Button
+                    outline={user?.data?.status !== "active"}
+                    className="ccap"
+                    onClick={updateUserStatus}
+                    color={user?.data?.status !== "active" ? "primary" : "danger"}
+                  >
+                    <span>{user?.data?.status === "active" ? "Restrict" : "Unrestrict"}</span>
+                  </Button>
+                </NavItem>
               </Nav>
               <div className="card-inner">
-                {isLoading ? (
+                {/* {isLoading ? (
                   <LoadingSpinner />
                 ) : (
-                  <>
-                    <Block>
-                      <BlockHead className="nk-block-head-line">
-                        <BlockBetween>
-                          <BlockTitle tag="h5">Profile Information</BlockTitle>
-                          <div className="user-card">
-                            <UserAvatar
-                              theme={user?.avatar}
-                              className="md"
-                              text={user && findUpper(`${user?.data?.firstname} ${user?.data?.lastname}`)}
-                              image={user?.data?.avatar}
-                            ></UserAvatar>
-                          </div>
-                        </BlockBetween>
-                      </BlockHead>
-                      <div className="profile-ud-list">
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Fullname</span>
-                            <span className="profile-ud-value">
-                              {user?.data?.firstname} {user?.data?.lastname}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Username</span>
-                            <span className="profile-ud-value">{user?.data?.username ?? "Not set"}</span>
-                          </div>
-                        </div>
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Email</span>
-                            <span className="profile-ud-value">{user?.data?.email}</span>
-                          </div>
-                        </div>
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Gender</span>
-                            <span className="profile-ud-value ccap">
-                              {user?.data?.gender ? user?.data?.gender : "Not Set"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">State/Country</span>
-                            <span className="profile-ud-value">
-                              {user?.data?.state && user?.data?.country
-                                ? `${user?.data?.state} / ${user?.data?.country}`
-                                : "No Location set"}
-                              {/* {user?.state}/{user?.country} */}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Referral Code</span>
-                            <span className="profile-ud-value">
-                              {user?.data?.ref_code ? user?.data?.ref_code : "Not Set"}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Mobile Number</span>
-                            {user?.data?.phone ? (
-                              <span className="profile-ud-value">
-                                ({user?.data?.phone_code}) {user?.data?.phone}
-                              </span>
-                            ) : (
-                              <span className="profile-ud-value">Not set</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Date Joined</span>
-                            <span className="profile-ud-value">{formatDateWithTime(user?.data?.created_at)}</span>
-                          </div>
-                        </div>
-
-                        {/* <div className="profile-ud-item">
-                    <div className="profile-ud wider">
-                      <span className="profile-ud-label">Email Address</span>
-                      <span className="profile-ud-value">{user.email}</span>
-                    </div>
-                  </div> */}
-                      </div>
-                    </Block>
-
-                    <div className="nk-divider divider md"></div>
-
-                    <Block>
-                      <BlockHead className="nk-block-head-line">
-                        <BlockTitle tag="h4" className="overline-title">
-                          Wallet Information
-                        </BlockTitle>
-                      </BlockHead>
-                      <div className="profile-ud-list">
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Wallet Type</span>
-                            <span className="profile-ud-value">{user?.data?.wallet?.type}</span>
-                          </div>
-                        </div>
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Wallet Balance</span>
-                            <span className={`profile-ud-value text-capitalize`}>
-                              {formatter("NGN").format(user?.data?.wallet?.balance)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </Block>
-
-                    <div className="nk-divider divider md"></div>
-
-                    <Block>
-                      <BlockHead className="nk-block-head-line">
-                        <BlockTitle tag="h4" className="overline-title">
-                          Account Information
-                        </BlockTitle>
-                      </BlockHead>
-                      <div className="profile-ud-list">
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Email Verified</span>
-                            <span
-                              className={`profile-ud-value ccap ${
-                                user?.data?.email_verified ? "text-success" : "text-danger"
-                              }`}
-                            >
-                              {user?.data?.email_verified ? "Verified" : "Not verified"}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="profile-ud-item">
-                          <div className="profile-ud wider">
-                            <span className="profile-ud-label">Account Status</span>
-                            <span
-                              className={`profile-ud-value ccap ${
-                                user?.data?.status === "active" ? "text-success" : "text-danger"
-                              }`}
-                            >
-                              {user?.data?.status}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </Block>
-                  </>
-                )}
+                  <div> */}
+                <TabContent activeTab={activeTab}>
+                  <TabPane tabId="details">
+                    <Details user={user} />
+                  </TabPane>
+                  <TabPane tabId="wallet">
+                    <WithdrawalTable userId={userId} />
+                  </TabPane>
+                  <TabPane tabId="services">
+                    <TransactionTable userId={userId} />
+                    {/* <WithdrawalTable userId={userId} /> */}
+                  </TabPane>
+                  <TabPane tabId="accounts">
+                    <FaqTable
+                      faqTitle={"Accounts"}
+                      headers={["Account Name", "Account Number", "Bank Name"]}
+                      dataKeys={["account_name", "account_number", "bank_name"]}
+                      defaultData={user?.data?.bank_accounts}
+                      data={user?.data?.bank_accounts}
+                      hidePagination={true}
+                      hideFilters={true}
+                      action={ActionOptions}
+                    />
+                  </TabPane>
+                </TabContent>
               </div>
+              {/* )} */}
+              {/* </div> */}
             </div>
           </div>
         </Card>
+        <AddModal modal={view.finance} closeModal={closeModal} onSubmit={onFormSubmit} />
       </Content>
     </>
   );

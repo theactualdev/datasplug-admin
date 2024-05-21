@@ -61,7 +61,7 @@ export const useUpdateServices = (id) => {
   return useMutation(
     (values) => {
       try {
-        const response = toast.promise(instance.post(BACKEND_URLS.providers + `/${id}`, values), {
+        const response = toast.promise(instance.post(BACKEND_URLS.service + `/${id}`, values), {
           success: (data) => data.message || "Update Successful",
           loading: "Please wait...",
           error: (error) => error?.response?.data?.message || "Failed. Something happened.",

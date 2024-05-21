@@ -7,11 +7,13 @@ const BACKEND_URLS = {
     login: "/auth/login",
     // resendOtp: "/users/resend-verification/",
     forgotPassword: "/forgot-password",
-    resetPassword: "/reset-password/",
+    resetPassword: "/auth/password/reset",
+    changePassword: "/auth/password/update",
     // verifyEmail: "/users/verify/",
     logout: "/auth/logout",
     refreshToken: "/refresh-access-token/",
   },
+  admins: "/admins",
   crypto: "/crypto-transactions",
   giftcard: "/giftcard-transactions",
   transaction: "/transactions",
@@ -24,6 +26,7 @@ const BACKEND_URLS = {
   service: "/services",
   product: "/products",
   route: "/route-actions",
+
   // product: {
   //   all: "/products",
   //   productReview: "/review",
@@ -40,7 +43,7 @@ const BACKEND_URLS = {
   coupons: "/coupon",
   users: "/users",
   roles: "/roles",
-  permissions: "/role-permissions",
+  permissions: "/permissions",
   serviceCharge: "/additional-charges",
   shipping: {
     intlZones: "/shipping-zone",

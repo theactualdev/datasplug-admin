@@ -3,15 +3,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { instance } from "../httpConfig";
 import { toast } from "react-hot-toast";
 
-export const useGetAllUsers = (currentPage, size, search) => {
+export const useGetAllUsers = (currentPage, size, search, status) => {
   const page = `page=${currentPage}`;
   const per_page = `per_page=${size}`;
   const searchTerm = search ? `&search=${search}` : "";
+  const statusTerm = status ? `&filter[status]=${status}` : "";
   return useQuery(
-    ["getAllUsers", page, size, searchTerm],
+    ["getAllUsers", page, size, searchTerm, statusTerm],
     async () => {
       const request = await instance
-        .get(BACKEND_URLS.users + `?${page}&${per_page}${searchTerm}`)
+        .get(BACKEND_URLS.users + `?${page}&${per_page}${searchTerm}${statusTerm}`)
         .then((res) => res?.data)
         .catch((err) => {
           throw err;
@@ -32,7 +33,7 @@ export const useGetSingleUser = (id) => {
     ["getSingleUser"],
     async () => {
       const request = await instance
-        .get(BACKEND_URLS.users + `/${id}`)
+        .get(BACKEND_URLS.users + `/${id}?include=bankAccounts`)
         .then((res) => res?.data)
         .catch((err) => {
           throw err;
@@ -76,6 +77,41 @@ export const useUpdateUserStatus = (id) => {
       onSuccess: (data) => {
         // console.log(data);
         queryClient.invalidateQueries(["getAllUsers"]);
+        queryClient.invalidateQueries(["getSingleUser"]);
+      },
+    }
+  );
+};
+
+export const useFinanceUser = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post(BACKEND_URLS.users + `/${id}/wallet`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: (data) => data?.message || "Successful",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: "Something happened",
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: (data) => {
+        // console.log(data);
+        queryClient.invalidateQueries(["getAllUsers"]);
+        queryClient.invalidateQueries(["getSingleUser"]);
       },
     }
   );

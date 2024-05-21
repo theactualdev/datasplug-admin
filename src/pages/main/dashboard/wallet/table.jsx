@@ -42,7 +42,7 @@ import { FilterOptions } from "../tables/filter-select";
 import { WalletFilterOptions } from "./data";
 import { WalletStatsCard } from "./stats-card";
 
-const WithdrawalTable = ({ type }) => {
+const WithdrawalTable = ({ type, userId }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -55,8 +55,16 @@ const WithdrawalTable = ({ type }) => {
 
   //   const type = searchParams.get("type") ?? undefined;
   // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
-  const { isLoading, data, error } = useGetWithdrawalTransactions(currentPage, itemsPerPage, status, search, type);
-  console.log(data?.stat);
+  const { isLoading, data, error } = useGetWithdrawalTransactions(
+    currentPage,
+    itemsPerPage,
+    status,
+    search,
+    type,
+    userId
+  );
+  // console.log(data);
+  // console.log(data?.stat);
 
   const [formData, setFormData] = useState({
     reference: "",
@@ -72,6 +80,11 @@ const WithdrawalTable = ({ type }) => {
     fullName: "",
     email: "",
     phone: "",
+    totalAmount: "",
+    receiverName: "",
+    receiverPhone: "",
+    receiverEmail: "",
+    purpose: "",
   });
   const [view, setView] = useState({
     edit: false,
@@ -110,6 +123,11 @@ const WithdrawalTable = ({ type }) => {
       fullName: "",
       email: "",
       phone: "",
+      totalAmount: "",
+      receiverName: "",
+      receiverPhone: "",
+      receiverEmail: "",
+      purpose: "",
     });
     reset({});
   };
@@ -125,13 +143,16 @@ const WithdrawalTable = ({ type }) => {
           provider: item?.provider,
           remark: item?.remark,
           status: item?.status,
+          purpose: item?.purpose,
           fee: item?.fee,
-          accountName: item?.meta?.account_name,
-          accountNumber: item?.meta?.account_number,
+          receiverName: `${item?.meta?.firstname} ${item?.meta?.lastname}`,
+          receiverPhone: `${item?.meta?.phone_code}${item?.meta?.phone}`,
+          receiverEmail: item?.meta?.email,
           bank: item?.meta?.bank_name,
           fullName: `${item?.user?.firstname} ${item?.user?.lastname}`,
           email: item?.user?.email,
           phone: `${item?.user?.phone_code}${item?.user?.phone}`,
+          totalAmount: item?.total_amount,
         });
       }
     });
@@ -235,7 +256,7 @@ const WithdrawalTable = ({ type }) => {
             <div className="card-inner p-0">
               {isLoading ? (
                 <LoadingSpinner />
-              ) : 2 > 0 ? (
+              ) : data?.meta?.total > 0 ? (
                 <>
                   <DataTableBody className="is-compact">
                     <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
@@ -243,8 +264,15 @@ const WithdrawalTable = ({ type }) => {
                         <span className="tb-tnx-head bg-white text-secondary">S/N</span>
                       </DataTableRow>
                       <DataTableRow size="sm">
-                        <span className="tb-tnx-head bg-white text-secondary">Fullname</span>
+                        <span className="tb-tnx-head bg-white text-secondary">
+                          {type === "transfer" ? "Sender" : "Fullname"}
+                        </span>
                       </DataTableRow>
+                      {type === "transfer" && (
+                        <DataTableRow size="sm">
+                          <span className="tb-tnx-head bg-white text-secondary">Receiver</span>
+                        </DataTableRow>
+                      )}
                       <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Amount</span>
                       </DataTableRow>
@@ -289,6 +317,13 @@ const WithdrawalTable = ({ type }) => {
                               {item?.user?.firstname} {item?.user?.lastname}
                             </Link>
                           </DataTableRow>
+                          {type === "transfer" && (
+                            <DataTableRow size="sm" className="text-primary fw-bold">
+                              <Link to={`/user-details/${item?.meta?.id}`} className="title">
+                                {item?.meta?.firstname} {item?.meta?.lastname}
+                              </Link>
+                            </DataTableRow>
+                          )}
                           <DataTableRow>
                             <span>{formatter("NGN").format(item?.amount)}</span>
                           </DataTableRow>
@@ -392,24 +427,25 @@ const WithdrawalTable = ({ type }) => {
                 <span className="caption-text">{formData.reference}</span>
               </Col>
               <Col lg={4}>
-                <span className="sub-text">Amount</span>
-                <span className="caption-text">{formatter("NGN").format(formData.amount)}</span>
-              </Col>
-              <Col lg={4}>
-                <span className="sub-text">Type</span>
-                <span className="caption-text">{formData.type}</span>
-              </Col>
-              <Col lg={4}>
-                <span className="sub-text">Provider</span>
-                <span className="caption-text ccap">{formData.provider}</span>
-              </Col>
-              <Col lg={4}>
                 <span className="sub-text">Status</span>
                 <span className="caption-text">
                   <Badge className="badge-sm badge-dot has-bg d-inline-flex" color={statusColor(formData.status)}>
                     <span className="ccap">{formData.status}</span>
                   </Badge>
                 </span>
+              </Col>
+              <Col lg={4}>
+                <span className="sub-text">Type</span>
+                <span className="caption-text">{formData.type}</span>
+              </Col>
+              <Col lg={4}>
+                <span className="sub-text">Amount</span>
+                <span className="caption-text">{formatter("NGN").format(formData.amount)}</span>
+              </Col>
+
+              <Col lg={4}>
+                <span className="sub-text">Total Amount</span>
+                <span className="caption-text">{formatter("NGN").format(formData.totalAmount)}</span>
               </Col>
 
               <Col lg={4}>
@@ -420,20 +456,44 @@ const WithdrawalTable = ({ type }) => {
                 <span className="sub-text">Remark</span>
                 <span className="caption-text ccap">{formData.remark}</span>
               </Col>
+              <Col lg={4}>
+                <span className="sub-text">Provider</span>
+                <span className="caption-text ccap">{formData.provider}</span>
+              </Col>
 
-              <h6>User</h6>
-              <Col lg={4}>
-                <span className="sub-text">Fullname</span>
-                <span className="caption-text">{formData.fullName}</span>
-              </Col>
-              <Col lg={4}>
-                <span className="sub-text">Email</span>
-                <span className="caption-text">{formData.email}</span>
-              </Col>
-              <Col lg={4}>
-                <span className="sub-text">Phone</span>
-                <span className="caption-text">{formData.phone}</span>
-              </Col>
+              <Row className="mt-2">
+                <h6>{type === "transfer" ? "Sender" : "User"}</h6>
+                <Col lg={4}>
+                  <span className="sub-text">Fullname</span>
+                  <span className="caption-text">{formData.fullName}</span>
+                </Col>
+                <Col lg={4}>
+                  <span className="sub-text">Email</span>
+                  <span className="caption-text">{formData.email}</span>
+                </Col>
+                <Col lg={4}>
+                  <span className="sub-text">Phone</span>
+                  <span className="caption-text">{formData.phone}</span>
+                </Col>
+              </Row>
+              {formData?.purpose === "transfer" && (
+                <Row className="mt-2">
+                  <h6>Receiver</h6>
+                  <Col lg={4}>
+                    <span className="sub-text">Fullname</span>
+                    <span className="caption-text">{formData?.receiverName}</span>
+                  </Col>
+                  <Col lg={4}>
+                    <span className="sub-text">Email</span>
+                    <span className="caption-text">{formData?.receiverEmail}</span>
+                  </Col>
+                  <Col lg={4}>
+                    <span className="sub-text">Phone</span>
+                    <span className="caption-text">{formData.receiverPhone}</span>
+                  </Col>
+                </Row>
+              )}
+
               {/* 
                 <h6>Bank</h6>
                 <Col lg={6}>

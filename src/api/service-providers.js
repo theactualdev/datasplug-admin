@@ -198,6 +198,32 @@ export const useToggleProviders = (id) => {
   );
 };
 
+export const useGetRouteStatuses = (currentPage = 1, size = 100) => {
+  const page = `page=${currentPage}`;
+  const per_page = `per_page=${size}`;
+  return useQuery(
+    ["Routes-status", page, size],
+    async () => {
+      try {
+        const response = await instance.get(BACKEND_URLS.route + "/statuses");
+        // console.log(response.data.data);
+        // toast.success(response.data.message);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        Promise.reject(error);
+      }
+    },
+    {
+      // initialData: [],
+      retry: 1,
+      retryDelay: 3000,
+      refetchOnWindowFocus: false,
+      keepPreviousData: true,
+      staleTime: 5000,
+    }
+  );
+};
 export const useGetRoutes = (currentPage = 1, size = 100) => {
   const page = `page=${currentPage}`;
   const per_page = `per_page=${size}`;

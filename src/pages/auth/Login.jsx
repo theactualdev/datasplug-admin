@@ -42,10 +42,10 @@ const Login = () => {
       <Head title="Login" />
       <Block className="nk-block-middle nk-auth-body  wide-xs">
         <div className="brand-logo pb-4 text-center">
-          <Link to={import.meta.env.PUBLIC_URL + "/"} className="logo-link">
+          <div className="logo-link">
             <img className="logo-light logo-img logo-img-lg" src={BillPadiLogo} alt="logo" />
             <img className="logo-dark logo-img logo-img-lg" src={BillPadiLogo} alt="logo-dark" />
-          </Link>
+          </div>
         </div>
 
         <PreviewCard className="card-bordered" bodyClass="card-inner-lg">
@@ -60,7 +60,7 @@ const Login = () => {
           {error && (
             <div className="mb-3">
               <Alert color="danger" className="alert-icon">
-                <Icon name="alert-circle" /> {error.error}
+                <Icon name="alert-circle" /> {error}
               </Alert>
             </div>
           )}
@@ -76,7 +76,7 @@ const Login = () => {
                   type="text"
                   id="default-01"
                   {...register("name", { required: "This field is required" })}
-                  defaultValue="admin@fabpay.com"
+                  // defaultValue="admin@billpadi.com"
                   placeholder="Enter your email address or username"
                   className="form-control-lg form-control"
                 />
@@ -109,7 +109,7 @@ const Login = () => {
                   type={passState ? "text" : "password"}
                   id="password"
                   {...register("passcode", { required: "This field is required" })}
-                  defaultValue="password"
+                  // defaultValue="password"
                   placeholder="Enter your passcode"
                   className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
                 />

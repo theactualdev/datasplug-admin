@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown, Badge } from "reactstrap";
-import { useGetAllUsers, useUpdateUserStatus } from "../../../../api/users/user";
+import { useFinanceUser, useGetAllUsers, useUpdateUserStatus } from "../../../../api/users/user";
 import {
   Block,
   BlockDes,
@@ -26,8 +26,11 @@ import Head from "../../../../layout/head/Head";
 import { findUpper, formatDateWithTime, formatter } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import SortToolTip from "../tables/SortTooltip";
-import { filterRole, filterStatus } from "./UserData";
+import { filterRole, filterStatus, userFilterOptions } from "./UserData";
 import Search from "../tables/Search";
+import { FilterOptions } from "../tables/filter-select";
+import AddModal from "./AddModal";
+
 const UserList = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,15 +39,53 @@ const UserList = () => {
   const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
   const search = searchParams.get("search") ?? "";
+  const status = searchParams.get("status") ?? "";
 
-  const { isLoading, data: users } = useGetAllUsers(currentPage, itemsPerPage, search);
+  const { isLoading, data: users } = useGetAllUsers(currentPage, itemsPerPage, search, status);
   const { mutate: updateUserStatus } = useUpdateUserStatus(userId);
+  const { mutate: financeUser } = useFinanceUser(userId);
   // console.log(users);
 
   const [tablesm, updateTableSm] = useState(false);
   const [onSearch, setonSearch] = useState(false);
+  // console.log(users);
 
-  const [filters, setfilters] = useState({});
+  const [view, setView] = useState({
+    finance: false,
+  });
+
+  const [formData, setFormData] = useState({
+    name: "",
+    status: "",
+  });
+
+  // function that loads the want to editted data
+  const onEditClick = (id) => {
+    users?.data?.forEach((item) => {
+      if (item.id === id) {
+        setFormData({
+          name: item?.name,
+          status: item?.status,
+        });
+      }
+    });
+    setUserId(id);
+  };
+
+  const onFormSubmit = (data) => {
+    let submittedData = {
+      ...data,
+      type: data.type.value,
+    };
+    financeUser(submittedData);
+    closeModal();
+  };
+
+  const toggleModal = (type) => {
+    setView({
+      finance: type === "finance" ? true : false,
+    });
+  };
 
   // function to change to suspend property for an item
   const suspendUser = (id) => {
@@ -58,6 +99,19 @@ const UserList = () => {
   // function to toggle the search option
   const toggle = () => setonSearch(!onSearch);
 
+  // resets forms
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      status: "",
+    });
+  };
+
+  // function to close the form modal
+  const closeModal = () => {
+    setView({ finance: false });
+    resetForm();
+  };
   // Change Page
   //paginate
   const paginate = (pageNumber) => {
@@ -66,11 +120,6 @@ const UserList = () => {
       return searchParams;
     });
   };
-
-  // function to filter data
-  const filterData = useCallback(() => {
-    return;
-  }, []);
 
   const statusColor = useCallback((status) => {
     if (status === "pending") {
@@ -133,75 +182,7 @@ const UserList = () => {
                               </Button>
                             </li>
                             <li>
-                              <UncontrolledDropdown>
-                                <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
-                                  <div className="dot dot-primary"></div>
-                                  <Icon name="filter-alt"></Icon>
-                                </DropdownToggle>
-                                <DropdownMenu
-                                  end
-                                  className="filter-wg dropdown-menu-xl"
-                                  style={{ overflow: "visible" }}
-                                >
-                                  <div className="dropdown-head">
-                                    <span className="sub-title dropdown-title">Filter Users</span>
-                                  </div>
-                                  <div className="dropdown-body dropdown-body-rg">
-                                    <Row className="gx-6 gy-3">
-                                      <Col size="6">
-                                        <div className="form-group">
-                                          <label className="overline-title overline-title-alt">Role</label>
-                                          <RSelect
-                                            options={filterRole}
-                                            placeholder="Any Role"
-                                            value={filters.role && { label: filters.role, value: filters.role }}
-                                            onChange={(e) => setfilters({ ...filters, role: e.value })}
-                                          />
-                                        </div>
-                                      </Col>
-                                      <Col size="6">
-                                        <div className="form-group">
-                                          <label className="overline-title overline-title-alt">Status</label>
-                                          <RSelect
-                                            options={filterStatus}
-                                            placeholder="Any Status"
-                                            value={filters.status && { label: filters.status, value: filters.status }}
-                                            onChange={(e) => setfilters({ ...filters, status: e.value })}
-                                          />
-                                        </div>
-                                      </Col>
-                                      <Col size="12">
-                                        <div className="form-group">
-                                          <Button color="secondary" onClick={filterData}>
-                                            Filter
-                                          </Button>
-                                        </div>
-                                      </Col>
-                                    </Row>
-                                  </div>
-                                  <div className="dropdown-foot between">
-                                    <a
-                                      href="#reset"
-                                      onClick={(ev) => {
-                                        ev.preventDefault();
-                                        // setData(userData);
-                                        setfilters({});
-                                      }}
-                                      className="clickable"
-                                    >
-                                      Reset Filter
-                                    </a>
-                                    <a
-                                      href="#save"
-                                      onClick={(ev) => {
-                                        ev.preventDefault();
-                                      }}
-                                    >
-                                      Save Filter
-                                    </a>
-                                  </div>
-                                </DropdownMenu>
-                              </UncontrolledDropdown>
+                              <FilterOptions options={userFilterOptions} />
                             </li>
                             <li>
                               <UncontrolledDropdown>
@@ -264,58 +245,57 @@ const UserList = () => {
                     return (
                       <DataTableItem
                         key={idx}
-                        onClick={() => navigate(`/user-details/${item.id}`)}
-                        style={{ cursor: "pointer" }}
+                        // onClick={() => navigate(`/user-details/${item.id}`)}
+                        // style={{ cursor: "pointer" }}
                       >
                         <DataTableRow className="nk-tb-col-check">
                           <div className="custom-control custom-control-sm custom-checkbox notext">{idx + 1}</div>
                         </DataTableRow>
                         <DataTableRow>
-                          {/* <Link to={`${import.meta.env.PUBLIC_URL}/user-details-regular/${item.id}`}> */}
-                          <div className="user-card">
-                            <UserAvatar
-                              theme={item?.avatar}
-                              className="xs"
-                              text={findUpper(`${item?.firstname} ${item?.lastname}`)}
-                              image={item?.profilePicture}
-                            />
-                            <div className="user-name">
-                              <span className="tb-lead">
-                                {item?.firstname} {item?.lastname}{" "}
-                              </span>
-                              <span className="text-primary text-ellipsis fw-normal fs-12px">{item.email}</span>
+                          <Link to={`/user-details/${item.id}`}>
+                            <div className="user-card">
+                              <UserAvatar
+                                theme={item?.avatar}
+                                className="xs"
+                                text={findUpper(`${item?.firstname} ${item?.lastname}`)}
+                                image={item?.avatar}
+                              />
+                              <div className="user-name">
+                                <span className="tb-lead">
+                                  {item?.firstname} {item?.lastname}{" "}
+                                </span>
+                                <p className="text-primary text-ellipsis fw-normal fs-12px w-max-200px">{item.email}</p>
+                              </div>
                             </div>
-                          </div>
-
-                          {/* </Link> */}
+                          </Link>
                         </DataTableRow>
 
                         <DataTableRow size="lg">
-                          <span className="ccap">{item?.username || "Not set"}</span>
+                          <span className="ccap fs-12px">{item?.username || "Not set"}</span>
                         </DataTableRow>
 
                         <DataTableRow size="sm">
                           {item.phone ? (
-                            <span>
-                              ({item.phone_code}) {item.phone}
+                            <span className="fs-12px">
+                              ({item.phone_code}){item.phone}
                             </span>
                           ) : (
-                            <span>Not set</span>
+                            <span className="fs-12px">Not set</span>
                           )}
                         </DataTableRow>
                         <DataTableRow size="sm">
                           <span>{formatter("NGN").format(item?.wallet?.balance)}</span>
                         </DataTableRow>
                         <DataTableRow size="lg">
-                          <span>{formatDateWithTime(item.created_at)}</span>
+                          <span className="fs-12px">{formatDateWithTime(item.created_at)}</span>
                         </DataTableRow>
                         <DataTableRow>
                           <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
                           <Badge
-                            className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
+                            className="badge-sm badge-dot has-bg d-none d-sm-inline-flex fs-12px"
                             color={statusColor(item.status)}
                           >
-                            <span className="ccap">{item.status}</span>
+                            <span className="ccap fs-12px">{item.status}</span>
                           </Badge>
                         </DataTableRow>
                         <DataTableRow className="nk-tb-col-tools">
@@ -338,6 +318,21 @@ const UserList = () => {
                                       >
                                         <Icon name="eye"></Icon>
                                         <span>View user</span>
+                                      </DropdownItem>
+                                    </li>
+                                    <li>
+                                      <DropdownItem
+                                        tag="a"
+                                        href="#view"
+                                        onClick={(ev) => {
+                                          ev.preventDefault();
+                                          setUserId(item.id);
+                                          onEditClick(item.id);
+                                          toggleModal("finance");
+                                        }}
+                                      >
+                                        <Icon name="tranx-fill"></Icon>
+                                        <span>Finance User</span>
                                       </DropdownItem>
                                     </li>
 
@@ -387,15 +382,16 @@ const UserList = () => {
             )}
           </DataTable>
         </Block>
-        {/* 
         <AddModal
-          modal={modal.add}
+          modal={view.finance}
           formData={formData}
           setFormData={setFormData}
           closeModal={closeModal}
           onSubmit={onFormSubmit}
           filterStatus={filterStatus}
         />
+        {/* 
+        
         <EditModal
           modal={modal.edit}
           formData={editFormData}

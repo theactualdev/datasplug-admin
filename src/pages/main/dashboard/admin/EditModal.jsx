@@ -14,9 +14,10 @@ const EditModal = ({
   filterStatus,
   selectedRole,
   setSelectedRole,
+  setRoleId,
 }) => {
   const { data: roles, isLoading } = useGetRoles();
-
+  // console.log("hello");
   const {
     reset,
     register,
@@ -28,9 +29,9 @@ const EditModal = ({
     if (!isLoading) {
       return roles?.data?.map((role) => {
         return {
-          id: role._id,
-          label: role.title,
-          value: role.title,
+          id: role.id,
+          label: role.name,
+          value: role.name,
         };
       });
     }
@@ -38,7 +39,7 @@ const EditModal = ({
 
   const selectRole = (e) => {
     setSelectedRole(e.value);
-    setFormData({ ...formData, role: e.id });
+    setFormData({ ...formData, role: e.value });
   };
 
   useEffect(() => {
@@ -111,7 +112,10 @@ const EditModal = ({
                         value: selectedRole,
                         label: selectedRole,
                       }}
-                      onChange={(e) => selectRole(e)}
+                      onChange={(e) => {
+                        selectRole(e);
+                        setRoleId(e.id);
+                      }}
                     />
                     {/* <RSelect
                       options={filterStatus}

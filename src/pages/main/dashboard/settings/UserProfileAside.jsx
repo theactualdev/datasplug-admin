@@ -116,6 +116,12 @@ const UserProfileAside = ({ updateSm, sm }) => {
               <span>App update</span>
             </Link>
           </li>
+          <li onClick={() => updateSm(false)}>
+            <Link to="/settings/support" className={location.pathname === `/settings/support` ? "active" : ""}>
+              <Icon name="help-fill"></Icon>
+              <span>Support</span>
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

@@ -18,6 +18,7 @@ import TwoFactorModal from "./modals/TwoFactorModal";
 import { useSendOtp, useSetOtp, useTurnoff2FA } from "../../../../api/settings";
 import { useRecoilValue } from "recoil";
 import { userState } from "../../../../atoms/userState";
+import { useChangePassword } from "../../../../api/authentication";
 
 const UserSecurityPage = () => {
   const admin = useRecoilValue(userState);
@@ -36,6 +37,7 @@ const UserSecurityPage = () => {
   const { mutate: sendEmail } = useSetOtp(setOpen2fa);
   const { mutate: sendOtp } = useSendOtp(setOpen2fa);
   const { mutate: turnOff2FA } = useTurnoff2FA();
+  const { mutate: changePassword } = useChangePassword();
 
   const [form2fa, setForm2fa] = useState({
     pin: "",
@@ -82,8 +84,14 @@ const UserSecurityPage = () => {
 
   const onSubmit = (data) => {
     // API to update password
-
+    // console.log(data);
+    let submitted = {
+      old_password: data.oldPassword,
+      password: data.newPassword,
+    };
+    changePassword(submitted);
     resetForm();
+    closeModal();
   };
 
   const onSubmitPin = (data) => {

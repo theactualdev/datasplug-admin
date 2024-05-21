@@ -3,6 +3,22 @@ import User2 from "../../../../images/avatar/c-sm.jpg";
 import User3 from "../../../../images/avatar/a-sm.jpg";
 import User4 from "../../../../images/avatar/d-sm.jpg";
 
+export const userFilterOptions = [
+  {
+    name: "status",
+    options: [
+      { label: "Active", value: "active" },
+      { label: "Restricted", value: "restricted" },
+      { label: "Deactivated", value: "deactivated" },
+    ],
+  },
+];
+
+export const TransactionType = [
+  { label: "Credit", value: "credit" },
+  { label: "Debit", value: "debit" },
+];
+
 export const userData = [
   {
     id: 1,

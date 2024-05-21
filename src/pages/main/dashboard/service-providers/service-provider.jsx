@@ -45,6 +45,10 @@ import {
 import SortToolTip from "../tables/SortTooltip";
 import Search from "../tables/Search";
 import LoadingSpinner from "../../../components/spinner";
+import { useUploadImages, generateSignature } from "../../../../api/uploadimage";
+import Dropzone from "react-dropzone";
+import EditProductTypes from "./edit-product-types";
+import EditProviderLogo from "./edit-logo";
 
 const ServiceProviders = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,6 +60,8 @@ const ServiceProviders = () => {
 
   const [editId, setEditedId] = useState();
   const [onSearch, setonSearch] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [files, setFiles] = useState([]);
 
   // const { isLoading, data: faqs } = useGetFaqs();
   // const { isLoading, data: accounts } = useGetSystemAccount(currentPage, itemsPerPage);
@@ -66,7 +72,7 @@ const ServiceProviders = () => {
   const { mutate: updateStatus } = useToggleProviders(editId);
   const { mutate: updateProduct } = useUpdateProviderProduct(editId);
   const { data } = useGetRoutes();
-  console.log(data);
+  // console.log(data);
   // console.log(providers);
 
   // console.log(accounts);
@@ -83,6 +89,8 @@ const ServiceProviders = () => {
     add: false,
     details: false,
     edit: false,
+    logo: false,
+    types: false,
   });
 
   // toggle function to view order details
@@ -92,6 +100,8 @@ const ServiceProviders = () => {
       add: type === "add" ? true : false,
       details: type === "details" ? true : false,
       edit: type === "edit" ? true : false,
+      logo: type === "logo" ? true : false,
+      types: type === "types" ? true : false,
     });
   };
 
@@ -120,13 +130,13 @@ const ServiceProviders = () => {
       updateProvider(submittedData);
     }
 
-    setView({ add: false, details: false, edit: false });
+    setView({ add: false, details: false, edit: false, logo: false, types: false });
     resetForm();
   };
 
   // function that loads the want to editted data
   const onEditClick = (id) => {
-    console.log(id);
+    // console.log(id);
     providers?.data?.forEach((item) => {
       if (item.id === id) {
         setFormData({
@@ -147,7 +157,7 @@ const ServiceProviders = () => {
 
   // function to close the form modal
   const onFormCancel = () => {
-    setView({ add: false, details: false, edit: false });
+    setView({ add: false, details: false, edit: false, logo: false, types: false });
     resetForm();
   };
 
@@ -171,6 +181,55 @@ const ServiceProviders = () => {
     formState: { errors },
   } = useForm();
 
+  const onImageUpload = (data) => {
+    const image = data?.url;
+    console.log("Image uploaded");
+    setUploadedImages((prev) => [...prev, image]);
+  };
+
+  // console.log(uploadedImages);
+
+  const bulkImageUpload = async (image) => {
+    const { token, expire, signature } = await generateSignature();
+
+    const formData = new FormData();
+    formData.append("publicKey", import.meta.env.VITE_APP_IMAGEKIT_PUBLIC_KEY);
+    formData.append("file", image);
+    formData.append("fileName", image?.name);
+    formData.append("useUniqueFileName", "true");
+    formData.append("expire", expire);
+    formData.append("token", token);
+    formData.append("signature", signature);
+    upload(formData);
+  };
+
+  const uploadImageToImageKit = async () => {
+    files.forEach((image) => {
+      return bulkImageUpload(image);
+    });
+  };
+
+  // handles ondrop function of dropzone
+  const handleDropChange = (acceptedFiles) => {
+    if (files.length === 1) {
+      return;
+    }
+    let selectedFile = acceptedFiles.map((file) =>
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      })
+    );
+    setFiles([...files, ...selectedFile]);
+  };
+
+  const removeImage = (e, name) => {
+    e.stopPropagation();
+    let newFiles = files.filter((item) => item.name !== name);
+    setFiles(newFiles);
+  };
+
+  //api function to upload images
+  const { isLoading: uploading, mutate: upload, isSuccess: uploaded } = useUploadImages(onImageUpload);
   return (
     <React.Fragment>
       <Head title="Service Providers"></Head>
@@ -267,7 +326,7 @@ const ServiceProviders = () => {
                               onClick={(ev) => {
                                 ev.preventDefault();
                                 // setData(couponsData);
-                                setfilters({});
+                                // setfilters({});
                               }}
                               className="clickable"
                             >
@@ -305,7 +364,7 @@ const ServiceProviders = () => {
               <div className="card-inner p-0">
                 {isLoading ? (
                   <LoadingSpinner />
-                ) : 2 > 0 ? (
+                ) : providers?.meta?.total > 0 ? (
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
@@ -372,7 +431,7 @@ const ServiceProviders = () => {
                               {item?.product_type?.length > 2 && <span>& {item?.product_type?.length - 2} more.</span>}
                             </DataTableRow>
                             <DataTableRow>
-                              <span className="text-capitalize"> 0</span>
+                              <span className="text-capitalize"> {item?.service_count}</span>
                             </DataTableRow>
                             <DataTableRow>
                               <span>{formatDate(item.created_at)}</span>
@@ -418,6 +477,36 @@ const ServiceProviders = () => {
                                             ev.preventDefault();
                                             setEditedId(item.id);
                                             onEditClick(item.id);
+                                            toggle("logo");
+                                          }}
+                                        >
+                                          <Icon name="edit"></Icon>
+                                          <span>Edit logo</span>
+                                        </DropdownItem>
+                                      </li>
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            setEditedId(item.id);
+                                            onEditClick(item.id);
+                                            toggle("types");
+                                          }}
+                                        >
+                                          <Icon name="unarchive"></Icon>
+                                          <span>Update products</span>
+                                        </DropdownItem>
+                                      </li>
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            setEditedId(item.id);
+                                            onEditClick(item.id);
                                             toggle("details");
                                           }}
                                         >
@@ -439,34 +528,6 @@ const ServiceProviders = () => {
                                           <span>{item.active ? "Deactivate" : "Activate"}</span>
                                         </DropdownItem>
                                       </li>
-                                      {/* <li>
-                                        <DropdownItem
-                                          tag="a"
-                                          href="#"
-                                          onClick={(ev) => {
-                                            ev.preventDefault();
-                                            // setEditedId(id);
-                                            // deleteProvider();
-                                          }}
-                                        >
-                                          <Icon name="clock"></Icon>
-                                          <span>Make coming soon</span>
-                                        </DropdownItem>
-                                      </li> */}
-                                      {/* <li>
-                                        <DropdownItem
-                                          tag="a"
-                                          href="#"
-                                          onClick={(ev) => {
-                                            ev.preventDefault();
-                                            // setEditedId(id);
-                                            // deleteProvider();
-                                          }}
-                                        >
-                                          <Icon name="thumbs-up"></Icon>
-                                          <span>Make available</span>
-                                        </DropdownItem>
-                                      </li> */}
                                     </ul>
                                   </DropdownMenu>
                                 </UncontrolledDropdown>
@@ -586,6 +647,113 @@ const ServiceProviders = () => {
             </div>
           </ModalBody>
         </Modal>
+
+        <EditProductTypes
+          modal={view.types}
+          closeModal={() => onFormCancel()}
+          data={providers?.data}
+          formData={formData}
+          editFunction={updateProvider}
+        />
+
+        <EditProviderLogo
+          modal={view.logo}
+          closeModal={() => onFormCancel()}
+          formData={formData}
+          editFunction={updateProvider}
+        />
+        {/* Update logo
+        <Modal isOpen={view.logo} toggle={() => onFormCancel()} className="modal-dialog-centered" size="md">
+          <ModalBody className="bg-white rounded">
+            <a href="#cancel" className="close">
+              {" "}
+              <Icon
+                name="cross-sm"
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  onFormCancel();
+                }}
+              ></Icon>
+            </a>
+            <div className="p-2">
+              <h5 className="title"> Edit Logo</h5>
+              <div className="mt-4">
+                <form onSubmit={handleSubmit(onFormSubmit)}>
+                  <Row className="g-3">
+                    <Col>
+                      <div>
+                        <Dropzone multiple onDrop={(acceptedFiles) => handleDropChange(acceptedFiles)}>
+                          {({ getRootProps, getInputProps }) => (
+                            <section>
+                              <div
+                                {...getRootProps()}
+                                className="dropzone upload-zone small bg-lighter my-2 dz-clickable bg-white"
+                              >
+                                <input {...getInputProps()} />
+                                {files.length === 0 && <p>Drag 'n' drop some files here, or click to select files</p>}
+                                {files.map((file) => (
+                                  <div
+                                    key={file.name}
+                                    style={{
+                                      position: "relative",
+                                    }}
+                                    className="dz-preview dz-processing dz-image-preview dz-error dz-complete"
+                                  >
+                                    <div className="dz-image">
+                                      <img src={file.preview} alt="preview" style={{ objectFit: "cover" }} />
+                                    </div>
+
+                                    <div
+                                      role="button"
+                                      onClick={(e) => removeImage(e, file.name)}
+                                      style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        right: 0,
+                                        zIndex: 50,
+                                        paddingInline: "0.25rem",
+                                        paddingBlock: "0.05rem",
+                                        backgroundColor: "whitesmoke",
+                                        borderRadius: "9999px",
+                                        cursor: "pointer",
+                                      }}
+                                    >
+                                      <Icon name="cross" style={{ cursor: "pointer" }} />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </section>
+                          )}
+                        </Dropzone>
+                        {!uploaded && (
+                          <Button
+                            disabled={uploading}
+                            color="primary"
+                            size="md"
+                            type="button"
+                            onClick={uploadImageToImageKit}
+                          >
+                            {uploading ? "Uploading" : "Upload"}
+                          </Button>
+                        )}
+                      </div>
+                    </Col>
+
+                    {uploaded && (
+                      <Col size="12">
+                        <Button color="primary" type="submit">
+                          <Icon className="plus"></Icon>
+                          <span>{view.add ? "Add" : "Verify"} Account</span>
+                        </Button>
+                      </Col>
+                    )}
+                  </Row>
+                </form>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal> */}
 
         {/* View */}
         <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">

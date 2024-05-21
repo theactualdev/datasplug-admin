@@ -15,7 +15,7 @@ const Error404Modern = () => {
               We are very sorry for inconvenience. It looks like you’re try to access a page that either has been
               deleted or never existed.
             </p>
-            <Link to={`${import.meta.env.PUBLIC_URL}/`}>
+            <Link to={`/`}>
               <Button color="primary" size="lg" className="mt-2">
                 Back To Home
               </Button>
