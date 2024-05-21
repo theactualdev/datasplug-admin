@@ -138,7 +138,7 @@ export const useGetAppVersion = () => {
     ["useGetAppVersion"],
     async () => {
       const request = await instance
-        .get("/app-configs")
+        .get("/app-versions")
         .then((res) => res?.data)
         .catch((err) => {
           throw err;
@@ -194,7 +194,7 @@ export const useEditAppVersion = (id) => {
     (data) =>
       toast.promise(
         instance
-          .post("/app-configs" + `/${id}`, data)
+          .post("/app-versions" + `/${id}`, data)
           .then((res) => res.data)
           .catch((err) => {
             throw err;
@@ -214,6 +214,61 @@ export const useEditAppVersion = (id) => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["useGetAppVersion"]);
+      },
+    }
+  );
+};
+
+// ************************SUPPORT*****************************
+export const useGetSupport = () => {
+  return useQuery(
+    ["useGetSupport"],
+    async () => {
+      const request = await instance
+        .get("/app-configs")
+        .then((res) => res?.data)
+        .catch((err) => {
+          throw err;
+        });
+
+      //   console.log(request);
+      return request;
+    },
+    {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      retryDelay: 3000,
+    }
+  );
+};
+
+export const useEditSupport = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post("/app-configs" + `/${id}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: "Support Info updated",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (error) => (error?.response?.data?.message ? error?.response?.data?.message : "Something happened"),
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["useGetSupport"]);
       },
     }
   );

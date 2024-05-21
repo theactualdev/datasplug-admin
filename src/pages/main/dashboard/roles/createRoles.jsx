@@ -22,7 +22,7 @@ const CreateRoles = () => {
   const navigate = useNavigate();
   const { data: permissions } = useGetAllPermissions();
   const { mutate } = useCreateRole();
-  // console.log(permissions);
+  console.log(permissions);
 
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [formData, setFormData] = useState({
@@ -114,20 +114,27 @@ const CreateRoles = () => {
                   </Col>
                   <Col md="12" className="">
                     <span className="text-primary fw-bold fs-16px">Permissions</span>
-                    <Row className="g-2 align-center mt-1">
+                    <Row className="g-4 align-center mt-1">
                       {permissions?.data?.map((item, idx) => (
-                        <Col key={idx} size="4">
-                          <div key={item.id} className="custom-control custom-control-sm custom-checkbox">
-                            <input
-                              type="checkbox"
-                              className="custom-control-input"
-                              id={item.id}
-                              onChange={(e) => handleChange(e)}
-                            />
-                            <label className="custom-control-label" htmlFor={item.id}>
-                              <span className="text-secondary fs-14px text-capitalize">{item.name}</span>
-                            </label>
-                          </div>
+                        <Col key={idx}>
+                          <h6 className="mb-2">{item.group}</h6>
+                          <Row className="g-1">
+                            {item?.permissions?.map((permission) => (
+                              <Col size="3">
+                                <div key={permission.id} className="custom-control custom-control-sm custom-checkbox">
+                                  <input
+                                    type="checkbox"
+                                    className="custom-control-input"
+                                    id={permission.id}
+                                    onChange={(e) => handleChange(e)}
+                                  />
+                                  <label className="custom-control-label" htmlFor={permission.id}>
+                                    <span className="text-secondary fs-14px text-capitalize">{permission.name}</span>
+                                  </label>
+                                </div>
+                              </Col>
+                            ))}
+                          </Row>
                         </Col>
                       ))}
                     </Row>

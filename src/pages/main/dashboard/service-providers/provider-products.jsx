@@ -67,7 +67,7 @@ const ServiceProvidersServices = () => {
 
   //   const { mutate: deleteProvider } = useDeleteProviders(editId);
   //   const { mutate: updateStatus } = useToggleProviders(editId);
-  //   console.log(provider);
+  // console.log(provider);
   // console.log(providers);
 
   // console.log(accounts);
@@ -75,6 +75,7 @@ const ServiceProvidersServices = () => {
   const [formData, setFormData] = useState({
     name: "",
     amount: "",
+    provider_amount: "",
   });
 
   const [view, setView] = useState({
@@ -83,7 +84,7 @@ const ServiceProvidersServices = () => {
     edit: false,
   });
 
-  // toggle function to view order details
+  // toggle function to view order detailse
 
   const toggle = (type) => {
     setView({
@@ -98,6 +99,7 @@ const ServiceProvidersServices = () => {
     setFormData({
       name: "",
       amount: "",
+      provider_amount: "",
     });
   };
 
@@ -117,6 +119,7 @@ const ServiceProvidersServices = () => {
         setFormData({
           name: item?.name,
           amount: item.amount,
+          provider_amount: item.provider_amount,
         });
       }
     });
@@ -237,6 +240,12 @@ const ServiceProvidersServices = () => {
                           <span className="tb-tnx-head bg-white text-secondary">Name</span>
                         </DataTableRow>
                         <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">Provider Amount</span>
+                        </DataTableRow>
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">Additional Amount</span>
+                        </DataTableRow>
+                        <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Amount</span>
                         </DataTableRow>
                         <DataTableRow>
@@ -281,12 +290,17 @@ const ServiceProvidersServices = () => {
                               </span>
                             </DataTableRow>
                             <DataTableRow>
+                              <span>{formatter("NGN").format(item.provider_amount)}</span>
+                            </DataTableRow>{" "}
+                            <DataTableRow>
+                              <span>{formatter("NGN").format(item.additional_amount)}</span>
+                            </DataTableRow>
+                            <DataTableRow>
                               <span>{formatter("NGN").format(item.amount)}</span>
                             </DataTableRow>
                             <DataTableRow>
                               <span className="ccap">{item.type}</span>
                             </DataTableRow>
-
                             {/* <DataTableRow>
                               <span className={`dot bg-${item.active ? "success" : "warning"} d-sm-none`}></span>
                               <Badge
@@ -390,7 +404,7 @@ const ServiceProvidersServices = () => {
                     <Col md="12">
                       <div className="form-group">
                         <label className="form-label" htmlFor="account_number">
-                          Amount
+                          New Amount
                         </label>
                         <div className="form-control-wrap">
                           <input
@@ -402,6 +416,26 @@ const ServiceProvidersServices = () => {
                             defaultValue={formData.amount}
                           />
                           {errors.amount && <span className="invalid">{errors.amount.message}</span>}
+                        </div>
+                      </div>
+                    </Col>
+
+                    <Col md="12">
+                      <div className="form-group">
+                        <label className="form-label" htmlFor="account_number">
+                          Provider Amount
+                        </label>
+                        <div className="form-control-wrap">
+                          <input
+                            type="number"
+                            className="form-control"
+                            {...register("provider_amount", {
+                              required: "This field is required",
+                            })}
+                            disabled
+                            defaultValue={formData.provider_amount}
+                          />
+                          {errors.provider_amout && <span className="invalid">{errors.amount.provider_amount}</span>}
                         </div>
                       </div>
                     </Col>

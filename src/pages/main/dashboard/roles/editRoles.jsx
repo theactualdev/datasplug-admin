@@ -73,6 +73,8 @@ const EditRoles = () => {
     return role?.data?.permissions.map((item) => item.id);
   }, [role]);
 
+  // console.log(role?.data?.permissions);
+
   useEffect(() => {
     if (!isLoading && role) {
       let perm = role?.data?.permissions.map((item) => item.id);
@@ -144,21 +146,33 @@ const EditRoles = () => {
                       </Col>
                       <Col md="12" className="">
                         <span className="text-primary fw-bold fs-16px">Permissions</span>
-                        <Row className="g-2 align-center mt-1">
+                        <Row className="g-4 align-center mt-1">
                           {permissions?.data?.map((item, idx) => (
-                            <Col key={idx} size="4">
-                              <div key={item} className="custom-control custom-control-sm custom-checkbox">
-                                <input
-                                  type="checkbox"
-                                  className="custom-control-input"
-                                  defaultChecked={perms && perms.includes(item.id)} //returns true if it's in the array
-                                  id={item.id}
-                                  onChange={(e) => handleChange(e)}
-                                />
-                                <label className="custom-control-label" htmlFor={item.id}>
-                                  <span className="text-secondary fs-14px text-capitalize">{item.name}</span>
-                                </label>
-                              </div>
+                            <Col key={idx}>
+                              <h6 className="mb-2">{item.group}</h6>
+                              <Row className="g-1">
+                                {item?.permissions?.map((permission) => (
+                                  <Col size="3">
+                                    <div
+                                      key={permission.id}
+                                      className="custom-control custom-control-sm custom-checkbox"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        className="custom-control-input"
+                                        id={permission.id}
+                                        onChange={(e) => handleChange(e)}
+                                        defaultChecked={perms && perms.includes(permission.id)} //returns true if it's in the array
+                                      />
+                                      <label className="custom-control-label" htmlFor={permission.id}>
+                                        <span className="text-secondary fs-14px text-capitalize">
+                                          {permission.name}
+                                        </span>
+                                      </label>
+                                    </div>
+                                  </Col>
+                                ))}
+                              </Row>
                             </Col>
                           ))}
                         </Row>

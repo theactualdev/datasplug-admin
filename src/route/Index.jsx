@@ -75,6 +75,9 @@ import ServiceProvidersServices from "../pages/main/dashboard/service-providers/
 import AppUpdatePage from "../pages/main/dashboard/settings/AppUpdate";
 import SystemAccountPage from "../pages/main/dashboard/settings/SystemAccount";
 import ServicesTypes from "../pages/main/dashboard/service-types/service-types";
+import DepositRequest from "../pages/main/dashboard/requests/deposit-request";
+import WithdrawalRequest from "../pages/main/dashboard/requests/withdrawal-request";
+import SupportPage from "../pages/main/dashboard/settings/support";
 
 const routes = (
   <Route>
@@ -123,6 +126,9 @@ const routes = (
           <Route path="transactions/cable-tv" element={<CableTVTransactionsPage />} />
           <Route path="transactions/education" element={<EducationTransactionsPage />} />
 
+          <Route path="requests/deposit" element={<DepositRequest />} />
+          <Route path="requests/withdrawal" element={<WithdrawalRequest />} />
+
           {/* <Route path="transactions/flights" element={<TransactionsPage />} /> */}
           {/* <Route path="transactions/giftcards" element={<TransactionsPage />} /> */}
           <Route path="announcement" element={<AnnouncementPage />} />
@@ -152,6 +158,7 @@ const routes = (
             <Route path="other-settings" element={<OtherSettingsPage />} />
             <Route path="app-update" element={<AppUpdatePage />} />
             <Route path="system-bank-accounts" element={<SystemAccountPage />} />
+            <Route path="support" element={<SupportPage />} />
           </Route>
         </Route>
       </Route>

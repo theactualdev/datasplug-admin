@@ -135,15 +135,15 @@ const AdminList = () => {
   };
   // function that loads the want to editted data
   const onEditClick = (id) => {
-    admin?.data.forEach((item) => {
-      if (item.id === id) {
+    admin?.data?.forEach((item) => {
+      if (item?.id === id) {
         setEditFormData({
           name: item.name,
           email: item.email,
-          role: item.role.id,
+          role: item.role?.id,
           phone: item.phone,
         });
-        setSelectedRole(item.role.title);
+        setSelectedRole(item?.role?.title);
         setModal({ edit: true }, { add: false });
       }
     });
@@ -386,30 +386,30 @@ const AdminList = () => {
                             ></UserAvatar>
                             <div className="user-name">
                               <span className="tb-lead">
-                                {item.firstname} {item.lastname}
+                                {item?.firstname} {item?.lastname}
                               </span>
                             </div>
                           </div>
                           {/* </Link> */}
                         </DataTableRow>
                         <DataTableRow size="sm">
-                          <span>{item.email}</span>
+                          <span>{item?.email}</span>
                         </DataTableRow>
                         <DataTableRow size="sm">
                           <span>{formatDate(item.created_at)}</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span>{item.role.name || "All"}</span>
+                          <span>{item.role?.name || "All"}</span>
                         </DataTableRow>
                         <DataTableRow>
                           <span
-                            className={`dot bg-${item.status === "active" ? "success" : "warning"} d-sm-none`}
+                            className={`dot bg-${item?.status === "active" ? "success" : "warning"} d-sm-none`}
                           ></span>
                           <Badge
                             className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
-                            color={item.status === "active" ? "success" : "warning"}
+                            color={item?.status === "active" ? "success" : "warning"}
                           >
-                            <span className="ccap">{item.status}</span>
+                            <span className="ccap">{item?.status}</span>
                           </Badge>
                         </DataTableRow>
                         <DataTableRow className="nk-tb-col-tools">
