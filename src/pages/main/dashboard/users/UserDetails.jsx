@@ -49,7 +49,7 @@ const UserDetailsPage = () => {
       let text = `Account Name: ${account?.account_name}
                   Account Number: ${account?.account_number}
                   Bank Name: ${account.bank_name}`;
-      console.log(text);
+      // console.log(text);
       navigator.clipboard.writeText(text);
       toast("Copied to clipboard");
     }

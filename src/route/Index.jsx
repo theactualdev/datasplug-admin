@@ -78,6 +78,8 @@ import ServicesTypes from "../pages/main/dashboard/service-types/service-types";
 import DepositRequest from "../pages/main/dashboard/requests/deposit-request";
 import WithdrawalRequest from "../pages/main/dashboard/requests/withdrawal-request";
 import SupportPage from "../pages/main/dashboard/settings/support";
+import ServiceProvidersDiscounts from "../pages/main/dashboard/service-providers/provider-discouts";
+import ServicesDiscounts from "../pages/main/dashboard/services/services-discounts";
 
 const routes = (
   <Route>
@@ -140,7 +142,11 @@ const routes = (
           <Route path="system-bank-account" element={<SystemBankAccountPage />} />
           <Route path="service-providers" element={<ServiceProviders />} />
           <Route path="service-providers/:providerId" element={<ServiceProvidersServices />} />
+          <Route path="service-providers/discounts/:providerName" element={<ServiceProvidersDiscounts />} />
+
           <Route path="services" element={<ServicesPage />} />
+          <Route path="services/:serviceName" element={<ServicesDiscounts />} />
+
           <Route path="service-types" element={<ServicesTypes />} />
           <Route path="trades-info" element={<TradeSettings />} />
 

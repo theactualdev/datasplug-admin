@@ -316,3 +316,90 @@ export const useToggleRoutes = (id, status) => {
 };
 
 // + `?${page}&${per_page}`
+
+// *****************************DISCOUNT*************************//
+
+export const useGetDiscounts = (type, value) => {
+  // const page = `page=${currentPage}`;
+  // const per_page = `per_page=${size}`;
+  const filterDiscount = type === "providers" ? `provider=${value}` : `service=${value}`;
+  return useQuery(
+    ["Discounts", type, value],
+    async () => {
+      try {
+        const response = await instance.get(BACKEND_URLS.discounts + `?${filterDiscount}`);
+        // console.log(response.data.data);
+        // toast.success(response.data.message);
+        return response.data;
+      } catch (error) {
+        console.error(error);
+        Promise.reject(error);
+      }
+    },
+    {
+      // initialData: [],
+      retry: 1,
+      retryDelay: 3000,
+      refetchOnWindowFocus: false,
+      keepPreviousData: true,
+      staleTime: 5000,
+    }
+  );
+};
+
+export const useToggleDiscount = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .put(BACKEND_URLS.discounts + `/${id}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err.response.data;
+          }),
+        {
+          success: (data) => data.message,
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (error) => error?.message || "Something happened",
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["Discounts"]);
+      },
+    }
+  );
+};
+
+export const useUpdateDiscount = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (values) => {
+      try {
+        const response = toast.promise(instance.post(BACKEND_URLS.discounts + `/${id}`, values), {
+          success: (data) => data.message || "Update Successful",
+          loading: "Please wait...",
+          error: (error) => error?.response?.data?.message || "Failed. Something happened.",
+        });
+        return response;
+      } catch (error) {
+        console.error(error);
+        Promise.reject(error);
+      }
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["Discounts"]);
+      },
+    }
+  );
+};

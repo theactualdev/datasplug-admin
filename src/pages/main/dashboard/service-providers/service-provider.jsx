@@ -520,6 +520,22 @@ const ServiceProviders = () => {
                                           href="#"
                                           onClick={(ev) => {
                                             ev.preventDefault();
+                                            // setEditedId(item.id);
+                                            // onEditClick(item.id);
+                                            // toggle("details");
+                                            navigate(`/service-providers/discounts/${item.name}`);
+                                          }}
+                                        >
+                                          <Icon name="percent"></Icon>
+                                          <span>View Discounts</span>
+                                        </DropdownItem>
+                                      </li>
+                                      <li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
                                             onEditClick(item.id);
                                             updateStatus();
                                           }}
