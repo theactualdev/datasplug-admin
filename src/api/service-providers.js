@@ -141,6 +141,38 @@ export const useVerifyAccount = (formData, setFormData) => {
   );
 };
 
+export const useToggleProvidersProducts = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .put("/products" + `/${id}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err.response.data;
+          }),
+        {
+          success: (data) => data.message,
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (error) => error?.message || "Something happened",
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["Providers"]);
+      },
+    }
+  );
+};
+
 export const useDeleteProviders = (id) => {
   const queryClient = useQueryClient();
 
