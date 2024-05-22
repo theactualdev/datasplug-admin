@@ -180,12 +180,14 @@ const OtherSettingsPage = () => {
                                   Value
                                 </label>
                                 <input
-                                  type="number"
                                   id="value"
                                   className="form-control"
                                   name="value"
                                   defaultValue={formData.value}
                                   placeholder="Enter Service Value"
+                                  pattern="[0-9]*[.,]?[0-9]*"
+                                  type="text"
+                                  inputmode="decimal"
                                 />
                               </div>
                             </Col>

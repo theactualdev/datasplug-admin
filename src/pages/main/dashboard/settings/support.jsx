@@ -159,7 +159,7 @@ const SupportPage = () => {
                 <div className="nk-data data-list">
                   <div className="data-head">
                     <BlockBetween>
-                      <h6 className="overline-title mb-0">App Version and Support</h6>
+                      <h6 className="overline-title mb-0">Support</h6>
                     </BlockBetween>
                   </div>
 

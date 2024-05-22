@@ -40,6 +40,7 @@ import {
   useGetProviders,
   useGetRoutes,
   useToggleProviders,
+  useToggleProvidersProducts,
   useUpdateProviderProduct,
   useUpdateProviders,
 } from "../../../../api/service-providers";
@@ -62,6 +63,7 @@ const ServiceProvidersServices = () => {
 
   const { isLoading, data: provider } = useGetProviderInfo(providerId);
   const { mutate: updateProduct } = useUpdateProviderProduct(editId);
+  const { mutate: toggleProduct } = useToggleProvidersProducts(editId);
 
   // console.log(provider);
 
@@ -251,10 +253,10 @@ const ServiceProvidersServices = () => {
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Type</span>
                         </DataTableRow>
-                        {/* 
+
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
-                        </DataTableRow> */}
+                        </DataTableRow>
 
                         <DataTableRow className="nk-tb-col-tools">
                           <ul className="nk-tb-actions gx-1 my-n1">
@@ -301,7 +303,7 @@ const ServiceProvidersServices = () => {
                             <DataTableRow>
                               <span className="ccap">{item.type}</span>
                             </DataTableRow>
-                            {/* <DataTableRow>
+                            <DataTableRow>
                               <span className={`dot bg-${item.active ? "success" : "warning"} d-sm-none`}></span>
                               <Badge
                                 className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
@@ -309,7 +311,7 @@ const ServiceProvidersServices = () => {
                               >
                                 <span className="ccap">{item.active ? "active" : "inactive"}</span>
                               </Badge>
-                            </DataTableRow> */}
+                            </DataTableRow>
                             <DataTableRow className="nk-tb-col-tools">
                               <ul className="nk-tb-actions gx-1 my-n1">
                                 <li>
@@ -331,6 +333,22 @@ const ServiceProvidersServices = () => {
                                           >
                                             <Icon name="edit"></Icon>
                                             <span>Edit Price</span>
+                                          </DropdownItem>
+                                        </li>
+                                        <li>
+                                          <DropdownItem
+                                            tag="a"
+                                            href="#"
+                                            onClick={(ev) => {
+                                              ev.preventDefault();
+                                              setEditedId(item.id);
+                                              toggleProduct();
+                                              // onEditClick(item.id);
+                                              // setView({ add: false, edit: true, details: false });
+                                            }}
+                                          >
+                                            <Icon name={item.active ? "na" : "check"}></Icon>
+                                            <span>Make {item.active ? "Inactive" : "Active"}</span>
                                           </DropdownItem>
                                         </li>
                                       </ul>
