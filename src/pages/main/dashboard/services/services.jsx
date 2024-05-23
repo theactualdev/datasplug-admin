@@ -404,7 +404,7 @@ const Services = () => {
                                               ev.preventDefault();
                                               // onEditClick(item.id);
                                               // setView({ add: false, edit: false, details: true });
-                                              navigate(`/services/${item.name}`);
+                                              navigate(`/services/${item.code}`);
                                             }}
                                           >
                                             <Icon name="percent"></Icon>
