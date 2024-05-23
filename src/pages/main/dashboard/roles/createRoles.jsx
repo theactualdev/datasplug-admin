@@ -22,7 +22,7 @@ const CreateRoles = () => {
   const navigate = useNavigate();
   const { data: permissions } = useGetAllPermissions();
   const { mutate } = useCreateRole();
-  console.log(permissions);
+  // console.log(permissions);
 
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [formData, setFormData] = useState({

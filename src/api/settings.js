@@ -273,3 +273,57 @@ export const useEditSupport = (id) => {
     }
   );
 };
+
+export const useGetReferralBonus = () => {
+  return useQuery(
+    ["ReferralBonus"],
+    async () => {
+      const request = await instance
+        .get("/referral-bonuses")
+        .then((res) => res?.data)
+        .catch((err) => {
+          throw err;
+        });
+
+      //   console.log(request);
+      return request;
+    },
+    {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      retryDelay: 3000,
+    }
+  );
+};
+
+export const useEditReferralBonus = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post("/referral-bonuses" + `/${id}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: "Referral Bonus updated",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (error) => (error?.response?.data?.message ? error?.response?.data?.message : "Something happened"),
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["ReferralBonus"]);
+      },
+    }
+  );
+};

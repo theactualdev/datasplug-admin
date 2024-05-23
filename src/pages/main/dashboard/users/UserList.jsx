@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown, Badge } from "reactstrap";
-import { useFinanceUser, useGetAllUsers, useUpdateUserStatus } from "../../../../api/users/user";
+import { useFinanceUser, useGetAllUsers, useUpdateUserStatus, useUpdateUserType } from "../../../../api/users/user";
 import {
   Block,
   BlockDes,
@@ -23,13 +23,14 @@ import {
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { findUpper, formatDateWithTime, formatter } from "../../../../utils/Utils";
+import { findUpper, formatDateWithTime, formatter, formatDate, truncateText } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import SortToolTip from "../tables/SortTooltip";
 import { filterRole, filterStatus, userFilterOptions } from "./UserData";
 import Search from "../tables/Search";
 import { FilterOptions } from "../tables/filter-select";
 import AddModal from "./AddModal";
+import UserTypeModal from "./userTypeModal";
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ const UserList = () => {
   const { isLoading, data: users } = useGetAllUsers(currentPage, itemsPerPage, search, status);
   const { mutate: updateUserStatus } = useUpdateUserStatus(userId);
   const { mutate: financeUser } = useFinanceUser(userId);
+  const { mutate: updateUserType } = useUpdateUserType(userId);
   // console.log(users);
 
   const [tablesm, updateTableSm] = useState(false);
@@ -52,11 +54,13 @@ const UserList = () => {
 
   const [view, setView] = useState({
     finance: false,
+    userType: false,
   });
 
   const [formData, setFormData] = useState({
     name: "",
     status: "",
+    type: "",
   });
 
   // function that loads the want to editted data
@@ -66,6 +70,7 @@ const UserList = () => {
         setFormData({
           name: item?.name,
           status: item?.status,
+          type: item?.type,
         });
       }
     });
@@ -81,9 +86,18 @@ const UserList = () => {
     closeModal();
   };
 
+  const onSubmitUserType = (data) => {
+    // console.log(data);
+    let submittedData = {
+      type: data.type,
+    };
+    updateUserType(submittedData);
+    closeModal();
+  };
   const toggleModal = (type) => {
     setView({
       finance: type === "finance" ? true : false,
+      userType: type === "userType" ? true : false,
     });
   };
 
@@ -109,7 +123,7 @@ const UserList = () => {
 
   // function to close the form modal
   const closeModal = () => {
-    setView({ finance: false });
+    setView({ finance: false, userType: false });
     resetForm();
   };
   // Change Page
@@ -219,9 +233,11 @@ const UserList = () => {
                     <DataTableRow>
                       <span className="sub-text ">Username</span>
                     </DataTableRow>
-
                     <DataTableRow size="sm">
                       <span className="sub-text">Phone</span>
+                    </DataTableRow>
+                    <DataTableRow>
+                      <span className="sub-text ">Type</span>
                     </DataTableRow>
                     <DataTableRow size="md">
                       <span className="sub-text">Wallet</span>
@@ -264,7 +280,7 @@ const UserList = () => {
                                 <span className="tb-lead">
                                   {item?.firstname} {item?.lastname}{" "}
                                 </span>
-                                <p className="text-primary text-ellipsis fw-normal fs-12px w-max-200px">{item.email}</p>
+                                <p className="text-primary fw-normal fs-12px">{truncateText(item.email, 20)}</p>
                               </div>
                             </div>
                           </Link>
@@ -283,11 +299,14 @@ const UserList = () => {
                             <span className="fs-12px">Not set</span>
                           )}
                         </DataTableRow>
+                        <DataTableRow>
+                          <span className="ccap fs-12px">{item?.type}</span>
+                        </DataTableRow>
                         <DataTableRow size="sm">
                           <span>{formatter("NGN").format(item?.wallet?.balance)}</span>
                         </DataTableRow>
                         <DataTableRow size="lg">
-                          <span className="fs-12px">{formatDateWithTime(item.created_at)}</span>
+                          <span className="fs-12px">{formatDate(item.created_at)}</span>
                         </DataTableRow>
                         <DataTableRow>
                           <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
@@ -333,6 +352,21 @@ const UserList = () => {
                                       >
                                         <Icon name="tranx-fill"></Icon>
                                         <span>Finance User</span>
+                                      </DropdownItem>
+                                    </li>
+                                    <li>
+                                      <DropdownItem
+                                        tag="a"
+                                        href="#view"
+                                        onClick={(ev) => {
+                                          ev.preventDefault();
+                                          setUserId(item.id);
+                                          onEditClick(item.id);
+                                          toggleModal("userType");
+                                        }}
+                                      >
+                                        <Icon name="user"></Icon>
+                                        <span>Update User Type</span>
                                       </DropdownItem>
                                     </li>
 
@@ -388,6 +422,15 @@ const UserList = () => {
           setFormData={setFormData}
           closeModal={closeModal}
           onSubmit={onFormSubmit}
+          filterStatus={filterStatus}
+        />
+
+        <UserTypeModal
+          modal={view.userType}
+          formData={formData}
+          setFormData={setFormData}
+          closeModal={closeModal}
+          onSubmit={onSubmitUserType}
           filterStatus={filterStatus}
         />
         {/* 

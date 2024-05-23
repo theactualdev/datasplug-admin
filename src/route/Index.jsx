@@ -80,6 +80,7 @@ import WithdrawalRequest from "../pages/main/dashboard/requests/withdrawal-reque
 import SupportPage from "../pages/main/dashboard/settings/support";
 import ServiceProvidersDiscounts from "../pages/main/dashboard/service-providers/provider-discouts";
 import ServicesDiscounts from "../pages/main/dashboard/services/services-discounts";
+import ReferralBonusPage from "../pages/main/dashboard/settings/ReferralBonus";
 
 const routes = (
   <Route>
@@ -165,6 +166,7 @@ const routes = (
             <Route path="app-update" element={<AppUpdatePage />} />
             <Route path="system-bank-accounts" element={<SystemAccountPage />} />
             <Route path="support" element={<SupportPage />} />
+            <Route path="referral-bonus" element={<ReferralBonusPage />} />
           </Route>
         </Route>
       </Route>

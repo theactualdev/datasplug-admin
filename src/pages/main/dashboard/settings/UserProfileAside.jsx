@@ -98,7 +98,7 @@ const UserProfileAside = ({ updateSm, sm }) => {
               className={location.pathname === `/settings/other-settings` ? "active" : ""}
             >
               <Icon name="sign-kobo-alt"></Icon>
-              <span>Service</span>
+              <span>Service charges</span>
             </Link>
           </li>
           <li onClick={() => updateSm(false)}>
@@ -114,6 +114,15 @@ const UserProfileAside = ({ updateSm, sm }) => {
             <Link to="/settings/app-update" className={location.pathname === `/settings/app-update` ? "active" : ""}>
               <Icon name="info"></Icon>
               <span>App update</span>
+            </Link>
+          </li>
+          <li onClick={() => updateSm(false)}>
+            <Link
+              to="/settings/referral-bonus"
+              className={location.pathname === `/settings/referral-bonus` ? "active" : ""}
+            >
+              <Icon name="info"></Icon>
+              <span>Referral bonus</span>
             </Link>
           </li>
           <li onClick={() => updateSm(false)}>
