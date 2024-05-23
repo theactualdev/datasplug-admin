@@ -523,7 +523,7 @@ const ServiceProviders = () => {
                                             // setEditedId(item.id);
                                             // onEditClick(item.id);
                                             // toggle("details");
-                                            navigate(`/service-providers/discounts/${item.name}`);
+                                            navigate(`/service-providers/discounts/${item.code}`);
                                           }}
                                         >
                                           <Icon name="percent"></Icon>
