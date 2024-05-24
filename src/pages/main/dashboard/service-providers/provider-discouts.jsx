@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import NoIcon from "../../../../images/no-image-icon.png";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   Badge,
   Card,
@@ -12,6 +11,7 @@ import {
   ModalBody,
   UncontrolledDropdown,
 } from "reactstrap";
+import { useGetDiscounts, useToggleDiscount, useUpdateDiscount } from "../../../../api/service-providers";
 import {
   Block,
   BlockBetween,
@@ -32,22 +32,12 @@ import {
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
 import { formatDateWithTime } from "../../../../utils/Utils";
-import FaqTable from "../faq/faqTable";
-import {
-  useCreateProviders,
-  useDeleteProviders,
-  useGetProviders,
-  useToggleProviders,
-  useUpdateProviders,
-} from "../../../../api/service-providers";
-import SortToolTip from "../tables/SortTooltip";
-import Search from "../tables/Search";
 import LoadingSpinner from "../../../components/spinner";
-import { useDeleteServices, useGetServices, useToggleServices, useUpdateServices } from "../../../../api/services";
-import EditServiceProductTypes from "./edit-product-types";
+import Search from "../tables/Search";
 
-const Services = () => {
+const ServiceProvidersDiscounts = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { providerName } = useParams();
   const navigate = useNavigate();
 
   const itemsPerPage = searchParams.get("limit") ?? 100;
@@ -57,39 +47,33 @@ const Services = () => {
   const [editId, setEditedId] = useState();
   const [onSearch, setonSearch] = useState(false);
 
-  const { isLoading, data: services } = useGetServices(currentPage, itemsPerPage);
-  const { mutate: addProvider } = useCreateProviders();
-  const { mutate: updateStatus } = useToggleServices(editId);
-  const { mutate: deleteServices } = useDeleteServices(editId);
-  // const { mutate: updateProvider } = useUpdateProviders(editId);
-  const { mutate: updateService } = useUpdateServices(editId);
-  // console.log(services);
+  const { isLoading, data } = useGetDiscounts("providers", providerName);
+  const { mutate: updateDiscount } = useUpdateDiscount(editId);
+  const { mutate: toggleDiscount } = useToggleDiscount(editId);
 
   // console.log(accounts);
 
   const [formData, setFormData] = useState({
     name: "",
-    logo: "",
-    active: false,
-    product_type: [],
-    created_at: "",
+    amount: "",
+    provider_amount: "",
+    value: "",
+    type: "",
   });
 
   const [view, setView] = useState({
     add: false,
     details: false,
     edit: false,
-    types: false,
   });
 
-  // toggle function to view order details
+  // toggle function to view order detailse
 
   const toggle = (type) => {
     setView({
       add: type === "add" ? true : false,
       details: type === "details" ? true : false,
       edit: type === "edit" ? true : false,
-      types: type === "types" ? true : false,
     });
   };
 
@@ -97,10 +81,10 @@ const Services = () => {
   const resetForm = () => {
     setFormData({
       name: "",
-      logo: "",
-      active: false,
-      product_type: [],
-      created_at: "",
+      amount: "",
+      provider_amount: "",
+      value: "",
+      type: "",
     });
   };
 
@@ -108,30 +92,25 @@ const Services = () => {
   const onFormSubmit = (form) => {
     // console.log(form);
     let submittedData = {
-      question: form.question,
-      answer: form.answer,
-      faq_category_id: form.categoryId,
+      value: form.value,
+      type: formData.type,
     };
-    if (view.add) {
-      addProvider(submittedData);
-    } else {
-      // updateProvider(submittedData);
-    }
-
-    setView({ add: false, details: false, edit: false, types: false });
+    updateDiscount(submittedData);
+    // updateProduct(form);
+    setView({ add: false, details: false, edit: false });
     resetForm();
   };
 
   // function that loads the want to editted data
   const onEditClick = (id) => {
-    services?.data?.forEach((item) => {
+    data?.data?.forEach((item) => {
       if (item.id === id) {
         setFormData({
           name: item?.name,
-          logo: item?.logo,
-          active: item?.active,
-          product_type: item?.product_type,
-          created_at: item?.created_at,
+          amount: item.amount,
+          provider_amount: item.provider_amount,
+          type: item.type,
+          value: item.value,
         });
       }
     });
@@ -144,10 +123,9 @@ const Services = () => {
 
   // function to close the form modal
   const onFormCancel = () => {
-    setView({ add: false, details: false, edit: false, types: false });
+    setView({ add: false, details: false, edit: false });
     resetForm();
   };
-  // console.log(services);
 
   //paginate
   const paginate = (pageNumber) => {
@@ -171,36 +149,29 @@ const Services = () => {
 
   return (
     <React.Fragment>
-      <Head title="Services"></Head>
+      <Head title={`${providerName} Discounts`}></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle page>Services</BlockTitle>
+              <BlockTitle page>{providerName} Discounts</BlockTitle>
             </BlockHeadContent>
-            {/* <BlockHeadContent>
-              <div className="toggle-wrap nk-block-tools-toggle">
-                <Button
-                  className="toggle btn-icon d-md-none"
-                  color="primary"
-                  onClick={() => {
-                    toggle("add");
-                  }}
-                >
-                  <Icon name="plus"></Icon>
-                </Button>
-                <Button
-                  className="toggle d-none d-md-inline-flex"
-                  color="primary"
-                  onClick={() => {
-                    toggle("add");
-                  }}
-                >
-                  <Icon name="plus"></Icon>
-                  <span>Add Provider</span>
-                </Button>
-              </div>
-            </BlockHeadContent> */}
+            <BlockHeadContent>
+              <Button color="light" outline className="bg-white d-none d-sm-inline-flex" onClick={() => navigate(-1)}>
+                <Icon name="arrow-left"></Icon>
+                <span>Back to Providers</span>
+              </Button>
+              <a
+                href="#back"
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  navigate(-1);
+                }}
+                className="btn btn-icon btn-outline-light bg-white d-inline-flex d-sm-none"
+              >
+                <Icon name="arrow-left"></Icon>
+              </a>
+            </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
 
@@ -213,7 +184,7 @@ const Services = () => {
                 </div>
                 <div className="card-tools me-n1">
                   <ul className="btn-toolbar gx-1">
-                    <li>
+                    {/* <li>
                       <Button
                         href="#search"
                         onClick={(ev) => {
@@ -224,66 +195,12 @@ const Services = () => {
                       >
                         <Icon name="search"></Icon>
                       </Button>
-                    </li>
-                    <li className="btn-toolbar-sep"></li>
-                    <li>
-                      <UncontrolledDropdown>
-                        <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
-                          <div className="dot dot-primary"></div>
-                          <Icon name="filter-alt"></Icon>
-                        </DropdownToggle>
-                        <DropdownMenu end className="filter-wg dropdown-menu-xl" style={{ overflow: "visible" }}>
-                          <div className="dropdown-head">
-                            <span className="sub-title dropdown-title">Advanced Filter</span>
-                          </div>
-                          <div className="dropdown-body dropdown-body-rg">
-                            <Row className="gx-6 gy-4">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="overline-title overline-title-alt">Type</label>
-                                  {/* <RSelect
-                                    options={flightsFilterOptions}
-                                    placeholder="Any flight type"
-                                    value={filters.status && { label: filters.status, value: filters.status }}
-                                    isSearchable={false}
-                                    onChange={(e) => setfilters({ ...filters, status: e.label })}
-                                  /> */}
-                                </div>
-                              </Col>
-                              <Col size="12">
-                                <div className="form-group">
-                                  <Button type="button" onClick={filterData} className="btn btn-secondary ">
-                                    Filter
-                                  </Button>
-                                </div>
-                              </Col>
-                            </Row>
-                          </div>
-                          <div className="dropdown-foot between">
-                            <a
-                              href="#reset"
-                              onClick={(ev) => {
-                                ev.preventDefault();
-                                // setData(couponsData);
-                                setfilters({});
-                              }}
-                              className="clickable"
-                            >
-                              Reset Filter
-                            </a>
-                            <a
-                              href="#save"
-                              onClick={(ev) => {
-                                ev.preventDefault();
-                              }}
-                            >
-                              Save Filter
-                            </a>
-                          </div>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </li>
-                    <li>
+                    </li> */}
+                    {/* <li className="btn-toolbar-sep"></li> */}
+                    {/* <li>
+                      <FilterOptions options={} />
+                    </li> */}
+                    {/* <li>
                       <UncontrolledDropdown>
                         <DropdownToggle tag="a" className="btn btn-trigger btn-icon dropdown-toggle">
                           <Icon name="setting"></Icon>
@@ -292,7 +209,7 @@ const Services = () => {
                           <SortToolTip />
                         </DropdownMenu>
                       </UncontrolledDropdown>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
                 {/* Search component */}
@@ -303,19 +220,29 @@ const Services = () => {
               <div className="card-inner p-0">
                 {isLoading ? (
                   <LoadingSpinner />
-                ) : 2 > 0 ? (
+                ) : data?.data?.length > 0 ? (
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">S/N</span>
+                        </DataTableRow>
                         <DataTableRow size="sm">
-                          <span className="tb-tnx-head bg-white text-secondary">Provider Name</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Name</span>
                         </DataTableRow>
                         <DataTableRow>
-                          <span className="tb-tnx-head bg-white text-secondary">Product Type</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Type</span>
+                        </DataTableRow>
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">Value</span>
                         </DataTableRow>
                         {/* <DataTableRow>
-                          <span className="tb-tnx-head bg-white text-secondary">Service Category</span>
+                          <span className="tb-tnx-head bg-white text-secondary">Amount</span>
+                        </DataTableRow>
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">Type</span>
                         </DataTableRow> */}
+
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
                         </DataTableRow>
@@ -337,32 +264,33 @@ const Services = () => {
                           </ul>
                         </DataTableRow>
                       </DataTableHead>
-                      {services?.data?.map((item, idx) => {
+                      {data?.data?.map((item, idx) => {
                         return (
                           <DataTableItem key={item.id} className="text-secondary">
-                            <DataTableRow className="w-max-100px">
+                            <DataTableRow>
+                              <span>{idx + 1}</span>
+                            </DataTableRow>
+                            <DataTableRow>
                               <span className="tb-product">
-                                <img
+                                {/* <img
                                   src={item.logo ? item.logo : NoIcon}
                                   alt={"provider logo for " + item.name}
                                   className="thumb d-none d-lg-inline-flex"
-                                />
+                                /> */}
                                 <span className="title">{item.name}</span>
                               </span>
                             </DataTableRow>
-
-                            {/* <DataTableRow>
-                              <span className="text-capitalize"> {item?.purpose}</span>
-                            </DataTableRow> */}
                             <DataTableRow>
-                              {item?.product_type.map((type, index) => (
-                                <span key={index} className="ccap pe-1">
-                                  {type}
-                                </span>
-                              ))}
+                              <span>{item.type}</span>
+                            </DataTableRow>{" "}
+                            <DataTableRow>
+                              <span>{item.value}</span>
                             </DataTableRow>
                             {/* <DataTableRow>
-                              <span>{formatDateWithTime(item.created_at)}</span>
+                              <span>{formatter("NGN").format(item.amount)}</span>
+                            </DataTableRow>
+                            <DataTableRow>
+                              <span className="ccap">{item.type}</span>
                             </DataTableRow> */}
                             <DataTableRow>
                               <span className={`dot bg-${item.active ? "success" : "warning"} d-sm-none`}></span>
@@ -389,11 +317,11 @@ const Services = () => {
                                             onClick={(ev) => {
                                               ev.preventDefault();
                                               onEditClick(item.id);
-                                              setView({ add: false, edit: false, details: true });
+                                              setView({ add: false, edit: true, details: false });
                                             }}
                                           >
-                                            <Icon name="eye"></Icon>
-                                            <span>View</span>
+                                            <Icon name="edit"></Icon>
+                                            <span>Edit Discount</span>
                                           </DropdownItem>
                                         </li>
                                         <li>
@@ -402,55 +330,15 @@ const Services = () => {
                                             href="#"
                                             onClick={(ev) => {
                                               ev.preventDefault();
+                                              setEditedId(item.id);
+                                              toggleDiscount();
+                                              //   toggleProduct();
                                               // onEditClick(item.id);
-                                              // setView({ add: false, edit: false, details: true });
-                                              navigate(`/services/${item.code}`);
+                                              // setView({ add: false, edit: true, details: false });
                                             }}
                                           >
-                                            <Icon name="percent"></Icon>
-                                            <span>View Discounts</span>
-                                          </DropdownItem>
-                                        </li>
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              onEditClick(item.id);
-                                              toggle("types");
-                                            }}
-                                          >
-                                            <Icon name="unarchive"></Icon>
-                                            <span>Edit Logo</span>
-                                          </DropdownItem>
-                                        </li>
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              onEditClick(item.id);
-                                              updateStatus();
-                                            }}
-                                          >
-                                            <Icon name={item.active ? "cross" : "check"}></Icon>
-                                            <span>{item.active ? "Deactivate" : "Activate"}</span>
-                                          </DropdownItem>
-                                        </li>
-                                        <li>
-                                          <DropdownItem
-                                            tag="a"
-                                            href="#"
-                                            onClick={(ev) => {
-                                              ev.preventDefault();
-                                              setEditedId(id);
-                                              deleteServices();
-                                            }}
-                                          >
-                                            <Icon name="trash"></Icon>
-                                            <span>Delete</span>
+                                            <Icon name={item.active ? "na" : "check"}></Icon>
+                                            <span>Make {item.active ? "Inactive" : "Active"}</span>
                                           </DropdownItem>
                                         </li>
                                       </ul>
@@ -464,10 +352,10 @@ const Services = () => {
                       })}
                     </DataTableBody>
                     <div className="card-inner">
-                      {services?.meta?.total > 0 && (
+                      {data?.data?.length > 0 && (
                         <PaginationComponent
                           itemPerPage={itemsPerPage}
-                          totalItems={services?.meta?.total}
+                          totalItems={data?.data?.length}
                           paginate={paginate}
                           currentPage={Number(currentPage)}
                         />
@@ -476,7 +364,7 @@ const Services = () => {
                   </>
                 ) : (
                   <div className="text-center" style={{ paddingBlock: "1rem" }}>
-                    <span className="text-silent">No Provider record found</span>
+                    <span className="text-silent">No Services found</span>
                   </div>
                 )}
               </div>
@@ -486,7 +374,7 @@ const Services = () => {
 
         {/* ADD CATEGORIES */}
         <Modal isOpen={view.add || view.edit} toggle={() => onFormCancel()} className="modal-dialog-centered" size="md">
-          <ModalBody className="bg-white rounded">
+          {/* <ModalBody className="bg-white rounded">
             <a href="#cancel" className="close">
               {" "}
               <Icon
@@ -498,26 +386,25 @@ const Services = () => {
               ></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">{view.add ? "Add" : "Edit"} Account</h5>
+              <h5 className="title">Edit Product Price</h5>
               <div className="mt-4">
                 <form onSubmit={handleSubmit(onFormSubmit)}>
                   <Row className="g-3">
                     <Col md="12">
                       <div className="form-group">
                         <label className="form-label" htmlFor="bank_code">
-                          Bank ID
+                          Product Name
                         </label>
                         <div className="form-control-wrap">
                           <input
                             type="text"
                             className="form-control"
-                            {...register("bank_code", {
+                            {...register("name", {
                               required: "This field is required",
                             })}
-                            onChange={(e) => setFormData({ ...formData, bank_code: e.target.value })}
-                            value={formData.bank_code}
+                            defaultValue={formData.name}
                           />
-                          {errors.bank_code && <span className="invalid">{errors.bank_code.message}</span>}
+                          {errors.name && <span className="invalid">{errors.name.message}</span>}
                         </div>
                       </div>
                     </Col>
@@ -525,38 +412,38 @@ const Services = () => {
                     <Col md="12">
                       <div className="form-group">
                         <label className="form-label" htmlFor="account_number">
-                          Account Number
+                          New Amount
                         </label>
                         <div className="form-control-wrap">
                           <input
                             type="number"
                             className="form-control"
-                            {...register("account_number", {
+                            {...register("amount", {
                               required: "This field is required",
                             })}
-                            onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
-                            value={formData.account_number}
+                            defaultValue={formData.amount}
                           />
-                          {errors.account_number && <span className="invalid">{errors.account_number.message}</span>}
+                          {errors.amount && <span className="invalid">{errors.amount.message}</span>}
                         </div>
                       </div>
                     </Col>
 
                     <Col md="12">
                       <div className="form-group">
-                        <label className="form-label" htmlFor="account_name">
-                          Account Name
+                        <label className="form-label" htmlFor="account_number">
+                          Provider Amount
                         </label>
                         <div className="form-control-wrap">
                           <input
-                            type="text"
+                            type="number"
                             className="form-control"
-                            {...register("account_name")}
-                            onChange={(e) => setFormData({ ...formData, account_name: e.target.value })}
-                            value={formData.account_name}
+                            {...register("provider_amount", {
+                              required: "This field is required",
+                            })}
                             disabled
+                            defaultValue={formData.provider_amount}
                           />
-                          {errors.account_name && <span className="invalid">{errors.account_name.message}</span>}
+                          {errors.provider_amout && <span className="invalid">{errors.amount.provider_amount}</span>}
                         </div>
                       </div>
                     </Col>
@@ -564,24 +451,85 @@ const Services = () => {
                     <Col size="12">
                       <Button color="primary" type="submit">
                         <Icon className="plus"></Icon>
-                        <span>{view.add ? "Add" : "Verify"} Account</span>
+                        <span>Proceed</span>
                       </Button>
                     </Col>
                   </Row>
                 </form>
               </div>
             </div>
+          </ModalBody> */}
+          <ModalBody>
+            <div className="p-2">
+              <h5 className="title">Update {formData?.name}</h5>
+              <form onSubmit={handleSubmit(onFormSubmit)}>
+                <Row className="gy-4">
+                  <Col md="6">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="value">
+                        Value
+                      </label>
+                      <input
+                        id="value"
+                        className="form-control"
+                        defaultValue={formData.value}
+                        placeholder="Enter Service Value"
+                        pattern="[0-9]*[.,]?[0-9]*"
+                        type="text"
+                        inputmode="decimal"
+                        {...register("value", {
+                          required: "This field is required",
+                        })}
+                      />
+                    </div>
+                  </Col>
+                  <Col md="6">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="full-name">
+                        Type
+                      </label>
+                      <RSelect
+                        options={[
+                          { label: "Flat", value: "flat" },
+                          { label: "Percentage", value: "percentage" },
+                        ]}
+                        value={{
+                          label: formData?.type?.charAt(0).toUpperCase() + formData.type.slice(1),
+                          value: formData.type,
+                        }}
+                        onChange={(e) => setFormData({ ...formData, type: e.value })}
+                        placeholder="Select Type"
+                        isSearchable={false}
+                      />
+                    </div>
+                  </Col>
+
+                  <Col size="12">
+                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                      <li>
+                        <Button type="submit" color="primary" size="lg">
+                          Update
+                        </Button>
+                      </li>
+                      <li>
+                        <a
+                          href="#dropdownitem"
+                          onClick={(ev) => {
+                            ev.preventDefault();
+                            setModal(false);
+                          }}
+                          className="link link-light"
+                        >
+                          Cancel
+                        </a>
+                      </li>
+                    </ul>
+                  </Col>
+                </Row>
+              </form>
+            </div>
           </ModalBody>
         </Modal>
-
-        {/* EDIT SERVICE TYPES */}
-
-        <EditServiceProductTypes
-          modal={view.types}
-          closeModal={() => onFormCancel()}
-          formData={formData}
-          editFunction={updateService}
-        />
 
         {/* View */}
         <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
@@ -599,17 +547,15 @@ const Services = () => {
             <div className="p-2">
               <div className="nk-modal-head">
                 <h5 className="title">View Provider</h5>
-                <div style={{ width: "100px" }}>
-                  <img src={formData.logo} alt="logo" />
-                </div>
+                <img src={formData.logo} alt="logo" />
               </div>
               <div className="mt-4">
                 <Row className="gy-3">
-                  <Col lg={6}>
+                  <Col>
                     <span className="sub-text">Provider Name</span>
                     <span className="caption-text text-primary">{formData.name}</span>
                   </Col>
-                  <Col lg={6}>
+                  <Col>
                     <span className="sub-text">Product Type</span>
                     <span className="caption-text">
                       {formData.product_type?.map((item, index) => (
@@ -626,10 +572,10 @@ const Services = () => {
                     </span>
                   </Col>
 
-                  {/* <Col lg={6}>
+                  <Col lg={6}>
                     <span className="sub-text">Date Created</span>
                     <span className="caption-text">{formatDateWithTime(formData.created_at)}</span>
-                  </Col> */}
+                  </Col>
                 </Row>
               </div>
             </div>
@@ -640,4 +586,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default ServiceProvidersDiscounts;

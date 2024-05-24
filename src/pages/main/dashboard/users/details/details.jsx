@@ -85,12 +85,12 @@ const Details = ({ user }) => {
             </div>
           </div>
 
-          {/* <div className="profile-ud-item">
-                    <div className="profile-ud wider">
-                      <span className="profile-ud-label">Email Address</span>
-                      <span className="profile-ud-value">{user.email}</span>
-                    </div>
-                  </div> */}
+          <div className="profile-ud-item">
+            <div className="profile-ud wider">
+              <span className="profile-ud-label">User Type</span>
+              <span className="profile-ud-value ccap text-primary">{user?.data?.type}</span>
+            </div>
+          </div>
         </div>
       </Block>
 

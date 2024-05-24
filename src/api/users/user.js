@@ -116,3 +116,58 @@ export const useFinanceUser = (id) => {
     }
   );
 };
+
+export const useUpdateUserType = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post(BACKEND_URLS.users + `/${id}/type`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: (data) => data?.message || "Successful",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: "Something happened",
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: (data) => {
+        // console.log(data);
+        queryClient.invalidateQueries(["getAllUsers"]);
+        queryClient.invalidateQueries(["getSingleUser"]);
+      },
+    }
+  );
+};
+
+export const useGetUserType = () => {
+  return useQuery(
+    ["UserTypes"],
+    async () => {
+      const request = await instance
+        .get(BACKEND_URLS.users + "/types/all")
+        .then((res) => res?.data)
+        .catch((err) => {
+          throw err;
+        });
+      //   console.log(request);
+      return request;
+    },
+    {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      retryDelay: 3000,
+    }
+  );
+};

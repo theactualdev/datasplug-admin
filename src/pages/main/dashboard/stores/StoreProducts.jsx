@@ -20,7 +20,7 @@ const StoreProductsPage = () => {
 
   const { isLoading, data: storeProducts, error } = useGetStoreProducts();
 
-  console.log(storeProducts);
+  // console.log(storeProducts);
 
   // const [data, setData] = useState(productData);
 
