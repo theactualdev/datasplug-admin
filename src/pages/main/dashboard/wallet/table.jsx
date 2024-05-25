@@ -405,6 +405,7 @@ const WithdrawalTable = ({ type, userId }) => {
           </div>
         </Card>
       </Block>
+
       <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
         <ModalBody>
           <a href="#cancel" className="close">
