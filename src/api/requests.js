@@ -143,3 +143,64 @@ export const useGetAllTransactions = (page, limit, purpose = "", status, search,
     }
   );
 };
+
+export const useInitiateWithdrawalRequest = (transactionID, provider) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post(`/withdrawal-requests/${transactionID}/transfer/${provider}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            console.log(err?.response?.data);
+            throw err?.response?.data;
+          }),
+        {
+          success: (data) => data?.message,
+          loading: "Please wait...",
+          error: (error) => error?.message,
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["getDepositRequest"]);
+      },
+    }
+  );
+};
+
+export const useAuthorizeWithdrawalRequest = (transactionID, provider) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post(`/withdrawal-requests/${transactionID}/transfer/monnify/authorize`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err.response.data;
+          }),
+        {
+          success: (data) => data.message,
+          loading: "Please wait...",
+          error: (error) => error.message,
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["getDepositRequest"]);
+      },
+    }
+  );
+};

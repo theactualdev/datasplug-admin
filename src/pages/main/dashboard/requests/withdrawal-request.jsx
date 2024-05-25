@@ -34,8 +34,10 @@ import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
 import { FilterOptions } from "../tables/filter-select";
 import {
+  useAuthorizeWithdrawalRequest,
   useGetDepositRequest,
   useGetWithdrawalRequest,
+  useInitiateWithdrawalRequest,
   useUpdateDepositRequestStatus,
   useUpdateWithdrawalRequestStatus,
 } from "../../../../api/requests";
@@ -43,6 +45,7 @@ import { RequestsStatsCard } from "./stats-card";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
 import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
+import OTPModal from "./otp-modal";
 
 const WithdrawalRequest = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,6 +53,7 @@ const WithdrawalRequest = () => {
 
   const [editedId, setEditedId] = useState(null);
   const [updatedStatus, setUpdatedStatus] = useState();
+  const [provider, setProvider] = useState();
 
   const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
@@ -70,6 +74,8 @@ const WithdrawalRequest = () => {
   // console.log(data);
   // console.log(data?.stat);
   const { mutate: updateStatus } = useUpdateWithdrawalRequestStatus(editedId, updatedStatus);
+  const { mutate: initiateRequest } = useInitiateWithdrawalRequest(editedId, provider);
+  const { mutate: authorizeRequest } = useAuthorizeWithdrawalRequest(editedId, provider);
 
   const [formData, setFormData] = useState({
     reference: "",
@@ -98,6 +104,7 @@ const WithdrawalRequest = () => {
     edit: false,
     add: false,
     details: false,
+    otp: false,
   });
   const [onSearch, setonSearch] = useState(false);
   const [filters, setfilters] = useState({});
@@ -110,7 +117,7 @@ const WithdrawalRequest = () => {
 
   // function to close the form modal
   const onFormCancel = () => {
-    setView({ edit: false, add: false, details: false });
+    setView({ edit: false, add: false, details: false, otp: false });
     setTimeout(() => {
       resetForm();
     }, 500);
@@ -185,6 +192,7 @@ const WithdrawalRequest = () => {
       edit: type === "edit" ? true : false,
       add: type === "add" ? true : false,
       details: type === "details" ? true : false,
+      otp: type === "otp" ? true : false,
     });
   };
 
@@ -197,10 +205,15 @@ const WithdrawalRequest = () => {
     });
   };
 
+  const authorize = (data) => {
+    authorizeRequest(data);
+    onFormCancel();
+  };
+
   const statusColor = useCallback((status) => {
-    if (status === "pending") {
+    if (status === "pending" || status === "transfer-initiated" || status === "transfer-authorization-initiated") {
       return "warning";
-    } else if (status === "approved") {
+    } else if (status === "approved" || status === "transfer-completed") {
       return "success";
     } else {
       return "danger";
@@ -387,7 +400,7 @@ const WithdrawalRequest = () => {
                                               <span>View</span>
                                             </DropdownItem>
                                           </li>
-                                          {item.status === "pending" && (
+                                          {/* {item.status === "pending" && (
                                             <>
                                               <li>
                                                 <DropdownItem
@@ -397,10 +410,6 @@ const WithdrawalRequest = () => {
                                                     ev.preventDefault();
                                                     onEditClick(item.id);
                                                     setEditedId(item.id);
-                                                    setUpdatedStatus("approved");
-                                                    updateStatus();
-
-                                                    // toggle("details");
                                                   }}
                                                 >
                                                   <Icon name="check"></Icon>
@@ -415,13 +424,75 @@ const WithdrawalRequest = () => {
                                                     ev.preventDefault();
                                                     onEditClick(item.id);
                                                     setEditedId(item.id);
+                                                    setProvider("monnify");
+                                                    initiateRequest();
+                                                  }}
+                                                >
+                                                  <Icon name="arrow-to-right"></Icon>
+                                                  <span>Initiate Transfer</span>
+                                                </DropdownItem>
+                                              </li>
+                                              <li>
+                                                <DropdownItem
+                                                  tag="a"
+                                                  href="#edit"
+                                                  onClick={(ev) => {
+                                                    ev.preventDefault();
+                                                    onEditClick(item.id);
+                                                    setEditedId(item.id);
                                                     setUpdatedStatus("declined");
                                                     updateStatus();
-                                                    // toggle("details");
                                                   }}
                                                 >
                                                   <Icon name="cross"></Icon>
                                                   <span>Decline</span>
+                                                </DropdownItem>
+                                              </li>
+                                            </>
+                                          )} */}
+                                          {item.status === "pending" ||
+                                            (item.status === "transfer-authorization-failed" && (
+                                              <li>
+                                                <DropdownItem
+                                                  tag="a"
+                                                  href="#edit"
+                                                  onClick={(ev) => {
+                                                    ev.preventDefault();
+                                                    onEditClick(item.id);
+                                                    setEditedId(item.id);
+                                                    setProvider("monnify");
+                                                    initiateRequest();
+                                                    // setUpdatedStatus("approved");
+                                                    // updateStatus();
+
+                                                    // toggle("details");
+                                                  }}
+                                                >
+                                                  <Icon name="arrow-to-right"></Icon>
+                                                  <span>Initiate Transfer</span>
+                                                </DropdownItem>
+                                              </li>
+                                            ))}
+                                          {item.status === "transfer-initiated" && (
+                                            <>
+                                              <li>
+                                                <DropdownItem
+                                                  tag="a"
+                                                  href="#edit"
+                                                  onClick={(ev) => {
+                                                    ev.preventDefault();
+                                                    onEditClick(item.id);
+                                                    setEditedId(item.id);
+                                                    setProvider("monnify");
+                                                    toggle("otp");
+                                                    // setUpdatedStatus("approved");
+                                                    // updateStatus();
+
+                                                    // toggle("details");
+                                                  }}
+                                                >
+                                                  <Icon name="arrow-to-right"></Icon>
+                                                  <span>Authorize Transfer</span>
                                                 </DropdownItem>
                                               </li>
                                             </>
@@ -457,6 +528,7 @@ const WithdrawalRequest = () => {
             </Card>
           </Block>
         </Content>
+
         <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a href="#cancel" className="close">
@@ -576,10 +648,61 @@ const WithdrawalRequest = () => {
                   <span className="sub-text">Bank</span>
                   <span className="caption-text"> {formData.bank}</span>
                 </Col> */}
+                <Col size="12" className="mt-5">
+                  <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                    {formData.status === "pending" && (
+                      <>
+                        <li>
+                          <Button
+                            color="primary"
+                            size="md"
+                            onClick={() => {
+                              setUpdatedStatus("approved");
+                              updateStatus();
+                            }}
+                          >
+                            Approve via Bank Transfer
+                          </Button>
+                        </li>
+                        <li>
+                          <Button
+                            color="secondary"
+                            size="md"
+                            onClick={() => {
+                              setProvider("monnify");
+                              initiateRequest();
+                            }}
+                          >
+                            Initiate Transfer
+                          </Button>
+                        </li>
+                        <li>
+                          <Button color="danger" size="md" type="submit">
+                            Decline
+                          </Button>
+                        </li>
+                      </>
+                    )}
+                    {/* <li>
+                      <a
+                        href="#cancel"
+                        onClick={(ev) => {
+                          ev.preventDefault();
+                          close();
+                        }}
+                        className="link link-light"
+                      >
+                        Cancel
+                      </a>
+                    </li> */}
+                  </ul>
+                </Col>
               </Row>
             </div>
           </ModalBody>
         </Modal>
+
+        <OTPModal view={view} onFormCancel={onFormCancel} onFormSubmit={authorize} />
       </React.Fragment>
     </>
   );

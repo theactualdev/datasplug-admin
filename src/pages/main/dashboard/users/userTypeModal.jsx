@@ -56,6 +56,24 @@ const UserTypeModal = ({ modal, closeModal, onSubmit, formData, setFormData, fil
                   </div>
                 </div>
               </Col>
+              <Col md="12">
+                <div className="form-group">
+                  <label className="form-label">Referral Earning Rate</label>
+                  <div className="form-control-wrap">
+                    <input
+                      type="text"
+                      className="form-control"
+                      defaultValue={formData.referral_earning_rate}
+                      {...register("referral_earning_rate", {
+                        required: "This field is required",
+                      })}
+                    />
+                    {errors.referral_earning_rate && (
+                      <span className="invalid">{errors.referral_earning_rate.message}</span>
+                    )}
+                  </div>
+                </div>
+              </Col>
               <Col size="12">
                 <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                   <li>
