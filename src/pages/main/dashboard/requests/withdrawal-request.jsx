@@ -219,7 +219,7 @@ const WithdrawalRequest = () => {
       return "danger";
     }
   }, []);
-  // referral_earning_rate
+
   useEffect(() => {
     reset(formData);
   }, [formData, reset]);
@@ -400,7 +400,7 @@ const WithdrawalRequest = () => {
                                               <span>View</span>
                                             </DropdownItem>
                                           </li>
-                                          {item.status === "pending" && (
+                                          {/* {item.status === "pending" && (
                                             <>
                                               <li>
                                                 <DropdownItem
@@ -410,10 +410,6 @@ const WithdrawalRequest = () => {
                                                     ev.preventDefault();
                                                     onEditClick(item.id);
                                                     setEditedId(item.id);
-                                                    setUpdatedStatus("approved");
-                                                    updateStatus();
-
-                                                    // toggle("details");
                                                   }}
                                                 >
                                                   <Icon name="check"></Icon>
@@ -430,10 +426,6 @@ const WithdrawalRequest = () => {
                                                     setEditedId(item.id);
                                                     setProvider("monnify");
                                                     initiateRequest();
-                                                    // setUpdatedStatus("approved");
-                                                    // updateStatus();
-
-                                                    // toggle("details");
                                                   }}
                                                 >
                                                   <Icon name="arrow-to-right"></Icon>
@@ -450,7 +442,6 @@ const WithdrawalRequest = () => {
                                                     setEditedId(item.id);
                                                     setUpdatedStatus("declined");
                                                     updateStatus();
-                                                    // toggle("details");
                                                   }}
                                                 >
                                                   <Icon name="cross"></Icon>
@@ -458,7 +449,7 @@ const WithdrawalRequest = () => {
                                                 </DropdownItem>
                                               </li>
                                             </>
-                                          )}
+                                          )} */}
                                           {item.status === "pending" ||
                                             (item.status === "transfer-authorization-failed" && (
                                               <li>
@@ -657,6 +648,55 @@ const WithdrawalRequest = () => {
                   <span className="sub-text">Bank</span>
                   <span className="caption-text"> {formData.bank}</span>
                 </Col> */}
+                <Col size="12" className="mt-5">
+                  <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                    {formData.status === "pending" && (
+                      <>
+                        <li>
+                          <Button
+                            color="primary"
+                            size="md"
+                            onClick={() => {
+                              setUpdatedStatus("approved");
+                              updateStatus();
+                            }}
+                          >
+                            Approve via Bank Transfer
+                          </Button>
+                        </li>
+                        <li>
+                          <Button
+                            color="secondary"
+                            size="md"
+                            onClick={() => {
+                              setProvider("monnify");
+                              initiateRequest();
+                            }}
+                          >
+                            Initiate Transfer
+                          </Button>
+                        </li>
+                        <li>
+                          <Button color="danger" size="md" type="submit">
+                            Decline
+                          </Button>
+                        </li>
+                      </>
+                    )}
+                    {/* <li>
+                      <a
+                        href="#cancel"
+                        onClick={(ev) => {
+                          ev.preventDefault();
+                          close();
+                        }}
+                        className="link link-light"
+                      >
+                        Cancel
+                      </a>
+                    </li> */}
+                  </ul>
+                </Col>
               </Row>
             </div>
           </ModalBody>

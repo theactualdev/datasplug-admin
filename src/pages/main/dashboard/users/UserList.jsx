@@ -61,6 +61,7 @@ const UserList = () => {
     name: "",
     status: "",
     type: "",
+    referral_earning_rate: "",
   });
 
   // function that loads the want to editted data
@@ -71,6 +72,7 @@ const UserList = () => {
           name: item?.name,
           status: item?.status,
           type: item?.type,
+          referral_earning_rate: item?.referral_earning_rate,
         });
       }
     });
@@ -90,6 +92,7 @@ const UserList = () => {
     // console.log(data);
     let submittedData = {
       type: data.type,
+      referral_earning_rate: data.referral_earning_rate,
     };
     updateUserType(submittedData);
     closeModal();
