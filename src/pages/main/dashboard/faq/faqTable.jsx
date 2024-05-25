@@ -34,6 +34,7 @@ const FaqTable = ({
 }) => {
   const [onSearch, setonSearch] = useState(false);
   const [onSearchText, setSearchText] = useState("");
+  console.log(data);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const itemsPerPage = searchParams.get("limit") ? Number(searchParams.get("limit")) : 100;
@@ -223,6 +224,20 @@ const FaqTable = ({
                               />
                               <span className="title">{item.name}</span>
                             </span>
+                          </DataTableRow>
+                        );
+                      if (item.image && key === "fullname")
+                        return (
+                          <DataTableRow key={idx}>
+                            <Link to={`/user-details/${item.id}`}>
+                              <div className="user-card">
+                                <div className="user-name">
+                                  <span className="tb-lead">
+                                    {item?.firstname} {item?.lastname}{" "}
+                                  </span>
+                                </div>
+                              </div>
+                            </Link>
                           </DataTableRow>
                         );
                       if (key === "status")

@@ -451,28 +451,28 @@ const WithdrawalRequest = () => {
                                             </>
                                           )} */}
                                           {item.status === "pending" ||
-                                            (item.status === "transfer-authorization-failed" && (
-                                              <li>
-                                                <DropdownItem
-                                                  tag="a"
-                                                  href="#edit"
-                                                  onClick={(ev) => {
-                                                    ev.preventDefault();
-                                                    onEditClick(item.id);
-                                                    setEditedId(item.id);
-                                                    setProvider("monnify");
-                                                    initiateRequest();
-                                                    // setUpdatedStatus("approved");
-                                                    // updateStatus();
+                                          item.status === "transfer-authorization-failed" ? (
+                                            <li>
+                                              <DropdownItem
+                                                tag="a"
+                                                href="#edit"
+                                                onClick={(ev) => {
+                                                  ev.preventDefault();
+                                                  onEditClick(item.id);
+                                                  setEditedId(item.id);
+                                                  setProvider("monnify");
+                                                  initiateRequest();
+                                                  // setUpdatedStatus("approved");
+                                                  // updateStatus();
 
-                                                    // toggle("details");
-                                                  }}
-                                                >
-                                                  <Icon name="arrow-to-right"></Icon>
-                                                  <span>Initiate Transfer</span>
-                                                </DropdownItem>
-                                              </li>
-                                            ))}
+                                                  // toggle("details");
+                                                }}
+                                              >
+                                                <Icon name="arrow-to-right"></Icon>
+                                                <span>Initiate Transfer</span>
+                                              </DropdownItem>
+                                            </li>
+                                          ) : null}
                                           {item.status === "transfer-initiated" && (
                                             <>
                                               <li>
@@ -654,19 +654,7 @@ const WithdrawalRequest = () => {
                       <>
                         <li>
                           <Button
-                            color="primary"
-                            size="md"
-                            onClick={() => {
-                              setUpdatedStatus("approved");
-                              updateStatus();
-                            }}
-                          >
-                            Approve via Bank Transfer
-                          </Button>
-                        </li>
-                        <li>
-                          <Button
-                            color="secondary"
+                            color="success"
                             size="md"
                             onClick={() => {
                               setProvider("monnify");
@@ -676,9 +664,23 @@ const WithdrawalRequest = () => {
                             Initiate Transfer
                           </Button>
                         </li>
+
                         <li>
                           <Button color="danger" size="md" type="submit">
                             Decline
+                          </Button>
+                        </li>
+
+                        <li>
+                          <Button
+                            color="primary"
+                            size="md"
+                            onClick={() => {
+                              setUpdatedStatus("approved");
+                              updateStatus();
+                            }}
+                          >
+                            Approve via Bank Transfer
                           </Button>
                         </li>
                       </>

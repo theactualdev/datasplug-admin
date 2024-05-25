@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Badge, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
-import { useFinanceUser, useGetAllUsers, useUpdateUserStatus, useUpdateUserType } from "../../../../api/users/user";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown, Badge } from "reactstrap";
+import { useFinanceUser, useGetAllUsers, useUpdateUserStatus, useUpdateUserType } from "../../../../../api/users/user";
 import {
   Block,
   BlockDes,
@@ -9,6 +9,7 @@ import {
   BlockHeadContent,
   BlockTitle,
   Button,
+  Col,
   DataTable,
   DataTableBody,
   DataTableHead,
@@ -16,23 +17,27 @@ import {
   DataTableRow,
   Icon,
   PaginationComponent,
+  RSelect,
+  Row,
   UserAvatar,
-} from "../../../../components/Component";
-import Content from "../../../../layout/content/Content";
-import Head from "../../../../layout/head/Head";
-import { findUpper, formatDate, formatter, truncateText } from "../../../../utils/Utils";
-import LoadingSpinner from "../../../components/spinner";
-import Search from "../tables/Search";
-import SortToolTip from "../tables/SortTooltip";
-import { FilterOptions } from "../tables/filter-select";
-import AddModal from "./AddModal";
-import { filterStatus, userFilterOptions } from "./UserData";
-import UserTypeModal from "./userTypeModal";
+} from "../../../../../components/Component";
+import Content from "../../../../../layout/content/Content";
+import Head from "../../../../../layout/head/Head";
+import { findUpper, formatDateWithTime, formatter, formatDate, truncateText } from "../../../../../utils/Utils";
+import LoadingSpinner from "../../../../components/spinner";
+import SortToolTip from "../../tables/SortTooltip";
+import { filterRole, filterStatus, userFilterOptions } from "../UserData";
 
-const UserList = () => {
+import Search from "../../tables/Search";
+import { FilterOptions } from "../../tables/filter-select";
+import AddModal from "../AddModal";
+import UserTypeModal from "../userTypeModal";
+
+const ReferralUserList = ({ list }) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [userId, setUserId] = useState(null);
+  //   console.log(list);
 
   const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
@@ -147,25 +152,13 @@ const UserList = () => {
 
   return (
     <React.Fragment>
-      <Head title="User management"></Head>
-      <Content>
-        <BlockHead size="sm">
-          <BlockHeadContent>
-            <BlockTitle tag="h3" page>
-              Users Lists
-            </BlockTitle>
-            <BlockDes className="text-soft">
-              <p>You have total {users?.meta?.total?.toLocaleString()} users.</p>
-            </BlockDes>
-          </BlockHeadContent>
-        </BlockHead>
-
+      <>
         <Block>
           <DataTable className="card-stretch">
             <div className="card-inner position-relative card-tools-toggle">
               <div className="card-title-group">
                 <h5 className="title">All Users</h5>
-                <div className="card-tools me-n1">
+                {/* <div className="card-tools me-n1">
                   <ul className="btn-toolbar gx-1">
                     <li>
                       <a
@@ -213,14 +206,14 @@ const UserList = () => {
                       </div>
                     </li>
                   </ul>
-                </div>
+                </div> */}
                 {/* Search component */}
                 <Search onSearch={onSearch} setonSearch={setonSearch} placeholder="name" />
               </div>
             </div>
             {isLoading ? (
               <LoadingSpinner />
-            ) : users?.meta?.total > 0 ? (
+            ) : list?.length > 0 ? (
               <>
                 <DataTableBody compact>
                   <DataTableHead>
@@ -239,25 +232,17 @@ const UserList = () => {
                     <DataTableRow>
                       <span className="sub-text ">Type</span>
                     </DataTableRow>
-                    <DataTableRow size="md">
-                      <span className="sub-text">Wallet</span>
-                    </DataTableRow>
-                    <DataTableRow size="sm">
-                      <span className="sub-text">Date Joined</span>
-                    </DataTableRow>
-                    <DataTableRow>
-                      <span className="sub-text">Status</span>
-                    </DataTableRow>
-                    <DataTableRow className="nk-tb-col-tools text-end">
+
+                    {/* <DataTableRow className="nk-tb-col-tools text-end">
                       <UncontrolledDropdown>
                         <DropdownToggle tag="a" className="btn btn-xs btn-outline-light btn-icon dropdown-toggle">
                           <Icon name="plus"></Icon>
                         </DropdownToggle>
                       </UncontrolledDropdown>
-                    </DataTableRow>
+                    </DataTableRow> */}
                   </DataTableHead>
                   {/*Head*/}
-                  {users?.data?.map((item, idx) => {
+                  {list?.map((item, idx) => {
                     return (
                       <DataTableItem
                         key={idx}
@@ -273,42 +258,41 @@ const UserList = () => {
                               <UserAvatar
                                 theme={item?.avatar}
                                 className="xs"
-                                text={findUpper(`${item?.firstname} ${item?.lastname}`)}
+                                text={findUpper(`${item?.referred.firstname} ${item?.referred.lastname}`)}
                                 image={item?.avatar}
                               />
                               <div className="user-name">
-                                <span className="tb-lead">
-                                  {item?.firstname} {item?.lastname}{" "}
+                                <span className="tb-lead text-primary">
+                                  {item?.referred?.firstname} {item?.referred?.lastname}{" "}
                                 </span>
-                                <p className="text-primary fw-normal fs-12px">{truncateText(item.email, 20)}</p>
                               </div>
                             </div>
                           </Link>
                         </DataTableRow>
 
                         <DataTableRow size="lg">
-                          <span className="ccap fs-12px">{item?.username || "Not set"}</span>
+                          <span className="fs-12px">{item?.referred?.email || "Not set"}</span>
                         </DataTableRow>
 
                         <DataTableRow size="sm">
-                          {item.phone ? (
+                          {item.referred.phone ? (
                             <span className="fs-12px">
-                              ({item.phone_code}){item.phone}
+                              ({item?.referred?.phone_code}){item?.referred?.phone}
                             </span>
                           ) : (
                             <span className="fs-12px">Not set</span>
                           )}
                         </DataTableRow>
                         <DataTableRow>
-                          <span className="ccap fs-12px">{item?.type}</span>
+                          <span className="ccap fs-12px">{item?.referred?.type}</span>
                         </DataTableRow>
-                        <DataTableRow size="sm">
+                        {/* <DataTableRow size="sm">
                           <span>{formatter("NGN").format(item?.wallet?.balance)}</span>
-                        </DataTableRow>
-                        <DataTableRow size="lg">
+                        </DataTableRow> */}
+                        {/* <DataTableRow size="lg">
                           <span className="fs-12px">{formatDate(item.created_at)}</span>
-                        </DataTableRow>
-                        <DataTableRow>
+                        </DataTableRow> */}
+                        {/* <DataTableRow>
                           <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
                           <Badge
                             className="badge-sm badge-dot has-bg d-none d-sm-inline-flex fs-12px"
@@ -316,8 +300,8 @@ const UserList = () => {
                           >
                             <span className="ccap fs-12px">{item.status}</span>
                           </Badge>
-                        </DataTableRow>
-                        <DataTableRow className="nk-tb-col-tools">
+                        </DataTableRow> */}
+                        {/* <DataTableRow className="nk-tb-col-tools">
                           <ul className="nk-tb-actions gx-1">
                             <li>
                               <UncontrolledDropdown>
@@ -393,21 +377,11 @@ const UserList = () => {
                               </UncontrolledDropdown>
                             </li>
                           </ul>
-                        </DataTableRow>
+                        </DataTableRow> */}
                       </DataTableItem>
                     );
                   })}
                 </DataTableBody>
-                <div className="card-inner">
-                  {users?.meta?.total > 0 && (
-                    <PaginationComponent
-                      itemPerPage={itemsPerPage}
-                      totalItems={users?.meta?.total}
-                      paginate={paginate}
-                      currentPage={Number(currentPage)}
-                    />
-                  )}
-                </div>
               </>
             ) : (
               <div className="text-center" style={{ paddingBlock: "1rem" }}>
@@ -443,8 +417,8 @@ const UserList = () => {
           onSubmit={onEditSubmit}
           filterStatus={filterStatus}
         /> */}
-      </Content>
+      </>
     </React.Fragment>
   );
 };
-export default UserList;
+export default ReferralUserList;
