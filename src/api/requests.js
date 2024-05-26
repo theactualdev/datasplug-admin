@@ -153,7 +153,6 @@ export const useInitiateWithdrawalRequest = (transactionID, provider) => {
           .post(`/withdrawal-requests/${transactionID}/transfer/${provider}`, data)
           .then((res) => res.data)
           .catch((err) => {
-            console.log(err?.response?.data);
             throw err?.response?.data;
           }),
         {

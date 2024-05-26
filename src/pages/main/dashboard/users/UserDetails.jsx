@@ -28,6 +28,7 @@ import AddModal from "./AddModal";
 import { useFinanceUser } from "../../../../api/users/user";
 import FaqTable from "../faq/faqTable";
 import toast from "react-hot-toast";
+import ReferralUserList from "./details/referral-table";
 
 const UserDetailsPage = () => {
   const { userId } = useParams();
@@ -268,6 +269,9 @@ const UserDetailsPage = () => {
                       hideFilters={true}
                       action={ActionOptions}
                     />
+                  </TabPane>
+                  <TabPane tabId="referral">
+                    <ReferralUserList list={user?.data?.referrals} />
                   </TabPane>
                 </TabContent>
               </div>

@@ -85,6 +85,7 @@ const WithdrawalTable = ({ type, userId }) => {
     receiverPhone: "",
     receiverEmail: "",
     purpose: "",
+    discount: "",
   });
   const [view, setView] = useState({
     edit: false,
@@ -128,6 +129,7 @@ const WithdrawalTable = ({ type, userId }) => {
       receiverPhone: "",
       receiverEmail: "",
       purpose: "",
+      discount: "",
     });
     reset({});
   };
@@ -153,6 +155,7 @@ const WithdrawalTable = ({ type, userId }) => {
           email: item?.user?.email,
           phone: `${item?.user?.phone_code}${item?.user?.phone}`,
           totalAmount: item?.total_amount,
+          discount: item?.discount,
         });
       }
     });
@@ -452,6 +455,10 @@ const WithdrawalTable = ({ type, userId }) => {
               <Col lg={4}>
                 <span className="sub-text">Fee</span>
                 <span className="caption-text">{formatter("NGN").format(formData.fee)}</span>
+              </Col>
+              <Col lg={4}>
+                <span className="sub-text">Discount</span>
+                <span className="caption-text">{formatter("NGN").format(formData.discount)}</span>
               </Col>
               <Col>
                 <span className="sub-text">Remark</span>

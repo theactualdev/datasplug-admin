@@ -61,6 +61,7 @@ export const TransactionTable = ({ purpose, userId }) => {
     fullName: "",
     email: "",
     phone: "",
+    discount: "",
   });
   const [view, setView] = useState({
     edit: false,
@@ -99,6 +100,7 @@ export const TransactionTable = ({ purpose, userId }) => {
       fullName: "",
       email: "",
       phone: "",
+      discount: "",
     });
     reset({});
   };
@@ -143,6 +145,7 @@ export const TransactionTable = ({ purpose, userId }) => {
           fullName: `${item?.user?.firstname} ${item?.user?.lastname}`,
           email: item?.user?.email,
           phone: `${item?.user?.phone_code}${item?.user?.phone}`,
+          discount: item?.discount,
           ...customerDetails,
         });
       }
@@ -430,6 +433,10 @@ export const TransactionTable = ({ purpose, userId }) => {
               <Col lg={4}>
                 <span className="sub-text">Fee</span>
                 <span className="caption-text">{formatter("NGN").format(formData.fee)}</span>
+              </Col>
+              <Col lg={4}>
+                <span className="sub-text">Discount</span>
+                <span className="caption-text">{formatter("NGN").format(formData.discount)}</span>
               </Col>
               <Col>
                 <span className="sub-text">Remark</span>
