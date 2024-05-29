@@ -59,6 +59,36 @@ export const useUpdateDepositRequestStatus = (transactionID, status) => {
   );
 };
 
+export const useUpdateDepositAmount = (transactionID) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post(`/deposit-requests/${transactionID}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err.response.data;
+          }),
+        {
+          success: (data) => data.message,
+          loading: "Please wait...",
+          error: (error) => error.message,
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["getDepositRequest"]);
+      },
+    }
+  );
+};
+
 //getallbrands
 export const useGetWithdrawalRequest = (page, limit, status, search) => {
   // console.log(storeId);

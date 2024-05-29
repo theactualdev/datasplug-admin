@@ -11,9 +11,13 @@ import {
   ModalBody,
   UncontrolledDropdown,
 } from "reactstrap";
-import { useGetWithdrawalTransactions } from "../../../../api/transactions";
+import { useGetDepositRequest, useUpdateDepositAmount, useUpdateDepositRequestStatus } from "../../../../api/requests";
 import {
   Block,
+  BlockBetween,
+  BlockHead,
+  BlockHeadContent,
+  BlockTitle,
   Button,
   Col,
   DataTableBody,
@@ -22,22 +26,17 @@ import {
   DataTableRow,
   Icon,
   PaginationComponent,
-  BlockHeadContent,
-  BlockTitle,
   Row,
-  BlockHead,
-  BlockBetween,
 } from "../../../../components/Component";
+import Content from "../../../../layout/content/Content";
+import Head from "../../../../layout/head/Head";
 import { formatDateWithTime, formatter } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
 import { FilterOptions } from "../tables/filter-select";
-import { useGetDepositRequest, useUpdateDepositRequestStatus } from "../../../../api/requests";
+import EditModal from "./edit-modal";
 import { RequestsStatsCard } from "./stats-card";
-import Content from "../../../../layout/content/Content";
-import Head from "../../../../layout/head/Head";
-import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
 
 const DepositRequest = ({ type, userId }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,6 +54,7 @@ const DepositRequest = ({ type, userId }) => {
   // console.log(data);
   // console.log(data?.stat);
   const { mutate: updateStatus } = useUpdateDepositRequestStatus(editedId, updatedStatus);
+  const { mutate: updateAmount } = useUpdateDepositAmount(editedId);
 
   const [formData, setFormData] = useState({
     reference: "",
@@ -147,7 +147,7 @@ const DepositRequest = ({ type, userId }) => {
       }
     });
     setEditedId(id);
-    setView({ add: false, edit: true });
+    // setView({ add: false, edit: false });
   };
 
   // function to filter data
@@ -186,6 +186,11 @@ const DepositRequest = ({ type, userId }) => {
   useEffect(() => {
     reset(formData);
   }, [formData, reset]);
+
+  // const editAmount = (data) => {
+  //   updateAmount(data);
+
+  // };
 
   //scroll off when sidebar shows
   useEffect(() => {
@@ -270,10 +275,10 @@ const DepositRequest = ({ type, userId }) => {
                           <DataTableRow>
                             <span className="tb-tnx-head bg-white text-secondary">Amount</span>
                           </DataTableRow>
-
+                          {/* 
                           <DataTableRow>
                             <span className="tb-tnx-head bg-white text-secondary">Proof</span>
-                          </DataTableRow>
+                          </DataTableRow> */}
                           <DataTableRow>
                             <span className="tb-tnx-head bg-white text-secondary">Date</span>
                           </DataTableRow>
@@ -318,9 +323,9 @@ const DepositRequest = ({ type, userId }) => {
                                 <span>{formatter("NGN").format(item?.amount)}</span>
                               </DataTableRow>
 
-                              <DataTableRow>
+                              {/* <DataTableRow>
                                 <ImageContainer img={item.proof} sm />
-                              </DataTableRow>
+                              </DataTableRow> */}
 
                               <DataTableRow>
                                 <span>{formatDateWithTime(item.created_at)}</span>
@@ -365,6 +370,25 @@ const DepositRequest = ({ type, userId }) => {
                                           </li>
                                           {item.status === "pending" && (
                                             <>
+                                              <li>
+                                                <DropdownItem
+                                                  tag="a"
+                                                  href="#edit"
+                                                  onClick={(ev) => {
+                                                    ev.preventDefault();
+                                                    onEditClick(item.id);
+                                                    setEditedId(item.id);
+                                                    toggle("edit");
+                                                    // setUpdatedStatus("approved");
+                                                    // updateStatus();
+
+                                                    // toggle("details");
+                                                  }}
+                                                >
+                                                  <Icon name="edit"></Icon>
+                                                  <span>Edit</span>
+                                                </DropdownItem>
+                                              </li>
                                               <li>
                                                 <DropdownItem
                                                   tag="a"
@@ -433,6 +457,7 @@ const DepositRequest = ({ type, userId }) => {
             </Card>
           </Block>
         </Content>
+
         <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a href="#cancel" className="close">
@@ -540,6 +565,8 @@ const DepositRequest = ({ type, userId }) => {
             </div>
           </ModalBody>
         </Modal>
+
+        <EditModal onFormCancel={onFormCancel} onFormSubmit={updateAmount} view={view} formData={formData} />
       </React.Fragment>
     </>
   );
