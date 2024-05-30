@@ -48,7 +48,7 @@ export const useGetProductTypes = () => {
 export const useGetBanks = () => {
   return useQuery(["banks"], async () => {
     try {
-      const response = await axios.get("https://api.billpadi.com/banks");
+      const response = await instance.get("/banks");
       return response.data;
     } catch (e) {
       throw new Error(e);

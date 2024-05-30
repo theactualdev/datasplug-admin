@@ -37,6 +37,7 @@ import SortToolTip from "../tables/SortTooltip";
 import { FilterOptions } from "../tables/filter-select";
 import EditModal from "./edit-modal";
 import { RequestsStatsCard } from "./stats-card";
+import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
 
 const DepositRequest = ({ type, userId }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -75,6 +76,7 @@ const DepositRequest = ({ type, userId }) => {
     receiverPhone: "",
     receiverEmail: "",
     purpose: "",
+    proof: "",
   });
   const [view, setView] = useState({
     edit: false,
@@ -118,6 +120,7 @@ const DepositRequest = ({ type, userId }) => {
       receiverPhone: "",
       receiverEmail: "",
       purpose: "",
+      proof: "",
     });
     reset({});
   };
@@ -143,6 +146,7 @@ const DepositRequest = ({ type, userId }) => {
           email: item?.user?.email,
           phone: `${item?.user?.phone_code}${item?.user?.phone}`,
           totalAmount: item?.total_amount,
+          proof: item?.proof,
         });
       }
     });
@@ -561,6 +565,15 @@ const DepositRequest = ({ type, userId }) => {
                   <span className="sub-text">Bank</span>
                   <span className="caption-text"> {formData.bank}</span>
                 </Col> */}
+                {formData.proof && (
+                  <Col>
+                    <h6>Proof</h6>
+
+                    <div style={{ width: "100px", height: "100px", overflow: "hidden" }}>
+                      <ImageContainer img={formData.proof} />
+                    </div>
+                  </Col>
+                )}
               </Row>
             </div>
           </ModalBody>
