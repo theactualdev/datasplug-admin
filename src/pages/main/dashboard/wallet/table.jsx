@@ -36,7 +36,7 @@ import {
   ModalBody,
   UncontrolledDropdown,
 } from "reactstrap";
-import { formatter, formatDateWithTime } from "../../../../utils/Utils";
+import { formatter, formatDateWithTime, truncateText } from "../../../../utils/Utils";
 import {
   useGetWithdrawalTransactions,
   useUpdateWalletDepositAmount,
@@ -174,7 +174,7 @@ const WithdrawalTable = ({ type, userId }) => {
       }
     });
     setEditedId(id);
-    setView({ add: false, edit: true });
+    // setView({ add: false, edit: true });
   };
 
   // function to filter data
@@ -300,6 +300,12 @@ const WithdrawalTable = ({ type, userId }) => {
                       <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Total Amount</span>
                       </DataTableRow>
+                      <DataTableRow>
+                        <span className="tb-tnx-head bg-white text-secondary">Balance Before</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <span className="tb-tnx-head bg-white text-secondary">Balance After</span>
+                      </DataTableRow>
                       <DataTableRow size="md">
                         <span className="tb-tnx-head bg-white text-secondary">Purpose</span>
                       </DataTableRow>
@@ -335,13 +341,13 @@ const WithdrawalTable = ({ type, userId }) => {
                           </DataTableRow>
                           <DataTableRow size="sm" className="text-primary fw-bold">
                             <Link to={`/user-details/${item?.user?.id}`} className="title">
-                              {item?.user?.firstname} {item?.user?.lastname}
+                              {truncateText(`${item?.user?.firstname} ${item?.user?.lastname}`, 10)}
                             </Link>
                           </DataTableRow>
                           {type === "transfer" && (
                             <DataTableRow size="sm" className="text-primary fw-bold">
                               <Link to={`/user-details/${item?.meta?.id}`} className="title">
-                                {item?.meta?.firstname} {item?.meta?.lastname}
+                                {truncateText(`${item?.meta?.firstname} ${item?.meta?.lastname}`, 10)}
                               </Link>
                             </DataTableRow>
                           )}
@@ -354,6 +360,14 @@ const WithdrawalTable = ({ type, userId }) => {
 
                           <DataTableRow>
                             <span>{formatter("NGN").format(item?.total_amount)}</span>
+                          </DataTableRow>
+
+                          <DataTableRow>
+                            <span>{item?.balance_before ? formatter("NGN").format(item?.balance_before) : "N/A"}</span>
+                          </DataTableRow>
+
+                          <DataTableRow>
+                            <span>{item?.balance_after ? formatter("NGN").format(item?.balance_after) : "N/A"}</span>
                           </DataTableRow>
 
                           <DataTableRow>
