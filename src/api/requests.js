@@ -4,7 +4,7 @@ import { instance } from "./httpConfig";
 import BACKEND_URLS from "./urls";
 
 //getallbrands
-export const useGetDepositRequest = (page, limit, status, search) => {
+export const useGetDepositRequest = (page = 1, limit = 100, status, search) => {
   // console.log(storeId);
   const statusTerm = status ? `&filter[status]=${status}` : "";
   const searchTerm = search ? `&filter[reference]=${search}` : "";

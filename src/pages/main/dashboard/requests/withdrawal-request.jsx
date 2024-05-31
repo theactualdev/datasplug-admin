@@ -99,6 +99,7 @@ const WithdrawalRequest = () => {
     bank_name: "",
     account_number: "",
     account_name: "",
+    discount: "",
   });
   const [view, setView] = useState({
     edit: false,
@@ -146,6 +147,7 @@ const WithdrawalRequest = () => {
       bank_name: "",
       account_number: "",
       account_name: "",
+      discount: "",
     });
     reset({});
   };
@@ -153,6 +155,7 @@ const WithdrawalRequest = () => {
   // function that loads the want to editted data
   const onEditClick = (id) => {
     data?.data?.forEach((item) => {
+      // console.log(item);
       if (item.id === id) {
         setFormData({
           reference: item?.reference,
@@ -174,12 +177,15 @@ const WithdrawalRequest = () => {
           bank_name: item?.bank_name,
           account_number: item?.account_number,
           account_name: item?.account_name,
+          discount: item?.discount,
         });
       }
     });
     setEditedId(id);
     setView({ add: false, edit: true });
   };
+
+  // console.log(formData);
 
   // function to filter data
   const filterData = useCallback(() => {
@@ -308,9 +314,9 @@ const WithdrawalRequest = () => {
                             <span className="tb-tnx-head bg-white text-secondary">Amount</span>
                           </DataTableRow>
 
-                          <DataTableRow>
+                          {/* <DataTableRow>
                             <span className="tb-tnx-head bg-white text-secondary">Proof</span>
-                          </DataTableRow>
+                          </DataTableRow> */}
                           <DataTableRow>
                             <span className="tb-tnx-head bg-white text-secondary">Date</span>
                           </DataTableRow>
@@ -355,9 +361,9 @@ const WithdrawalRequest = () => {
                                 <span>{formatter("NGN").format(item?.amount)}</span>
                               </DataTableRow>
 
-                              <DataTableRow>
+                              {/* <DataTableRow>
                                 {item?.proof ? <ImageContainer img={item.proof} sm /> : <span>Nil</span>}
-                              </DataTableRow>
+                              </DataTableRow> */}
 
                               <DataTableRow>
                                 <span>{formatDateWithTime(item.created_at)}</span>
@@ -558,24 +564,28 @@ const WithdrawalRequest = () => {
                     </Badge>
                   </span>
                 </Col>
-                {/* <Col lg={4}>
+                <Col lg={4}>
                   <span className="sub-text">Type</span>
                   <span className="caption-text">{formData.type}</span>
-                </Col> */}
+                </Col>
                 <Col lg={4}>
                   <span className="sub-text">Amount</span>
                   <span className="caption-text">{formatter("NGN").format(formData.amount)}</span>
                 </Col>
 
-                {/* <Col lg={4}>
+                <Col lg={4}>
                   <span className="sub-text">Total Amount</span>
                   <span className="caption-text">{formatter("NGN").format(formData.totalAmount)}</span>
-                </Col> */}
+                </Col>
 
-                {/* <Col lg={4}>
+                <Col lg={4}>
                   <span className="sub-text">Fee</span>
                   <span className="caption-text">{formatter("NGN").format(formData.fee)}</span>
-                </Col> */}
+                </Col>
+                <Col lg={4}>
+                  <span className="sub-text">Discount</span>
+                  <span className="caption-text">{formatter("NGN").format(formData.discount)}</span>
+                </Col>
                 <Col>
                   <span className="sub-text">Remark</span>
                   <span className="caption-text ccap">{formData.remark}</span>
@@ -648,11 +658,20 @@ const WithdrawalRequest = () => {
                   <span className="sub-text">Bank</span>
                   <span className="caption-text"> {formData.bank}</span>
                 </Col> */}
+                {formData.proof && (
+                  <Col>
+                    <h6>Proof</h6>
+
+                    <div style={{ width: "100px", height: "100px", overflow: "hidden" }}>
+                      <ImageContainer img={formData.proof} />
+                    </div>
+                  </Col>
+                )}
                 <Col size="12" className="mt-5">
                   <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                     {formData.status === "pending" && (
                       <>
-                        <li>
+                        {/* <li>
                           <Button
                             color="success"
                             size="md"
@@ -663,6 +682,19 @@ const WithdrawalRequest = () => {
                           >
                             Initiate Transfer
                           </Button>
+                        </li> */}
+
+                        <li>
+                          <Button
+                            color="success"
+                            size="md"
+                            onClick={() => {
+                              setUpdatedStatus("approved");
+                              updateStatus();
+                            }}
+                          >
+                            Approve via Bank Transfer
+                          </Button>
                         </li>
 
                         <li>
@@ -671,7 +703,7 @@ const WithdrawalRequest = () => {
                           </Button>
                         </li>
 
-                        <li>
+                        {/* <li>
                           <Button
                             color="primary"
                             size="md"
@@ -682,7 +714,7 @@ const WithdrawalRequest = () => {
                           >
                             Approve via Bank Transfer
                           </Button>
-                        </li>
+                        </li> */}
                       </>
                     )}
                     {/* <li>

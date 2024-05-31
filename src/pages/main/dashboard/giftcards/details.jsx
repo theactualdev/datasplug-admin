@@ -75,7 +75,7 @@ const GiftcardDetails = ({ match }) => {
   let { giftcardId } = useParams();
   // console.log(giftcardId);
   const { isLoading, data: giftcard } = useGetGiftcardInfo(giftcardId);
-  console.log(giftcard);
+  // console.log(giftcard);
 
   const statusColor = useCallback((status) => {
     if (status === "pending") {

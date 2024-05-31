@@ -37,16 +37,22 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 import { formatter, formatDateWithTime } from "../../../../utils/Utils";
-import { useGetWithdrawalTransactions } from "../../../../api/transactions";
+import {
+  useGetWithdrawalTransactions,
+  useUpdateWalletDepositAmount,
+  useUpdateWithdrawalWalletStatus,
+} from "../../../../api/transactions";
 import { FilterOptions } from "../tables/filter-select";
 import { WalletFilterOptions } from "./data";
 import { WalletStatsCard } from "./stats-card";
+import EditModal from "../requests/edit-modal";
 
 const WithdrawalTable = ({ type, userId }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const [editedId, setEditedId] = useState(null);
+  const [updatedStatus, setUpdatedStatus] = useState();
 
   const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
@@ -65,6 +71,8 @@ const WithdrawalTable = ({ type, userId }) => {
   );
   // console.log(data);
   // console.log(data?.stat);
+  const { mutate: updateAmount } = useUpdateWalletDepositAmount(editedId);
+  const { mutate: updateStatus } = useUpdateWithdrawalWalletStatus(editedId, updatedStatus);
 
   const [formData, setFormData] = useState({
     reference: "",
@@ -86,11 +94,13 @@ const WithdrawalTable = ({ type, userId }) => {
     receiverEmail: "",
     purpose: "",
     discount: "",
+    proof: "",
   });
   const [view, setView] = useState({
     edit: false,
     add: false,
     details: false,
+    amount: false,
   });
   const [onSearch, setonSearch] = useState(false);
   const [filters, setfilters] = useState({});
@@ -103,7 +113,7 @@ const WithdrawalTable = ({ type, userId }) => {
 
   // function to close the form modal
   const onFormCancel = () => {
-    setView({ edit: false, add: false, details: false });
+    setView({ edit: false, add: false, details: false, amount: false });
     setTimeout(() => {
       resetForm();
     }, 500);
@@ -130,10 +140,11 @@ const WithdrawalTable = ({ type, userId }) => {
       receiverEmail: "",
       purpose: "",
       discount: "",
+      proof: "",
     });
     reset({});
   };
-
+  // console.log(formData);
   // function that loads the want to editted data
   const onEditClick = (id) => {
     data?.data?.forEach((item) => {
@@ -151,11 +162,14 @@ const WithdrawalTable = ({ type, userId }) => {
           receiverPhone: `${item?.meta?.phone_code}${item?.meta?.phone}`,
           receiverEmail: item?.meta?.email,
           bank: item?.meta?.bank_name,
+          accountName: item?.meta?.account_name,
+          accountNumber: item?.meta?.account_number,
           fullName: `${item?.user?.firstname} ${item?.user?.lastname}`,
           email: item?.user?.email,
           phone: `${item?.user?.phone_code}${item?.user?.phone}`,
           totalAmount: item?.total_amount,
           discount: item?.discount,
+          proof: item?.proof,
         });
       }
     });
@@ -174,6 +188,7 @@ const WithdrawalTable = ({ type, userId }) => {
       edit: type === "edit" ? true : false,
       add: type === "add" ? true : false,
       details: type === "details" ? true : false,
+      amount: type === "amount" ? true : false,
     });
   };
 
@@ -277,13 +292,16 @@ const WithdrawalTable = ({ type, userId }) => {
                         </DataTableRow>
                       )}
                       <DataTableRow>
+                        <span className="tb-tnx-head bg-white text-secondary">Provider</span>
+                      </DataTableRow>
+                      <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Amount</span>
+                      </DataTableRow>
+                      <DataTableRow>
+                        <span className="tb-tnx-head bg-white text-secondary">Total Amount</span>
                       </DataTableRow>
                       <DataTableRow size="md">
                         <span className="tb-tnx-head bg-white text-secondary">Purpose</span>
-                      </DataTableRow>
-                      <DataTableRow>
-                        <span className="tb-tnx-head bg-white text-secondary">Type</span>
                       </DataTableRow>
                       <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Date</span>
@@ -328,14 +346,18 @@ const WithdrawalTable = ({ type, userId }) => {
                             </DataTableRow>
                           )}
                           <DataTableRow>
+                            <span className="text-capitalize"> {item?.provider}</span>
+                          </DataTableRow>
+                          <DataTableRow>
                             <span>{formatter("NGN").format(item?.amount)}</span>
                           </DataTableRow>
 
                           <DataTableRow>
-                            <span className="text-capitalize"> {item?.purpose}</span>
+                            <span>{formatter("NGN").format(item?.total_amount)}</span>
                           </DataTableRow>
+
                           <DataTableRow>
-                            <span className="text-capitalize"> {item?.type}</span>
+                            <span className="text-capitalize"> {item?.purpose}</span>
                           </DataTableRow>
                           <DataTableRow>
                             <span>{formatDateWithTime(item.created_at)}</span>
@@ -378,6 +400,64 @@ const WithdrawalTable = ({ type, userId }) => {
                                           <span>View</span>
                                         </DropdownItem>
                                       </li>
+                                      {item.status === "pending" && type === "deposit" ? (
+                                        <>
+                                          <li>
+                                            <DropdownItem
+                                              tag="a"
+                                              href="#edit"
+                                              onClick={(ev) => {
+                                                ev.preventDefault();
+                                                onEditClick(item.id);
+                                                setEditedId(item.id);
+                                                toggle("edit");
+                                                // setUpdatedStatus("approved");
+                                                // updateStatus();
+
+                                                // toggle("details");
+                                              }}
+                                            >
+                                              <Icon name="edit"></Icon>
+                                              <span>Edit</span>
+                                            </DropdownItem>
+                                          </li>
+                                          <li>
+                                            <DropdownItem
+                                              tag="a"
+                                              href="#edit"
+                                              onClick={(ev) => {
+                                                ev.preventDefault();
+                                                onEditClick(item.id);
+                                                setEditedId(item.id);
+                                                setUpdatedStatus("approved");
+                                                updateStatus();
+
+                                                // toggle("details");
+                                              }}
+                                            >
+                                              <Icon name="check"></Icon>
+                                              <span>Approve</span>
+                                            </DropdownItem>
+                                          </li>
+                                          <li>
+                                            <DropdownItem
+                                              tag="a"
+                                              href="#edit"
+                                              onClick={(ev) => {
+                                                ev.preventDefault();
+                                                onEditClick(item.id);
+                                                setEditedId(item.id);
+                                                setUpdatedStatus("declined");
+                                                updateStatus();
+                                                // toggle("details");
+                                              }}
+                                            >
+                                              <Icon name="cross"></Icon>
+                                              <span>Decline</span>
+                                            </DropdownItem>
+                                          </li>
+                                        </>
+                                      ) : null}
                                     </ul>
                                   </DropdownMenu>
                                 </UncontrolledDropdown>
@@ -460,13 +540,13 @@ const WithdrawalTable = ({ type, userId }) => {
                 <span className="sub-text">Discount</span>
                 <span className="caption-text">{formatter("NGN").format(formData.discount)}</span>
               </Col>
-              <Col>
-                <span className="sub-text">Remark</span>
-                <span className="caption-text ccap">{formData.remark}</span>
-              </Col>
               <Col lg={4}>
                 <span className="sub-text">Provider</span>
                 <span className="caption-text ccap">{formData.provider}</span>
+              </Col>
+              <Col>
+                <span className="sub-text">Remark</span>
+                <span className="caption-text ccap">{formData.remark}</span>
               </Col>
 
               <Row className="mt-2">
@@ -502,24 +582,101 @@ const WithdrawalTable = ({ type, userId }) => {
                 </Row>
               )}
 
-              {/* 
-                <h6>Bank</h6>
-                <Col lg={6}>
-                  <span className="sub-text">Account Name</span>
-                  <span className="caption-text">{formData.accountName}</span>
-                </Col>
-                <Col lg={6}>
-                  <span className="sub-text">Account Number</span>
-                  <span className="caption-text">{formData.accountNumber}</span>
-                </Col>
-                <Col lg={6}>
-                  <span className="sub-text">Bank</span>
-                  <span className="caption-text"> {formData.bank}</span>
-                </Col> */}
+              {formData.status === "pending" && (
+                <>
+                  <h6>Bank</h6>
+                  <Col lg={4}>
+                    <span className="sub-text">Account Name</span>
+                    <span className="caption-text">{formData.accountName}</span>
+                  </Col>
+                  <Col lg={4}>
+                    <span className="sub-text">Account Number</span>
+                    <span className="caption-text">{formData.accountNumber}</span>
+                  </Col>
+                  <Col lg={4}>
+                    <span className="sub-text">Bank</span>
+                    <span className="caption-text"> {formData.bank}</span>
+                  </Col>
+                </>
+              )}
+              <Col size="12" className="mt-5">
+                <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                  {formData.status === "pending" && type === "withdrawal" ? (
+                    <>
+                      {/* <li>
+                          <Button
+                            color="success"
+                            size="md"
+                            onClick={() => {
+                              setProvider("monnify");
+                              initiateRequest();
+                            }}
+                          >
+                            Initiate Transfer
+                          </Button>
+                        </li> */}
+
+                      <li>
+                        <Button
+                          color="success"
+                          size="md"
+                          onClick={() => {
+                            setUpdatedStatus("approved");
+                            updateStatus();
+                          }}
+                        >
+                          Approve via Bank Transfer
+                        </Button>
+                      </li>
+
+                      <li>
+                        <Button
+                          color="danger"
+                          size="md"
+                          type="button"
+                          onClick={() => {
+                            setUpdatedStatus("declined");
+                            updateStatus();
+                          }}
+                        >
+                          Decline
+                        </Button>
+                      </li>
+
+                      {/* <li>
+                          <Button
+                            color="primary"
+                            size="md"
+                            onClick={() => {
+                              setUpdatedStatus("approved");
+                              updateStatus();
+                            }}
+                          >
+                            Approve via Bank Transfer
+                          </Button>
+                        </li> */}
+                    </>
+                  ) : null}
+                  {/* <li>
+                      <a
+                        href="#cancel"
+                        onClick={(ev) => {
+                          ev.preventDefault();
+                          close();
+                        }}
+                        className="link link-light"
+                      >
+                        Cancel
+                      </a>
+                    </li> */}
+                </ul>
+              </Col>
             </Row>
           </div>
         </ModalBody>
       </Modal>
+
+      <EditModal view={view} formData={formData} onFormSubmit={updateAmount} onFormCancel={onFormCancel} />
     </>
   );
 };

@@ -34,7 +34,7 @@ const FaqTable = ({
 }) => {
   const [onSearch, setonSearch] = useState(false);
   const [onSearchText, setSearchText] = useState("");
-  console.log(data);
+  // console.log(data);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const itemsPerPage = searchParams.get("limit") ? Number(searchParams.get("limit")) : 100;

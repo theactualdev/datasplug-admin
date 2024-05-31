@@ -120,24 +120,24 @@ const menu = [
     ],
   },
 
-  {
-    icon: "invest",
-    text: "Requests",
-    permission: "all",
-    // link: "/withdrawals",
-    subMenu: [
-      {
-        text: "Deposit Requests",
-        link: "/requests/deposit",
-        permission: "all",
-      },
-      {
-        text: "Withdrawal Requests",
-        link: "/requests/withdrawal",
-        permission: "all",
-      },
-    ],
-  },
+  // {
+  //   icon: "invest",
+  //   text: "Requests",
+  //   permission: "all",
+  //   link: "/withdrawals",
+  //   subMenu: [
+  //     {
+  //       text: "Deposit Requests",
+  //       link: "/requests/deposit",
+  //       permission: "all",
+  //     },
+  //     {
+  //       text: "Withdrawal Requests",
+  //       link: "/requests/withdrawal",
+  //       permission: "all",
+  //     },
+  //   ],
+  // },
 
   {
     heading: "Manage Users",
