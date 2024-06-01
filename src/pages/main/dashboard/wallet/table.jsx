@@ -95,6 +95,8 @@ const WithdrawalTable = ({ type, userId }) => {
     purpose: "",
     discount: "",
     proof: "",
+    balanceBefore: "",
+    balanceAfter: "",
   });
   const [view, setView] = useState({
     edit: false,
@@ -141,6 +143,8 @@ const WithdrawalTable = ({ type, userId }) => {
       purpose: "",
       discount: "",
       proof: "",
+      balanceBefore: "",
+      balanceAfter: "",
     });
     reset({});
   };
@@ -170,6 +174,8 @@ const WithdrawalTable = ({ type, userId }) => {
           totalAmount: item?.total_amount,
           discount: item?.discount,
           proof: item?.proof,
+          balanceBefore: item?.balance_before,
+          balanceAfter: item?.balance_after,
         });
       }
     });
@@ -300,9 +306,9 @@ const WithdrawalTable = ({ type, userId }) => {
                       <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Total Amount</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      {/* <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Balance Before</span>
-                      </DataTableRow>
+                      </DataTableRow> */}
                       <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Balance After</span>
                       </DataTableRow>
@@ -362,9 +368,9 @@ const WithdrawalTable = ({ type, userId }) => {
                             <span>{formatter("NGN").format(item?.total_amount)}</span>
                           </DataTableRow>
 
-                          <DataTableRow>
+                          {/* <DataTableRow>
                             <span>{item?.balance_before ? formatter("NGN").format(item?.balance_before) : "N/A"}</span>
-                          </DataTableRow>
+                          </DataTableRow> */}
 
                           <DataTableRow>
                             <span>{item?.balance_after ? formatter("NGN").format(item?.balance_after) : "N/A"}</span>
@@ -555,6 +561,18 @@ const WithdrawalTable = ({ type, userId }) => {
                 <span className="caption-text">{formatter("NGN").format(formData.discount)}</span>
               </Col>
               <Col lg={4}>
+                <span className="sub-text">Balance Before</span>
+                <span className="caption-text">
+                  {formData?.balanceBefore ? formatter("NGN").format(formData?.balanceBefore) : "N/A"}
+                </span>
+              </Col>
+              <Col lg={4}>
+                <span className="sub-text">Balance After</span>
+                <span className="caption-text">
+                  {formData?.balanceAfter ? formatter("NGN").format(formData?.balanceAfter) : "N/A"}
+                </span>
+              </Col>
+              <Col lg={4}>
                 <span className="sub-text">Provider</span>
                 <span className="caption-text ccap">{formData.provider}</span>
               </Col>
@@ -612,6 +630,15 @@ const WithdrawalTable = ({ type, userId }) => {
                     <span className="caption-text"> {formData.bank}</span>
                   </Col>
                 </>
+              )}
+              {formData?.proof && (
+                <Col>
+                  <h6>Proof</h6>
+
+                  <div style={{ width: "100px", height: "100px", overflow: "hidden" }}>
+                    <ImageContainer img={formData.proof} />
+                  </div>
+                </Col>
               )}
               <Col size="12" className="mt-5">
                 <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
