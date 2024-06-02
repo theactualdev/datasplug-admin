@@ -33,7 +33,7 @@ export const useGetSingleUser = (id) => {
     ["getSingleUser"],
     async () => {
       const request = await instance
-        .get(BACKEND_URLS.users + `/${id}?include=bankAccounts&include=referrals`)
+        .get(BACKEND_URLS.users + `/${id}?include=bankAccounts,referrals`)
         .then((res) => res?.data)
         .catch((err) => {
           throw err;
