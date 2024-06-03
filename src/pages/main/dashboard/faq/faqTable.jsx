@@ -187,11 +187,29 @@ const FaqTable = ({
               <DataTableRow className="nk-tb-col-check">
                 <span>S/N</span>
               </DataTableRow>
-              {headers?.map((header, idx) => (
-                <DataTableRow key={idx}>
-                  <span className="tb-tnx-head bg-white text-secondary">{header}</span>
-                </DataTableRow>
-              ))}
+              {headers?.map((header, idx) => {
+                if (header === "Answer") {
+                  return (
+                    <DataTableRow key={idx} size="sm">
+                      <span className="tb-tnx-head bg-white text-secondary">{header}</span>
+                    </DataTableRow>
+                  );
+                }
+
+                if (header === "Date") {
+                  return (
+                    <DataTableRow key={idx} size="sm">
+                      <span className="tb-tnx-head bg-white text-secondary">{header}</span>
+                    </DataTableRow>
+                  );
+                }
+
+                return (
+                  <DataTableRow key={idx}>
+                    <span className="tb-tnx-head bg-white text-secondary">{header}</span>
+                  </DataTableRow>
+                );
+              })}
 
               <DataTableRow className="nk-tb-col-tools">
                 <ul className="nk-tb-actions gx-1 my-n1">
@@ -264,14 +282,14 @@ const FaqTable = ({
 
                       if (key === "created_at")
                         return (
-                          <DataTableRow key={idx}>
+                          <DataTableRow key={idx} size="sm">
                             <span>{formatDateWithTime(item.created_at)}</span>
                           </DataTableRow>
                         );
 
                       if (key === "answer")
                         return (
-                          <DataTableRow key={idx}>
+                          <DataTableRow key={idx} size="md">
                             <span>{truncateText(item.answer, 80)}</span>
                           </DataTableRow>
                         );

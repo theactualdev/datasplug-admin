@@ -32,8 +32,8 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
     if (!isLoading && users) {
       return users.data.map((item) => ({
         id: item.id,
-        label: `${item.firstname} ${item.firstname}`,
-        value: `${item.firstname} ${item.firstname}`,
+        label: `${item.firstname} ${item.lastname}`,
+        value: `${item.firstname} ${item.lastname}`,
       }));
     }
   }, [isLoading, users]);
@@ -47,7 +47,7 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
     let submittedData;
     if (data.channels.value) {
       if (data.channels.value === "both") {
-        channels = ["Email", "Push"];
+        channels = ["email", "push"];
       } else {
         channels = [data.channels.value];
       }
@@ -83,7 +83,7 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
     } else {
       createFunction(submittedData);
     }
-    // closeModal();
+    closeModal();
   };
 
   const defaultChannel = useMemo(() => {

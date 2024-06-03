@@ -46,6 +46,7 @@ import { FilterOptions } from "../tables/filter-select";
 import { WalletFilterOptions } from "./data";
 import { WalletStatsCard } from "./stats-card";
 import EditModal from "../requests/edit-modal";
+import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
 
 const WithdrawalTable = ({ type, userId }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -284,10 +285,10 @@ const WithdrawalTable = ({ type, userId }) => {
                 <>
                   <DataTableBody className="is-compact">
                     <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
-                      <DataTableRow>
+                      <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">S/N</span>
                       </DataTableRow>
-                      <DataTableRow size="sm">
+                      <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">
                           {type === "transfer" ? "Sender" : "Fullname"}
                         </span>
@@ -297,10 +298,10 @@ const WithdrawalTable = ({ type, userId }) => {
                           <span className="tb-tnx-head bg-white text-secondary">Receiver</span>
                         </DataTableRow>
                       )}
-                      <DataTableRow>
+                      <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Provider</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Amount</span>
                       </DataTableRow>
                       <DataTableRow>
@@ -309,13 +310,13 @@ const WithdrawalTable = ({ type, userId }) => {
                       {/* <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Balance Before</span>
                       </DataTableRow> */}
-                      <DataTableRow>
+                      <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Balance After</span>
                       </DataTableRow>
                       <DataTableRow size="md">
                         <span className="tb-tnx-head bg-white text-secondary">Purpose</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Date</span>
                       </DataTableRow>
                       <DataTableRow>
@@ -342,10 +343,10 @@ const WithdrawalTable = ({ type, userId }) => {
                     {data?.data?.map((item, index) => {
                       return (
                         <DataTableItem key={item.id} className="text-secondary">
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span className="text-capitalize"> {index + 1}</span>
                           </DataTableRow>
-                          <DataTableRow size="sm" className="text-primary fw-bold">
+                          <DataTableRow className="text-primary fw-bold">
                             <Link to={`/user-details/${item?.user?.id}`} className="title">
                               {truncateText(`${item?.user?.firstname} ${item?.user?.lastname}`, 10)}
                             </Link>
@@ -357,10 +358,10 @@ const WithdrawalTable = ({ type, userId }) => {
                               </Link>
                             </DataTableRow>
                           )}
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span className="text-capitalize"> {item?.provider}</span>
                           </DataTableRow>
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span>{formatter("NGN").format(item?.amount)}</span>
                           </DataTableRow>
 
@@ -372,14 +373,14 @@ const WithdrawalTable = ({ type, userId }) => {
                             <span>{item?.balance_before ? formatter("NGN").format(item?.balance_before) : "N/A"}</span>
                           </DataTableRow> */}
 
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span>{item?.balance_after ? formatter("NGN").format(item?.balance_after) : "N/A"}</span>
                           </DataTableRow>
 
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span className="text-capitalize"> {item?.purpose}</span>
                           </DataTableRow>
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span>{formatDateWithTime(item.created_at)}</span>
                           </DataTableRow>
                           <DataTableRow>
@@ -526,11 +527,11 @@ const WithdrawalTable = ({ type, userId }) => {
           </div>
           <div className="nk-tnx-details mt-sm-3">
             <Row className="gy-2">
-              <Col lg={4}>
+              <Col sm={4}>
                 <span className="sub-text">Transaction Reference</span>
                 <span className="caption-text">{formData.reference}</span>
               </Col>
-              <Col lg={4}>
+              <Col size={4}>
                 <span className="sub-text">Status</span>
                 <span className="caption-text">
                   <Badge className="badge-sm badge-dot has-bg d-inline-flex" color={statusColor(formData.status)}>
@@ -538,35 +539,35 @@ const WithdrawalTable = ({ type, userId }) => {
                   </Badge>
                 </span>
               </Col>
-              <Col lg={4}>
+              <Col size={4}>
                 <span className="sub-text">Type</span>
                 <span className="caption-text">{formData.type}</span>
               </Col>
-              <Col lg={4}>
+              <Col size={4}>
                 <span className="sub-text">Amount</span>
                 <span className="caption-text">{formatter("NGN").format(formData.amount)}</span>
               </Col>
 
-              <Col lg={4}>
+              <Col size={4}>
                 <span className="sub-text">Total Amount</span>
                 <span className="caption-text">{formatter("NGN").format(formData.totalAmount)}</span>
               </Col>
 
-              <Col lg={4}>
+              <Col size={4}>
                 <span className="sub-text">Fee</span>
                 <span className="caption-text">{formatter("NGN").format(formData.fee)}</span>
               </Col>
-              <Col lg={4}>
+              <Col size={4}>
                 <span className="sub-text">Discount</span>
                 <span className="caption-text">{formatter("NGN").format(formData.discount)}</span>
               </Col>
-              <Col lg={4}>
+              <Col size={4}>
                 <span className="sub-text">Balance Before</span>
                 <span className="caption-text">
                   {formData?.balanceBefore ? formatter("NGN").format(formData?.balanceBefore) : "N/A"}
                 </span>
               </Col>
-              <Col lg={4}>
+              <Col size={4}>
                 <span className="sub-text">Balance After</span>
                 <span className="caption-text">
                   {formData?.balanceAfter ? formatter("NGN").format(formData?.balanceAfter) : "N/A"}
@@ -583,15 +584,15 @@ const WithdrawalTable = ({ type, userId }) => {
 
               <Row className="mt-2">
                 <h6>{type === "transfer" ? "Sender" : "User"}</h6>
-                <Col lg={4}>
+                <Col sm={6} lg={4}>
                   <span className="sub-text">Fullname</span>
                   <span className="caption-text">{formData.fullName}</span>
                 </Col>
-                <Col lg={4}>
+                <Col sm={6} lg={4}>
                   <span className="sub-text">Email</span>
                   <span className="caption-text">{formData.email}</span>
                 </Col>
-                <Col lg={4}>
+                <Col sm={6} lg={4}>
                   <span className="sub-text">Phone</span>
                   <span className="caption-text">{formData.phone}</span>
                 </Col>
@@ -599,15 +600,15 @@ const WithdrawalTable = ({ type, userId }) => {
               {formData?.purpose === "transfer" && (
                 <Row className="mt-2">
                   <h6>Receiver</h6>
-                  <Col lg={4}>
+                  <Col sm={6} lg={4}>
                     <span className="sub-text">Fullname</span>
                     <span className="caption-text">{formData?.receiverName}</span>
                   </Col>
-                  <Col lg={4}>
+                  <Col sm={6} lg={4}>
                     <span className="sub-text">Email</span>
                     <span className="caption-text">{formData?.receiverEmail}</span>
                   </Col>
-                  <Col lg={4}>
+                  <Col sm={4} lg={4}>
                     <span className="sub-text">Phone</span>
                     <span className="caption-text">{formData.receiverPhone}</span>
                   </Col>
@@ -617,15 +618,15 @@ const WithdrawalTable = ({ type, userId }) => {
               {formData.status === "pending" && (
                 <>
                   <h6>Bank</h6>
-                  <Col lg={4}>
+                  <Col sm={6} lg={4}>
                     <span className="sub-text">Account Name</span>
                     <span className="caption-text">{formData.accountName}</span>
                   </Col>
-                  <Col lg={4}>
+                  <Col sm={6} lg={4}>
                     <span className="sub-text">Account Number</span>
                     <span className="caption-text">{formData.accountNumber}</span>
                   </Col>
-                  <Col lg={4}>
+                  <Col sm={6} lg={4}>
                     <span className="sub-text">Bank</span>
                     <span className="caption-text"> {formData.bank}</span>
                   </Col>

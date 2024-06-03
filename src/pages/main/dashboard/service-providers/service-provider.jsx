@@ -368,19 +368,19 @@ const ServiceProviders = () => {
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
-                        <DataTableRow size="sm">
+                        <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Provider Name</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Product Type</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Service Count</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="md">
                           <span className="tb-tnx-head bg-white text-secondary">Date Added</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
                         </DataTableRow>
 
@@ -418,7 +418,7 @@ const ServiceProviders = () => {
                             {/* <DataTableRow>
                               <span className="text-capitalize"> {item?.purpose}</span>
                             </DataTableRow> */}
-                            <DataTableRow>
+                            <DataTableRow size="sm">
                               {item?.product_type?.map((type, index) => {
                                 if (index <= 1) {
                                   return (
@@ -430,13 +430,13 @@ const ServiceProviders = () => {
                               })}
                               {item?.product_type?.length > 2 && <span>& {item?.product_type?.length - 2} more.</span>}
                             </DataTableRow>
-                            <DataTableRow>
+                            <DataTableRow size="sm">
                               <span className="text-capitalize"> {item?.service_count}</span>
                             </DataTableRow>
-                            <DataTableRow>
+                            <DataTableRow size="md">
                               <span>{formatDate(item.created_at)}</span>
                             </DataTableRow>
-                            <DataTableRow>
+                            <DataTableRow size="sm">
                               <span className={`dot bg-${item.active ? "success" : "warning"} d-sm-none`}></span>
                               <Badge
                                 className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
@@ -447,7 +447,7 @@ const ServiceProviders = () => {
                             </DataTableRow>
 
                             <DataTableRow className="tb-odr-action">
-                              <div className="tb-odr-btns d-none d-md-inline">
+                              <div className="tb-odr-btns d-md-inline">
                                 <Button
                                   color="primary"
                                   className="btn-sm"

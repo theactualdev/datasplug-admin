@@ -98,7 +98,9 @@ const AssetListPage = () => {
             <div className="card-inner border-bottom">
               <div className="card-title-group">
                 <div className="card-title">
-                  <h5 className="title">Assets Transactions</h5>
+                  <h5 className="title">
+                    Assets <span className="d-none">Transactions</span>
+                  </h5>
                 </div>
                 <div className="card-tools me-n1">
                   <ul className="btn-toolbar gx-1">
@@ -145,19 +147,19 @@ const AssetListPage = () => {
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">S/N</span>
                         </DataTableRow>
-                        <DataTableRow size="sm">
+                        <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Fullname</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Reference No</span>
                         </DataTableRow>
-                        <DataTableRow size="md">
+                        <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Amount</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Date</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Type</span>
                         </DataTableRow>
                         <DataTableRow>
@@ -187,25 +189,25 @@ const AssetListPage = () => {
                             <DataTableRow>
                               <span>{index + 1}</span>
                             </DataTableRow>
-                            <DataTableRow size="sm" className="text-primary fw-bold">
+                            <DataTableRow className="text-primary fw-bold">
                               <Link to={`/user-details/${item?.user?.id}`} className="title">
                                 {item?.user?.firstname} {item?.user?.lastname}
                               </Link>
                             </DataTableRow>
-                            <DataTableRow>
+                            <DataTableRow size="md">
                               <span>{item.reference}</span>
                             </DataTableRow>
                             <DataTableRow>
                               <span>{formatter("NGN").format(item.payable_amount)}</span>
                             </DataTableRow>
-                            <DataTableRow>
+                            <DataTableRow size="sm">
                               <span>{formatDateWithTime(item.created_at)}</span>
                             </DataTableRow>
 
                             {/* <DataTableRow size="md" className="tnx-desc">
                               <span>{formatDate(item.startDate)}</span> - <span>{formatDate(item.endDate)}</span>
                             </DataTableRow> */}
-                            <DataTableRow>
+                            <DataTableRow size="sm">
                               <span className="ccap"> {item.trade_type}</span>
                             </DataTableRow>
                             <DataTableRow>
