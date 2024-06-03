@@ -5,6 +5,7 @@ import { Form, Modal, ModalBody } from "reactstrap";
 import { Button, Col, Icon, RSelect } from "../../../../components/Component";
 import { formatDateTimeNumeric } from "../../../../utils/Utils";
 import { useGetAllUsers } from "../../../../api/users/user";
+import toast from "react-hot-toast";
 
 const channelOption = [
   { label: "Push", value: "push" },
@@ -43,6 +44,12 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
 
   const onSubmit = (data) => {
     //Assign apporiate values to the channel prop
+    // console.log(data);
+    if (!data?.dispatchDate) {
+      toast.error("Select Date and Time");
+      return;
+    }
+
     let channels;
     let submittedData;
     if (data.channels.value) {
@@ -77,7 +84,6 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
           data.dispatchDate instanceof Date ? formatDateTimeNumeric(data.dispatchDate) : data.dispatchDate,
       };
     }
-    // console.log(submittedData);
     if (isEdit) {
       editFunction(submittedData);
     } else {
@@ -237,7 +243,7 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
                           onChange={onChange}
                           showTimeSelect
                           showTimeSelectOnly
-                          timeIntervals={15}
+                          timeIntervals={10}
                           timeCaption="Time"
                           dateFormat="h:mm aa"
                           className="form-control date-picker"
