@@ -256,10 +256,10 @@ export const TransactionTable = ({ purpose, userId }) => {
                 <>
                   <DataTableBody className="is-compact">
                     <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
-                      <DataTableRow>
+                      <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">S/N</span>
                       </DataTableRow>
-                      <DataTableRow size="sm">
+                      <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Fullname</span>
                       </DataTableRow>
                       <DataTableRow>
@@ -268,10 +268,10 @@ export const TransactionTable = ({ purpose, userId }) => {
                       <DataTableRow size="md">
                         <span className="tb-tnx-head bg-white text-secondary">Purpose</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Type</span>
                       </DataTableRow>
-                      <DataTableRow>
+                      <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Date</span>
                       </DataTableRow>
                       <DataTableRow>
@@ -298,10 +298,10 @@ export const TransactionTable = ({ purpose, userId }) => {
                     {data?.data?.map((item, index) => {
                       return (
                         <DataTableItem key={item.id} className="text-secondary">
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span className="text-capitalize">{index + 1}</span>
                           </DataTableRow>
-                          <DataTableRow size="sm" className="text-primary fw-bold">
+                          <DataTableRow className="text-primary fw-bold">
                             <Link to={`/user-details/${item?.user?.id}`} className="title">
                               {item?.user?.firstname} {item?.user?.lastname}
                             </Link>
@@ -310,13 +310,13 @@ export const TransactionTable = ({ purpose, userId }) => {
                             <span>{formatter("NGN").format(item?.amount)}</span>
                           </DataTableRow>
 
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span className="text-capitalize"> {item?.purpose}</span>
                           </DataTableRow>
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span className="text-capitalize"> {item?.type}</span>
                           </DataTableRow>
-                          <DataTableRow>
+                          <DataTableRow size="sm">
                             <span>{formatDateWithTime(item.created_at)}</span>
                           </DataTableRow>
                           <DataTableRow>

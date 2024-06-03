@@ -144,8 +144,8 @@ export const truncate = (str, n) => {
 };
 
 //shortens a long sentence
-export const truncateText = (value, limit) => {
-  return value.length > 20 ? value.substring(0, limit) + "..." : value;
+export const truncateText = (value, limit, length = 20) => {
+  return value.length > length ? value.substring(0, limit) + "..." : value;
 };
 
 // returns upload url

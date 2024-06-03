@@ -307,7 +307,7 @@ const Services = () => {
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
-                        <DataTableRow size="sm">
+                        <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Provider Name</span>
                         </DataTableRow>
                         <DataTableRow>

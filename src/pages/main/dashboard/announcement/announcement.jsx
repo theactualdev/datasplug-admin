@@ -329,10 +329,10 @@ const AnnouncementPage = () => {
                         <DataTableRow size="md">
                           <span className="tb-tnx-head bg-white text-secondary">Channel</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Target</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="md">
                           <span className="tb-tnx-head bg-white text-secondary">Target Count</span>
                         </DataTableRow>
                         <DataTableRow>
@@ -366,7 +366,7 @@ const AnnouncementPage = () => {
                               <span>Super Admin</span>
                             </DataTableRow>
 
-                            <DataTableRow>
+                            <DataTableRow size="md">
                               {item?.channels?.map((item, index) => (
                                 <span key={item} className="text-capitalize">
                                   {item}
@@ -374,10 +374,10 @@ const AnnouncementPage = () => {
                                 </span>
                               ))}
                             </DataTableRow>
-                            <DataTableRow>
+                            <DataTableRow size="sm">
                               <span className="text-capitalize"> {item?.target}</span>
                             </DataTableRow>
-                            <DataTableRow>
+                            <DataTableRow size="md">
                               <span>{item.user_count}</span>
                             </DataTableRow>
                             <DataTableRow>
@@ -390,7 +390,7 @@ const AnnouncementPage = () => {
                               </Badge>
                             </DataTableRow>
                             <DataTableRow className="tb-odr-action">
-                              <div className="tb-odr-btns d-none d-md-inline">
+                              <div className="tb-odr-btns d-md-inline">
                                 <Button
                                   color="primary"
                                   className="btn-sm"

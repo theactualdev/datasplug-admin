@@ -26,7 +26,7 @@ const ImageContainer = ({ img, sm }) => {
           ×
         </button>
         <div>
-          <img className="w-100" style={{ height: "100%", objectFit: "contain" }} src={img} alt="" />
+          <img className="w-100" style={{ height: "400px", objectFit: "contain" }} src={img} alt="" />
         </div>
       </Modal>
     </a>

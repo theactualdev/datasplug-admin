@@ -296,7 +296,7 @@ const ServicesTypes = () => {
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
-                        <DataTableRow size="sm">
+                        <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Name</span>
                         </DataTableRow>
                         <DataTableRow>

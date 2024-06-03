@@ -228,13 +228,13 @@ const BannersPage = () => {
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Preview Image</span>
                         </DataTableRow>
-                        <DataTableRow size="md">
+                        <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Featured Image</span>
                         </DataTableRow>
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size="sm">
                           <span className="tb-tnx-head bg-white text-secondary">Date Created</span>
                         </DataTableRow>
 
@@ -258,7 +258,7 @@ const BannersPage = () => {
                       {data?.data?.map((item) => {
                         return (
                           <DataTableItem key={item.id} className="text-secondary">
-                            <DataTableRow>
+                            <DataTableRow size="sm">
                               <span className="title">Super Admin</span>
                             </DataTableRow>
                             <DataTableRow>
@@ -279,7 +279,7 @@ const BannersPage = () => {
                               </Badge>
                             </DataTableRow>
 
-                            <DataTableRow>
+                            <DataTableRow size="sm">
                               <span className="text-capitalize"> {formatDateWithTime(item.created_at)}</span>
                             </DataTableRow>
 

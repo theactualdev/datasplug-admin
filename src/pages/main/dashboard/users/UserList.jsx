@@ -224,13 +224,13 @@ const UserList = () => {
               <>
                 <DataTableBody compact>
                   <DataTableHead>
-                    <DataTableRow className="nk-tb-col-check">
+                    <DataTableRow className="nk-tb-col-check" size="sm">
                       <div className="custom-control custom-control-sm custom-checkbox notext">S/N</div>
                     </DataTableRow>
                     <DataTableRow>
                       <span className="sub-text ">User</span>
                     </DataTableRow>
-                    <DataTableRow>
+                    <DataTableRow size="sm">
                       <span className="sub-text ">Username</span>
                     </DataTableRow>
                     <DataTableRow size="sm">
@@ -264,7 +264,7 @@ const UserList = () => {
                         // onClick={() => navigate(`/user-details/${item.id}`)}
                         // style={{ cursor: "pointer" }}
                       >
-                        <DataTableRow className="nk-tb-col-check">
+                        <DataTableRow className="nk-tb-col-check" size="sm">
                           <div className="custom-control custom-control-sm custom-checkbox notext">{idx + 1}</div>
                         </DataTableRow>
                         <DataTableRow>
@@ -386,6 +386,23 @@ const UserList = () => {
                                       >
                                         <Icon name="na"></Icon>
                                         <span>{item.status === "active" ? "Restrict" : "Unrestrict"} User</span>
+                                      </DropdownItem>
+                                    </li>
+                                    <li
+                                      onClick={() => {
+                                        setUserId(item.id);
+                                        // updateUserStatus();
+                                      }}
+                                    >
+                                      <DropdownItem
+                                        tag="a"
+                                        href="#suspend"
+                                        onClick={(ev) => {
+                                          ev.preventDefault();
+                                        }}
+                                      >
+                                        <Icon name="report"></Icon>
+                                        <span>Flag as Fraud.</span>
                                       </DropdownItem>
                                     </li>
                                   </ul>
