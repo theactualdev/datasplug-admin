@@ -1,7 +1,13 @@
 import React, { useCallback, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Badge, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
-import { useFinanceUser, useGetAllUsers, useUpdateUserStatus, useUpdateUserType } from "../../../../api/users/user";
+import {
+  useFinanceUser,
+  useGetAllUsers,
+  useMarkAsFraud,
+  useUpdateUserStatus,
+  useUpdateUserType,
+} from "../../../../api/users/user";
 import {
   Block,
   BlockDes,
@@ -43,6 +49,7 @@ const UserList = () => {
   const { mutate: updateUserStatus } = useUpdateUserStatus(userId);
   const { mutate: financeUser } = useFinanceUser(userId);
   const { mutate: updateUserType } = useUpdateUserType(userId);
+  const { mutate: markAsFraud } = useMarkAsFraud(userId);
   // console.log(users);
 
   const [tablesm, updateTableSm] = useState(false);
@@ -388,23 +395,26 @@ const UserList = () => {
                                         <span>{item.status === "active" ? "Restrict" : "Unrestrict"} User</span>
                                       </DropdownItem>
                                     </li>
-                                    <li
-                                      onClick={() => {
-                                        setUserId(item.id);
-                                        // updateUserStatus();
-                                      }}
-                                    >
-                                      <DropdownItem
-                                        tag="a"
-                                        href="#suspend"
-                                        onClick={(ev) => {
-                                          ev.preventDefault();
+                                    {item?.status !== "fraudulent" && (
+                                      <li
+                                        onClick={() => {
+                                          setUserId(item.id);
+                                          markAsFraud();
+                                          // updateUserStatus();
                                         }}
                                       >
-                                        <Icon name="report"></Icon>
-                                        <span>Flag as Fraud.</span>
-                                      </DropdownItem>
-                                    </li>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#suspend"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                          }}
+                                        >
+                                          <Icon name="report"></Icon>
+                                          <span>Flag as Fraud.</span>
+                                        </DropdownItem>
+                                      </li>
+                                    )}
                                   </ul>
                                 </DropdownMenu>
                               </UncontrolledDropdown>

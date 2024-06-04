@@ -83,6 +83,40 @@ export const useUpdateUserStatus = (id) => {
   );
 };
 
+export const useMarkAsFraud = (id) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .put(BACKEND_URLS.users + `/${id}/mark-as-fraudulent`)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: "User Status updated",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: "Something happened",
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: (data) => {
+        // console.log(data);
+        queryClient.invalidateQueries(["getAllUsers"]);
+        queryClient.invalidateQueries(["getSingleUser"]);
+      },
+    }
+  );
+};
+
 export const useFinanceUser = (id) => {
   const queryClient = useQueryClient();
 
