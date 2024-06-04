@@ -13,12 +13,13 @@ export const useCreateBanners = () => {
           .post(BACKEND_URLS.banners, data)
           .then((res) => res.data)
           .catch((err) => {
-            throw err.response.data;
+            console.log(err.message);
+            throw err.message;
           }),
         {
           success: (data) => data.message,
           loading: "Please wait...",
-          error: (error) => error.message,
+          error: (error) => error,
         },
         {
           style: {

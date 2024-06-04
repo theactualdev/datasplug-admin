@@ -3,6 +3,8 @@ import Dropzone from "react-dropzone";
 import { Form, Modal, ModalBody, Input } from "reactstrap";
 import { Button, Col, Icon } from "../../../../components/Component";
 import { useCreateBanners } from "../../../../api/banners";
+import { useUploadImages } from "../../../../api/uploadimage";
+import { generateSignature } from "../../../../api/uploadimage";
 
 const AddBanner = ({ modal, closeModal }) => {
   const { mutate: create } = useCreateBanners();
@@ -11,12 +13,20 @@ const AddBanner = ({ modal, closeModal }) => {
   const [featuredImage, setFeaturedImage] = useState([]);
   const [rejectedFiles, setRejectedFile] = useState([]);
   const [rejectedFeature, setRejectedFeature] = useState([]);
+  // const [isUploading, setIsUploading] = useState(false);
+  const [uploadedPreview, setUploadedPreview] = useState(null);
+  const [uploadedFeature, setUploadedFeature] = useState(null);
+  const [type, setType] = useState("");
 
   const submitForm = (e) => {
     e.preventDefault();
-    let data = new FormData();
-    data.append("preview_image", previewImage[0]);
-    data.append("featured_image", featuredImage[0]);
+
+    let data = {
+      preview_image: uploadedPreview,
+      featured_image: uploadedFeature,
+    };
+
+    // console.log(data);
 
     create(data);
     closeModal();
@@ -24,6 +34,8 @@ const AddBanner = ({ modal, closeModal }) => {
     setPreviewImage([]);
     setRejectedFile([]);
     setRejectedFeature([]);
+    setUploadedFeature(null);
+    setUploadedPreview(null);
   };
 
   // handles ondrop function of dropzone
@@ -49,6 +61,44 @@ const AddBanner = ({ modal, closeModal }) => {
     setRejectedFile([]);
     setRejectedFeature([]);
   };
+
+  const onImageUpload = (data) => {
+    const image = data?.url;
+    console.log("Image uploaded");
+    if (type === "preview") {
+      setUploadedPreview(image);
+    } else {
+      setUploadedFeature(image);
+    }
+  };
+
+  console.log(uploadedFeature);
+
+  const bulkImageUpload = async (image) => {
+    const { token, expire, signature } = await generateSignature();
+
+    const formData = new FormData();
+    formData.append("publicKey", import.meta.env.VITE_APP_IMAGEKIT_PUBLIC_KEY);
+    formData.append("file", image);
+    formData.append("fileName", image?.name);
+    formData.append("useUniqueFileName", "true");
+    formData.append("expire", expire);
+    formData.append("token", token);
+    formData.append("signature", signature);
+    upload(formData);
+  };
+
+  const uploadImageToImageKit = async (type) => {
+    if (type === "preview") {
+      return bulkImageUpload(previewImage[0]);
+    } else {
+      return bulkImageUpload(featuredImage[0]);
+    }
+  };
+
+  //api function to upload images
+  const { isLoading: isUploading, mutate: upload, isSuccess: uploaded } = useUploadImages(onImageUpload);
+
   return (
     <Modal isOpen={modal} toggle={close} className="modal-dialog-centered" size="lg">
       <ModalBody>
@@ -99,6 +149,21 @@ const AddBanner = ({ modal, closeModal }) => {
                           </div>
                         ))}
                       </div>
+                      {!uploadedPreview && previewImage.length > 0 && (
+                        <Button
+                          disabled={isUploading}
+                          color="primary"
+                          size="md"
+                          type="button"
+                          onClick={() => {
+                            setType("preview");
+                            uploadImageToImageKit("preview");
+                          }}
+                          className="mt-1"
+                        >
+                          {isUploading ? "Uploading" : "Upload Preview"}
+                        </Button>
+                      )}
                     </section>
                   )}
                 </Dropzone>
@@ -145,6 +210,21 @@ const AddBanner = ({ modal, closeModal }) => {
                           </div>
                         ))}
                       </div>
+                      {!uploadedFeature && featuredImage.length > 0 && (
+                        <Button
+                          disabled={isUploading}
+                          color="primary"
+                          size="md"
+                          type="button"
+                          onClick={() => {
+                            setType("feature");
+                            uploadImageToImageKit("feature");
+                          }}
+                          className="mt-1"
+                        >
+                          {isUploading ? "Uploading" : "Upload Feature"}
+                        </Button>
+                      )}
                     </section>
                   )}
                 </Dropzone>
@@ -162,7 +242,7 @@ const AddBanner = ({ modal, closeModal }) => {
               <Col size="12">
                 <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                   <li>
-                    <Button color="primary" size="md" type="submit">
+                    <Button color="primary" size="md" type="submit" disabled={!uploadedFeature || !uploadedPreview}>
                       Create Banner
                     </Button>
                   </li>

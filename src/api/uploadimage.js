@@ -53,7 +53,7 @@ export const useUploadImages = (uploadCallback) => {
 
 export const generateSignature = async () => {
   const response = await instance
-    .get(BACKEND_URLS.signature)
+    .get("/imagekit-signature")
     .then((response) => response?.data)
     .catch((err) => console.error(err));
 
