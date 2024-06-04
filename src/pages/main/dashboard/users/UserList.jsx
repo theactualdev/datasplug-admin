@@ -26,7 +26,7 @@ import {
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { findUpper, formatDate, formatter, truncateText } from "../../../../utils/Utils";
+import { findUpper, formatDate, formatDateWithTime, formatter, truncateText } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
@@ -313,7 +313,7 @@ const UserList = () => {
                           <span>{formatter("NGN").format(item?.wallet?.balance)}</span>
                         </DataTableRow>
                         <DataTableRow size="lg">
-                          <span className="fs-12px">{formatDate(item.created_at)}</span>
+                          <span className="fs-12px">{formatDateWithTime(item.created_at)}</span>
                         </DataTableRow>
                         <DataTableRow>
                           <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
