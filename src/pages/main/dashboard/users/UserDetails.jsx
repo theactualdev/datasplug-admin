@@ -1,33 +1,36 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Card,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Nav,
   NavItem,
   NavLink,
   TabContent,
   TabPane,
   UncontrolledDropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
 } from "reactstrap";
-import { Block, BlockBetween, BlockHead, BlockHeadContent, BlockTitle, Icon } from "../../../../components/Component";
+import {
+  BlockBetween,
+  BlockHead,
+  BlockHeadContent,
+  BlockTitle,
+  Icon,
+  BlockDes,
+} from "../../../../components/Component";
 
+import toast from "react-hot-toast";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useGetSingleUser, useUpdateUserStatus } from "../../../../api/users/user";
-import { UserAvatar } from "../../../../components/Component";
+import { useFinanceUser, useGetSingleUser, useUpdateUserStatus } from "../../../../api/users/user";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { findUpper, formatDateWithTime, formatter } from "../../../../utils/Utils";
-import LoadingSpinner from "../../../components/spinner";
-import Details from "./details/details";
-import WithdrawalTable from "../wallet/table";
-import { TransactionTable } from "../transactions/table";
-import AddModal from "./AddModal";
-import { useFinanceUser } from "../../../../api/users/user";
 import FaqTable from "../faq/faqTable";
-import toast from "react-hot-toast";
+import { TransactionTable } from "../transactions/table";
+import WithdrawalTable from "../wallet/table";
+import AddModal from "./AddModal";
+import Details from "./details/details";
 import ReferralUserList from "./details/referral-table";
 
 const UserDetailsPage = () => {
@@ -126,7 +129,12 @@ const UserDetailsPage = () => {
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle page>User Details</BlockTitle>
+              <BlockDes className="text-soft">
+                <p>User Details</p>
+              </BlockDes>
+              <BlockTitle page>
+                {user?.data?.firstname} {user?.data?.lastname}
+              </BlockTitle>
             </BlockHeadContent>
             <BlockHeadContent>
               <Button
