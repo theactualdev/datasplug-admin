@@ -76,6 +76,7 @@ const GiftcardDetails = ({ match }) => {
   // console.log(giftcardId);
   const { isLoading, data: giftcard } = useGetGiftcardInfo(giftcardId);
   // console.log(giftcard);
+  // console.log("hello");
 
   const statusColor = useCallback((status) => {
     if (status === "pending") {
@@ -304,21 +305,21 @@ const GiftcardDetails = ({ match }) => {
               </Block> */}
 
               {/* <div className="nk-divider divider md"></div> */}
-              {/* 
+
               <Block>
                 <BlockHead size="sm">
                   <BlockBetween>
                     <BlockTitle tag="h5">Proof</BlockTitle>
                   </BlockBetween>
                 </BlockHead>
-                {giftcard?.data?.proof ? (
+                {giftcard?.data?.card ? (
                   <div style={{ width: "100px", height: "100px" }}>
-                    <ImageContainer img={giftcard.data.proof} />
+                    <ImageContainer img={giftcard.data.card} />
                   </div>
                 ) : (
                   <span>No Image was uploaded</span>
                 )}
-              </Block> */}
+              </Block>
             </div>
           </Card>
         </Content>
