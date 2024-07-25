@@ -124,12 +124,19 @@ export const TransactionTable = ({ purpose, userId }) => {
             network: item?.meta?.provider?.name,
           };
         }
+        if (item.purpose === "data") {
+          customerDetails = {
+            customerPhone: item?.meta?.customer?.phone,
+            network: item?.meta?.provider?.name,
+          };
+        }
         if (item.purpose === "betting") {
           customerDetails = {
             bettingId: item?.meta?.customer?.customer_id,
             bettingProvider: item?.meta?.provider?.name,
           };
         }
+
         setFormData({
           reference: item?.reference,
           amount: item?.amount,
@@ -269,7 +276,7 @@ export const TransactionTable = ({ purpose, userId }) => {
                         <span className="tb-tnx-head bg-white text-secondary">Purpose</span>
                       </DataTableRow>
                       <DataTableRow size="sm">
-                        <span className="tb-tnx-head bg-white text-secondary">Type</span>
+                        <span className="tb-tnx-head bg-white text-secondary">Provider</span>
                       </DataTableRow>
                       <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Date</span>
@@ -311,10 +318,13 @@ export const TransactionTable = ({ purpose, userId }) => {
                           </DataTableRow>
 
                           <DataTableRow size="sm">
-                            <span className="text-capitalize"> {item?.purpose}</span>
+                            <span className="text-capitalize">
+                              {" "}
+                              {item?.purpose == "international-airtime" ? "INR-Airtime" : item.purpose}
+                            </span>
                           </DataTableRow>
                           <DataTableRow size="sm">
-                            <span className="text-capitalize"> {item?.type}</span>
+                            <span className="text-capitalize"> {item?.provider}</span>
                           </DataTableRow>
                           <DataTableRow size="sm">
                             <span>{formatDateWithTime(item.created_at)}</span>
@@ -438,25 +448,32 @@ export const TransactionTable = ({ purpose, userId }) => {
                 <span className="sub-text">Discount</span>
                 <span className="caption-text">{formatter("NGN").format(formData.discount)}</span>
               </Col>
-              <Col>
-                <span className="sub-text">Remark</span>
-                <span className="caption-text ccap">{formData.remark}</span>
-              </Col>
 
-              <h6>User</h6>
-              <Col lg={4}>
-                <span className="sub-text">Fullname</span>
-                <span className="caption-text">{formData.fullName}</span>
-              </Col>
-              <Col lg={4}>
-                <span className="sub-text">Email</span>
-                <span className="caption-text">{formData.email}</span>
-              </Col>
-              <Col lg={4}>
-                <span className="sub-text">Phone</span>
-                <span className="caption-text">{formData.phone}</span>
-              </Col>
+              {formData?.purpose === "airtime" && (
+                <>
+                  <Col lg={4}>
+                    <span className="sub-text">Recharged Number</span>
+                    <span className="caption-text">{formData.customerPhone}</span>
+                  </Col>
+                  <Col lg={4}>
+                    <span className="sub-text">Network</span>
+                    <span className="caption-text">{formData.network}</span>
+                  </Col>
+                </>
+              )}
 
+              {formData?.purpose === "data" && (
+                <>
+                  <Col lg={4}>
+                    <span className="sub-text">Recharged Number</span>
+                    <span className="caption-text">{formData.customerPhone}</span>
+                  </Col>
+                  <Col lg={4}>
+                    <span className="sub-text">Network</span>
+                    <span className="caption-text">{formData.network}</span>
+                  </Col>
+                </>
+              )}
               {formData?.purpose === "electricity" && (
                 <>
                   <Col lg={4}>
@@ -473,20 +490,6 @@ export const TransactionTable = ({ purpose, userId }) => {
                   </Col>
                 </>
               )}
-
-              {formData?.purpose === "airtime" && (
-                <>
-                  <Col lg={4}>
-                    <span className="sub-text">Recharged Number</span>
-                    <span className="caption-text">{formData.customerPhone}</span>
-                  </Col>
-                  <Col lg={4}>
-                    <span className="sub-text">Network</span>
-                    <span className="caption-text">{formData.network}</span>
-                  </Col>
-                </>
-              )}
-
               {formData?.purpose === "betting" && (
                 <>
                   <Col lg={4}>
@@ -499,6 +502,25 @@ export const TransactionTable = ({ purpose, userId }) => {
                   </Col>
                 </>
               )}
+              <Col>
+                <span className="sub-text">Remark</span>
+                <span className="caption-text ccap">{formData.remark}</span>
+              </Col>
+
+              <h6>User</h6>
+              <Col lg={4}>
+                <span className="sub-text">Fullname</span>
+                <span className="caption-text">{formData.fullName}</span>
+              </Col>
+
+              <Col lg={4}>
+                <span className="sub-text">Phone</span>
+                <span className="caption-text">{formData.phone}</span>
+              </Col>
+              <Col lg={6}>
+                <span className="sub-text">Email</span>
+                <span className="caption-text">{formData.email}</span>
+              </Col>
             </Row>
           </div>
         </ModalBody>
