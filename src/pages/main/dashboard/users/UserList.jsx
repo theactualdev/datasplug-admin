@@ -26,7 +26,14 @@ import {
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { findUpper, formatDate, formatDateWithTime, formatter, truncateText } from "../../../../utils/Utils";
+import {
+  findUpper,
+  formatDate,
+  formatDateWithTime,
+  formatter,
+  truncateText,
+  tableNumbers,
+} from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
@@ -231,29 +238,29 @@ const UserList = () => {
               <>
                 <DataTableBody compact>
                   <DataTableHead>
-                    <DataTableRow className="nk-tb-col-check" size="sm">
-                      <div className="custom-control custom-control-sm custom-checkbox notext">S/N</div>
+                    <DataTableRow size="sm">
+                      <span className="tb-tnx-head bg-white text-secondary">S/N</span>
                     </DataTableRow>
                     <DataTableRow>
-                      <span className="sub-text ">User</span>
+                      <span className="tb-tnx-head bg-white text-secondary ">User</span>
                     </DataTableRow>
                     <DataTableRow size="sm">
-                      <span className="sub-text ">Username</span>
+                      <span className="tb-tnx-head bg-white text-secondary">Username</span>
                     </DataTableRow>
                     <DataTableRow size="sm">
-                      <span className="sub-text">Phone</span>
+                      <span className="tb-tnx-head bg-white text-secondary">Phone</span>
                     </DataTableRow>
                     <DataTableRow>
-                      <span className="sub-text ">Type</span>
+                      <span className="tb-tnx-head bg-white text-secondary ">Type</span>
                     </DataTableRow>
                     <DataTableRow size="md">
-                      <span className="sub-text">Wallet</span>
+                      <span className="tb-tnx-head bg-white text-secondary">Wallet</span>
                     </DataTableRow>
                     <DataTableRow size="sm">
-                      <span className="sub-text">Date Joined</span>
+                      <span className="tb-tnx-head bg-white text-secondary">Date Joined</span>
                     </DataTableRow>
                     <DataTableRow>
-                      <span className="sub-text">Status</span>
+                      <span className="tb-tnx-head bg-white text-secondary">Status</span>
                     </DataTableRow>
                     <DataTableRow className="nk-tb-col-tools text-end">
                       <UncontrolledDropdown>
@@ -271,8 +278,8 @@ const UserList = () => {
                         // onClick={() => navigate(`/user-details/${item.id}`)}
                         // style={{ cursor: "pointer" }}
                       >
-                        <DataTableRow className="nk-tb-col-check" size="sm">
-                          <div className="custom-control custom-control-sm custom-checkbox notext">{idx + 1}</div>
+                        <DataTableRow size="sm">
+                          <span className="text-capitalize">{tableNumbers(currentPage, itemsPerPage) + idx + 1}</span>
                         </DataTableRow>
                         <DataTableRow>
                           <Link to={`/user-details/${item.id}`}>
@@ -284,7 +291,7 @@ const UserList = () => {
                                 image={item?.avatar}
                               />
                               <div className="user-name">
-                                <span className="tb-lead">
+                                <span className="tb-lead ccap">
                                   {item?.firstname} {item?.lastname}{" "}
                                 </span>
                                 <p className="text-primary fw-normal fs-12px">{truncateText(item.email, 20)}</p>
@@ -294,7 +301,9 @@ const UserList = () => {
                         </DataTableRow>
 
                         <DataTableRow size="lg">
-                          <span className="ccap fs-12px">{item?.username || "Not set"}</span>
+                          <span className="ccap fs-12px">
+                            {item?.username ? truncateText(item?.username, 15) : "Not set"}
+                          </span>
                         </DataTableRow>
 
                         <DataTableRow size="sm">

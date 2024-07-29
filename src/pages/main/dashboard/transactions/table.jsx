@@ -24,7 +24,7 @@ import {
   PaginationComponent,
   Row,
 } from "../../../../components/Component";
-import { formatDateWithTime, formatter } from "../../../../utils/Utils";
+import { formatDateWithTime, formatter, tableNumbers } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
@@ -32,7 +32,7 @@ import { FilterOptions } from "../tables/filter-select";
 import { ServicesFilterOptions } from "./static-data";
 import { ServicesStatsCard } from "./stats-card";
 
-export const TransactionTable = ({ purpose, userId }) => {
+export const TransactionTable = ({ purpose, userId, showStats }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -205,7 +205,7 @@ export const TransactionTable = ({ purpose, userId }) => {
 
   return (
     <>
-      {purpose && (
+      {(purpose || showStats) && (
         <Row className="mb-5">
           <Col>
             <ServicesStatsCard data={data?.stat ? data?.stat[purpose] : null} />
@@ -306,7 +306,9 @@ export const TransactionTable = ({ purpose, userId }) => {
                       return (
                         <DataTableItem key={item.id} className="text-secondary">
                           <DataTableRow size="sm">
-                            <span className="text-capitalize">{index + 1}</span>
+                            <span className="text-capitalize">
+                              {tableNumbers(currentPage, itemsPerPage) + index + 1}
+                            </span>
                           </DataTableRow>
                           <DataTableRow className="text-primary fw-bold">
                             <Link to={`/user-details/${item?.user?.id}`} className="title">

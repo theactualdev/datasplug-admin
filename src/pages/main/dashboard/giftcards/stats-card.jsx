@@ -22,6 +22,13 @@ export const AmountStatsCard = ({ data }) => {
               <div className="count">{formatter("NGN").format(total)}</div>
             </div>
           </li>
+          {/* <li className="item">
+            <Icon name="sign-kobo" className="bg-primary-dim"></Icon>
+            <div className="info">
+              <div className="title">Total Amount</div>
+              <div className="count">{formatter("NGN").format(total)}</div>
+            </div>
+          </li> */}
         </ul>
       </div>
     </Card>
@@ -59,6 +66,24 @@ export const StatsDetailsCard = ({ data }) => {
             <div className="info">
               <div className="title">Failed</div>
               <div className="count">{data?.failed || 0}</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </Card>
+  );
+};
+
+export const WalletAmountStatsCard = ({ data }) => {
+  return (
+    <Card>
+      <div className="card-inner">
+        <ul className="nk-tranx-statistics">
+          <li className="item">
+            <Icon name="sign-kobo" className="bg-primary-dim"></Icon>
+            <div className="info">
+              <div className="title">Total Amount</div>
+              <div className="count">{formatter("NGN").format(data)}</div>
             </div>
           </li>
         </ul>

@@ -1,31 +1,6 @@
-import React, { Suspense, useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import SortToolTip from "../tables/SortTooltip";
-import Search from "../tables/Search";
-import { useGetAllProducts } from "../../../../api/product/products";
-import {
-  Block,
-  BlockBetween,
-  BlockHead,
-  BlockHeadContent,
-  BlockTitle,
-  Button,
-  Col,
-  DataTableBody,
-  DataTableHead,
-  DataTableItem,
-  DataTableRow,
-  Icon,
-  PaginationComponent,
-  RSelect,
-  Row,
-} from "../../../../components/Component";
-import Content from "../../../../layout/content/Content";
-import Head from "../../../../layout/head/Head";
-import LoadingSpinner from "../../../components/spinner";
-import ProductTable from "../tables/ProductTable";
-import { useGetAssetsTransactions } from "../../../../api/assets";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Badge,
   Card,
@@ -36,19 +11,35 @@ import {
   ModalBody,
   UncontrolledDropdown,
 } from "reactstrap";
-import { formatter, formatDateWithTime, truncateText } from "../../../../utils/Utils";
 import {
   useGetWithdrawalTransactions,
   useUpdateWalletDepositAmount,
   useUpdateWithdrawalWalletStatus,
 } from "../../../../api/transactions";
+import {
+  Block,
+  Button,
+  Col,
+  DataTableBody,
+  DataTableHead,
+  DataTableItem,
+  DataTableRow,
+  Icon,
+  PaginationComponent,
+  Row,
+} from "../../../../components/Component";
+import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
+import { formatDateWithTime, formatter, tableNumbers, truncateText } from "../../../../utils/Utils";
+import LoadingSpinner from "../../../components/spinner";
+import EditModal from "../requests/edit-modal";
 import { FilterOptions } from "../tables/filter-select";
+import Search from "../tables/Search";
+import SortToolTip from "../tables/SortTooltip";
 import { WalletFilterOptions } from "./data";
 import { WalletStatsCard } from "./stats-card";
-import EditModal from "../requests/edit-modal";
-import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
+import { WalletAmountStatsCard } from "../giftcards/stats-card";
 
-const WithdrawalTable = ({ type, userId }) => {
+const WithdrawalTable = ({ type, userId, showStats }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -218,6 +209,8 @@ const WithdrawalTable = ({ type, userId }) => {
     }
   }, []);
 
+  // const start = (currentPage - 1) * itemsPerPage;
+
   useEffect(() => {
     reset(formData);
   }, [formData, reset]);
@@ -228,11 +221,13 @@ const WithdrawalTable = ({ type, userId }) => {
   }, [view.add]);
   return (
     <>
-      {type && (
+      {(type || showStats) && (
         <Row className="mb-5">
-          <Col>
+          <Col lg={4}>
+            <WalletAmountStatsCard data={0} />
+          </Col>
+          <Col lg={8}>
             <WalletStatsCard data={data?.stat[type]} />
-            {/* <StatsCard title={"Stats 2"} value={2} /> */}
           </Col>
         </Row>
       )}
@@ -344,15 +339,17 @@ const WithdrawalTable = ({ type, userId }) => {
                       return (
                         <DataTableItem key={item.id} className="text-secondary">
                           <DataTableRow size="sm">
-                            <span className="text-capitalize"> {index + 1}</span>
+                            <span className="text-capitalize">
+                              {tableNumbers(currentPage, itemsPerPage) + index + 1}
+                            </span>
                           </DataTableRow>
-                          <DataTableRow className="text-primary fw-bold">
+                          <DataTableRow className="text-primary fw-bold ccap">
                             <Link to={`/user-details/${item?.user?.id}`} className="title">
                               {truncateText(`${item?.user?.firstname} ${item?.user?.lastname}`, 10)}
                             </Link>
                           </DataTableRow>
                           {type === "transfer" && (
-                            <DataTableRow size="sm" className="text-primary fw-bold">
+                            <DataTableRow size="sm" className="text-primary fw-bold ccap">
                               <Link to={`/user-details/${item?.meta?.id}`} className="title">
                                 {truncateText(`${item?.meta?.firstname} ${item?.meta?.lastname}`, 10)}
                               </Link>
@@ -589,12 +586,12 @@ const WithdrawalTable = ({ type, userId }) => {
                   <span className="caption-text">{formData.fullName}</span>
                 </Col>
                 <Col sm={6} lg={4}>
-                  <span className="sub-text">Email</span>
-                  <span className="caption-text">{formData.email}</span>
-                </Col>
-                <Col sm={6} lg={4}>
                   <span className="sub-text">Phone</span>
                   <span className="caption-text">{formData.phone}</span>
+                </Col>
+                <Col sm={6}>
+                  <span className="sub-text">Email</span>
+                  <span className="caption-text">{formData.email}</span>
                 </Col>
               </Row>
               {formData?.purpose === "transfer" && (
@@ -604,34 +601,35 @@ const WithdrawalTable = ({ type, userId }) => {
                     <span className="sub-text">Fullname</span>
                     <span className="caption-text">{formData?.receiverName}</span>
                   </Col>
-                  <Col sm={6} lg={4}>
-                    <span className="sub-text">Email</span>
-                    <span className="caption-text">{formData?.receiverEmail}</span>
-                  </Col>
+
                   <Col sm={4} lg={4}>
                     <span className="sub-text">Phone</span>
                     <span className="caption-text">{formData.receiverPhone}</span>
                   </Col>
+                  <Col sm={6}>
+                    <span className="sub-text">Email</span>
+                    <span className="caption-text">{formData?.receiverEmail}</span>
+                  </Col>
                 </Row>
               )}
 
-              {formData.status === "pending" && (
-                <>
-                  <h6>Bank</h6>
-                  <Col sm={6} lg={4}>
-                    <span className="sub-text">Account Name</span>
-                    <span className="caption-text">{formData.accountName}</span>
-                  </Col>
-                  <Col sm={6} lg={4}>
-                    <span className="sub-text">Account Number</span>
-                    <span className="caption-text">{formData.accountNumber}</span>
-                  </Col>
-                  <Col sm={6} lg={4}>
-                    <span className="sub-text">Bank</span>
-                    <span className="caption-text"> {formData.bank}</span>
-                  </Col>
-                </>
-              )}
+              {/* {formData.status === "pending" && ( */}
+              <>
+                <h6>Bank</h6>
+                <Col sm={6} lg={4}>
+                  <span className="sub-text">Account Name</span>
+                  <span className="caption-text">{formData.accountName}</span>
+                </Col>
+                <Col sm={6} lg={4}>
+                  <span className="sub-text">Account Number</span>
+                  <span className="caption-text">{formData.accountNumber}</span>
+                </Col>
+                <Col sm={6} lg={4}>
+                  <span className="sub-text">Bank</span>
+                  <span className="caption-text"> {formData.bank}</span>
+                </Col>
+              </>
+              {/* )} */}
               {formData?.proof && (
                 <Col>
                   <h6>Proof</h6>
@@ -643,7 +641,7 @@ const WithdrawalTable = ({ type, userId }) => {
               )}
               <Col size="12" className="mt-5">
                 <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                  {formData.status === "pending" && type === "withdrawal" ? (
+                  {formData.status === "pending" && formData.type === "withdrawal" ? (
                     <>
                       {/* <li>
                           <Button

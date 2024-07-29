@@ -222,3 +222,7 @@ export const objectToQueryString = (obj) =>
   Object.entries(obj)
     .map(([k, v]) => `${k}=${v}`)
     .join("&");
+
+export const tableNumbers = (currentPage = 1, itemsPerPage = 0) => {
+  return (currentPage - 1) * itemsPerPage;
+};

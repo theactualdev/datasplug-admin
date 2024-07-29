@@ -72,6 +72,8 @@ const AppUpdatePage = () => {
     }
   }, [data]);
 
+  // console.log(ios);
+
   // console.log(android?.is_required);
 
   useEffect(() => {
@@ -189,6 +191,17 @@ const AppUpdatePage = () => {
                                 </div>
                               </div>
                             </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="data-item">
+                        <div className="between-center flex-wrap flex-md-nowrap g-3 w-100">
+                          <div className="nk-block-text">
+                            <span className="data-label">Shut down Apple Sign-In</span>
+                          </div>
+                          <div className="nk-block-actions">
+                            <Button color={"primary"}>Shut Down</Button>
                           </div>
                         </div>
                       </div>

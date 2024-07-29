@@ -176,7 +176,7 @@ const GiftcardDetails = ({ match }) => {
                     <div className="profile-ud wider">
                       <span className="profile-ud-label">Giftcard Value</span>
                       <span className="profile-ud-value">
-                        {giftcard?.data?.amount}
+                        {formatter().format(giftcard?.data?.amount)}
                         {/* {giftcard?.data?.crypto.code} */}
                       </span>
                     </div>
@@ -253,7 +253,9 @@ const GiftcardDetails = ({ match }) => {
                   </div>
                   <div className="profile-ud-item">
                     <div className="profile-ud wider">
-                      <span className="profile-ud-label">Giftcard Price</span>
+                      <span className="profile-ud-label">
+                        Giftcard {giftcard?.data?.trade_type === "sell" ? "Sell" : "Buy"} Rate
+                      </span>
                       {giftcard?.data?.trade_type === "sell" ? (
                         <span className="profile-ud-value">
                           {formatter("NGN").format(giftcard?.data?.gift_card?.sell_rate)}
@@ -263,6 +265,18 @@ const GiftcardDetails = ({ match }) => {
                           {formatter("NGN").format(giftcard?.data?.gift_card?.ngn_price_list[0])}
                         </span>
                       )}
+                    </div>
+                  </div>
+                  <div className="profile-ud-item">
+                    <div className="profile-ud wider">
+                      <span className="profile-ud-label">Giftcard Category</span>
+                      <span className="profile-ud-value">{giftcard?.data?.gift_card?.category?.name}</span>
+                    </div>
+                  </div>
+                  <div className="profile-ud-item">
+                    <div className="profile-ud wider">
+                      <span className="profile-ud-label">Giftcard Country</span>
+                      <span className="profile-ud-value">{giftcard?.data?.gift_card?.country_data?.name}</span>
                     </div>
                   </div>
                 </div>
@@ -313,7 +327,7 @@ const GiftcardDetails = ({ match }) => {
                   </BlockBetween>
                 </BlockHead>
                 {giftcard?.data?.card ? (
-                  <div style={{ width: "100px", height: "100px" }}>
+                  <div style={{ width: "100px", height: "100px", overflow: "hidden" }}>
                     <ImageContainer img={giftcard.data.card} />
                   </div>
                 ) : (
