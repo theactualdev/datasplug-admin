@@ -2,25 +2,26 @@ import React from "react";
 import { BlockBetween, BlockHead, BlockHeadContent, BlockTitle } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { TransactionTable } from "./table";
+import WithdrawalTable from "./table";
 
-const TransactionsPage = () => {
+const AllWalletTransactionListPage = () => {
   return (
     <React.Fragment>
-      <Head title="All Transaction"></Head>
+      <Head title="Wallet Transactions"></Head>
       <Content>
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle>Transactions</BlockTitle>
+              <BlockTitle>Withdrawal Transactions</BlockTitle>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
         {/* PRODUCT TABLE HERE */}
-        <TransactionTable purpose={"all"} />
+
+        <WithdrawalTable type={"all"} />
       </Content>
     </React.Fragment>
   );
 };
 
-export default TransactionsPage;
+export default AllWalletTransactionListPage;

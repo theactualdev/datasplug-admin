@@ -219,6 +219,61 @@ export const useEditAppVersion = (id) => {
   );
 };
 
+export const useGetAppleSignInStatus = () => {
+  return useQuery(
+    ["apple-sign-status"],
+    async () => {
+      const request = await instance
+        .get("/app-configs/apple-sign-in")
+        .then((res) => res?.data)
+        .catch((err) => {
+          throw err;
+        });
+
+      //   console.log(request);
+      return request;
+    },
+    {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      retryDelay: 3000,
+    }
+  );
+};
+
+export const useEditAppleSignInStatus = (id) => {
+  const queryClient = useQueryClient();
+  // console.log(id);
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post("/app-configs" + `/${id}`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: "Apple Sign in Updated updated",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (error) => (error?.response?.data?.message ? error?.response?.data?.message : "Something happened"),
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["apple-sign-status"]);
+      },
+    }
+  );
+};
+
 // ************************SUPPORT*****************************
 export const useGetSupport = () => {
   return useQuery(

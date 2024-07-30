@@ -260,10 +260,10 @@ const UserDetailsPage = () => {
                     <Details user={user} />
                   </TabPane>
                   <TabPane tabId="wallet">
-                    <WithdrawalTable userId={userId} />
+                    <WithdrawalTable userId={userId} showStats={true} type={"all"} />
                   </TabPane>
                   <TabPane tabId="services">
-                    <TransactionTable userId={userId} />
+                    <TransactionTable userId={userId} showStats={true} purpose={"all"} />
                     {/* <WithdrawalTable userId={userId} /> */}
                   </TabPane>
                   <TabPane tabId="accounts">

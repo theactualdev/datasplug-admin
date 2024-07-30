@@ -24,15 +24,16 @@ import {
   PaginationComponent,
   Row,
 } from "../../../../components/Component";
-import { formatDateWithTime, formatter } from "../../../../utils/Utils";
+import { formatDateWithTime, formatter, tableNumbers } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
 import { FilterOptions } from "../tables/filter-select";
 import { ServicesFilterOptions } from "./static-data";
 import { ServicesStatsCard } from "./stats-card";
+import { WalletAmountStatsCard } from "../giftcards/stats-card";
 
-export const TransactionTable = ({ purpose, userId }) => {
+export const TransactionTable = ({ purpose, userId, showStats }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -43,7 +44,14 @@ export const TransactionTable = ({ purpose, userId }) => {
   const search = searchParams.get("search") ?? "";
   const status = searchParams.get("status") ?? "";
   // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
-  const { isLoading, data, error } = useGetAllTransactions(currentPage, itemsPerPage, purpose, status, search, userId);
+  const { isLoading, data, error } = useGetAllTransactions(
+    currentPage,
+    itemsPerPage,
+    purpose === "all" ? "" : purpose,
+    status,
+    search,
+    userId
+  );
 
   // console.log(data);
 
@@ -205,11 +213,13 @@ export const TransactionTable = ({ purpose, userId }) => {
 
   return (
     <>
-      {purpose && (
+      {(purpose || showStats) && (
         <Row className="mb-5">
-          <Col>
+          <Col lg={4}>
+            <WalletAmountStatsCard data={data?.stat[purpose]?.total?.amount || 0} />
+          </Col>
+          <Col lg={8}>
             <ServicesStatsCard data={data?.stat ? data?.stat[purpose] : null} />
-            {/* <StatsCard title={"Stats 2"} value={2} /> */}
           </Col>
         </Row>
       )}
@@ -306,7 +316,9 @@ export const TransactionTable = ({ purpose, userId }) => {
                       return (
                         <DataTableItem key={item.id} className="text-secondary">
                           <DataTableRow size="sm">
-                            <span className="text-capitalize">{index + 1}</span>
+                            <span className="text-capitalize">
+                              {tableNumbers(currentPage, itemsPerPage) + index + 1}
+                            </span>
                           </DataTableRow>
                           <DataTableRow className="text-primary fw-bold">
                             <Link to={`/user-details/${item?.user?.id}`} className="title">

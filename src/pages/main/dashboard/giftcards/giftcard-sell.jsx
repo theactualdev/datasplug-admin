@@ -1,9 +1,7 @@
-import React, { Suspense, useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import SortToolTip from "../tables/SortTooltip";
-import Search from "../tables/Search";
-import { useGetAllProducts } from "../../../../api/product/products";
+import React, { useCallback, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Badge, Card, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { useGetGiftcardTransactions } from "../../../../api/giftcard";
 import {
   Block,
   BlockBetween,
@@ -18,29 +16,17 @@ import {
   DataTableRow,
   Icon,
   PaginationComponent,
-  RSelect,
   Row,
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
+import { formatDateWithTime, formatter, tableNumbers } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
-import ProductTable from "../tables/ProductTable";
-import { useGetAssetsTransactions } from "../../../../api/assets";
-import {
-  Badge,
-  Card,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Modal,
-  ModalBody,
-  UncontrolledDropdown,
-} from "reactstrap";
-import { formatter, formatDateWithTime } from "../../../../utils/Utils";
-import { useGetGiftcardTransactions } from "../../../../api/giftcard";
 import { FilterOptions } from "../tables/filter-select";
-import { AmountStatsCard, StatsDetailsCard } from "./stats-card";
+import Search from "../tables/Search";
+import SortToolTip from "../tables/SortTooltip";
 import { giftcardFilterOptions } from "./data";
+import { AmountStatsCard, StatsDetailsCard } from "./stats-card";
 
 const GiftCardSellListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,7 +40,7 @@ const GiftCardSellListPage = () => {
   // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
   const { isLoading, data, error } = useGetGiftcardTransactions(currentPage, itemsPerPage, search, status, type);
   // console.log(data);
-  // console.log(data);
+  // console.log(data?.meta);
 
   const [onSearch, setonSearch] = useState(false);
   const [filters, setfilters] = useState({});
@@ -103,10 +89,10 @@ const GiftCardSellListPage = () => {
         </BlockHead>
 
         <Row className="mb-5">
-          <Col lg={4}>
+          <Col lg={5}>
             <AmountStatsCard data={data?.stat?.sell} />
           </Col>
-          <Col lg={8}>
+          <Col lg={7}>
             <StatsDetailsCard data={data?.stat?.sell} />
             {/* <StatsCard title={"Stats 2"} value={2} /> */}
           </Col>
@@ -157,7 +143,7 @@ const GiftCardSellListPage = () => {
               <div className="card-inner p-0">
                 {isLoading ? (
                   <LoadingSpinner />
-                ) : 2 > 0 ? (
+                ) : data?.meta?.total > 0 ? (
                   <>
                     <DataTableBody className="is-compact">
                       <DataTableHead className="tb-tnx-head bg-white fw-bold text-secondary">
@@ -204,7 +190,7 @@ const GiftCardSellListPage = () => {
                         return (
                           <DataTableItem key={item.id} className="text-secondary">
                             <DataTableRow>
-                              <span>{index + 1}</span>
+                              <span> {tableNumbers(currentPage, itemsPerPage) + index + 1}</span>
                             </DataTableRow>
                             <DataTableRow size="sm" className="text-primary fw-bold">
                               <Link to={`/user-details/${item?.user?.id}`} className="title">

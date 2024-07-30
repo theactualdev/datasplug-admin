@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Badge, Card, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
-import { useGetGiftcardTransactions } from "../../../../api/giftcard";
+import { useGetAssetsTransactions } from "../../../../api/assets";
 import {
   Block,
   BlockBetween,
@@ -20,15 +20,15 @@ import {
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
-import { formatDateWithTime, formatter, tableNumbers } from "../../../../utils/Utils";
+import { formatDateWithTime, formatter } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
 import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
 import { FilterOptions } from "../tables/filter-select";
-import { giftcardFilterOptions } from "./data";
-import { AmountStatsCard, StatsDetailsCard } from "./stats-card";
+import { assetFilterOptions } from "./data";
+import { StatsCard, StatsDetailsCard } from "./stats-card";
 
-const GiftCardListPage = () => {
+const AllAssetPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -36,19 +36,15 @@ const GiftCardListPage = () => {
   const currentPage = searchParams.get("page") ?? 1;
   const search = searchParams.get("search") ?? "";
   const status = searchParams.get("status") ?? "";
-  const type = "buy";
-  // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
-  const { isLoading, data, error } = useGetGiftcardTransactions(currentPage, itemsPerPage, search, status, type);
-  // console.log(data);
-  // console.log(data);
-
+  const type = "";
+  const { isLoading, data, error } = useGetAssetsTransactions(currentPage, itemsPerPage, search, status, type);
+  //   console.log(data);
+  const [view, setView] = useState({
+    edit: false,
+    add: false,
+    details: false,
+  });
   const [onSearch, setonSearch] = useState(false);
-  const [filters, setfilters] = useState({});
-
-  // function to filter data
-  // const filterData = useCallback(() => {
-  //   return;
-  // }, []);
 
   // Change Page
   //paginate
@@ -62,7 +58,7 @@ const GiftCardListPage = () => {
   const statusColor = useCallback((status) => {
     if (status === "pending") {
       return "warning";
-    } else if (status === "approved") {
+    } else if (status === "success") {
       return "success";
     } else if (status === "transferred") {
       return "info";
@@ -83,27 +79,25 @@ const GiftCardListPage = () => {
         <BlockHead size="sm">
           <BlockBetween>
             <BlockHeadContent>
-              <BlockTitle>Giftcard</BlockTitle>
+              <BlockTitle>Assets</BlockTitle>
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
-
-        <Row className="mb-5">
+        {/* <Row className="mb-5">
           <Col lg={4}>
-            <AmountStatsCard data={data?.stat?.buy} />
+            <StatsCard data={data?.stat?.sell} />
           </Col>
           <Col lg={8}>
-            <StatsDetailsCard data={data?.stat?.buy} />
-            {/* <StatsCard title={"Stats 2"} value={2} /> */}
+            <StatsDetailsCard data={data?.stat?.sell} />
           </Col>
-        </Row>
+        </Row> */}
         {/* PRODUCT TABLE HERE */}
         <Block>
           <Card>
             <div className="card-inner border-bottom">
               <div className="card-title-group">
                 <div className="card-title">
-                  <h5 className="title">Giftcard Transactions</h5>
+                  <h5 className="title">Assets Transactions</h5>
                 </div>
                 <div className="card-tools me-n1">
                   <ul className="btn-toolbar gx-1">
@@ -121,7 +115,7 @@ const GiftCardListPage = () => {
                     </li>
                     <li className="btn-toolbar-sep"></li>
                     <li>
-                      <FilterOptions options={giftcardFilterOptions} />
+                      <FilterOptions options={assetFilterOptions} />
                     </li>
                     <li>
                       <UncontrolledDropdown>
@@ -136,7 +130,7 @@ const GiftCardListPage = () => {
                   </ul>
                 </div>
                 {/* Search component */}
-                <Search onSearch={onSearch} setonSearch={setonSearch} placeholder="hotel name" />
+                <Search onSearch={onSearch} setonSearch={setonSearch} placeholder="reference" />
               </div>
             </div>
             <div className="card-inner-group">
@@ -190,7 +184,7 @@ const GiftCardListPage = () => {
                         return (
                           <DataTableItem key={item.id} className="text-secondary">
                             <DataTableRow>
-                              <span> {tableNumbers(currentPage, itemsPerPage) + index + 1}</span>
+                              <span>{index + 1}</span>
                             </DataTableRow>
                             <DataTableRow size="sm" className="text-primary fw-bold">
                               <Link to={`/user-details/${item?.user?.id}`} className="title">
@@ -206,6 +200,10 @@ const GiftCardListPage = () => {
                             <DataTableRow>
                               <span>{formatDateWithTime(item.created_at)}</span>
                             </DataTableRow>
+
+                            {/* <DataTableRow size="md" className="tnx-desc">
+                              <span>{formatDate(item.startDate)}</span> - <span>{formatDate(item.endDate)}</span>
+                            </DataTableRow> */}
                             <DataTableRow>
                               <span className="ccap"> {item.trade_type}</span>
                             </DataTableRow>
@@ -238,7 +236,7 @@ const GiftCardListPage = () => {
                                             href="#edit"
                                             onClick={(ev) => {
                                               ev.preventDefault();
-                                              navigate(`/giftcards-details/${item.id}`);
+                                              navigate(`/assets-details/${item.id}`);
                                               // onEditClick(item.id);
                                             }}
                                           >
@@ -269,7 +267,7 @@ const GiftCardListPage = () => {
                   </>
                 ) : (
                   <div className="text-center" style={{ paddingBlock: "1rem" }}>
-                    <span className="text-silent">No tranaction record found</span>
+                    <span className="text-silent">No Transaction found</span>
                   </div>
                 )}
               </div>
@@ -281,4 +279,4 @@ const GiftCardListPage = () => {
   );
 };
 
-export default GiftCardListPage;
+export default AllAssetPage;

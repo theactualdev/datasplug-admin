@@ -81,6 +81,9 @@ import SupportPage from "../pages/main/dashboard/settings/support";
 import ServiceProvidersDiscounts from "../pages/main/dashboard/service-providers/provider-discouts";
 import ServicesDiscounts from "../pages/main/dashboard/services/services-discounts";
 import ReferralBonusPage from "../pages/main/dashboard/settings/ReferralBonus";
+import AllWalletTransactionListPage from "../pages/main/dashboard/wallet/all-wallet";
+import AllGiftCardListPage from "../pages/main/dashboard/giftcards/giftcard-all";
+import AllAssetPage from "../pages/main/dashboard/assets/all-assets";
 
 const routes = (
   <Route>
@@ -111,15 +114,18 @@ const routes = (
           <Route path="payouts" element={<PayoutPage />}></Route>
           <Route path="coupons" element={<CouponsPage />}></Route>
 
+          <Route path="assets/all" element={<AllAssetPage />} />
           <Route path="assets/buy" element={<AssetListPage />} />
           <Route path="assets/sell" element={<AssetSellPage />} />
           <Route path="assets-details/:assetId" element={<AssetDetails />} />
+          <Route path="giftcards/all" element={<AllGiftCardListPage />} />
           <Route path="giftcards/buy" element={<GiftCardListPage />} />
           <Route path="giftcards/sell" element={<GiftCardSellListPage />} />
           <Route path="giftcards-details/:giftcardId" element={<GiftcardDetails />} />
           <Route path="wallet/deposit" element={<WalletDepositListPage />} />
           <Route path="wallet/withdrawal" element={<WalletWithdrawalListPage />} />
           <Route path="wallet/transfer" element={<WalletTransferListPage />} />
+          <Route path="wallet/all" element={<AllWalletTransactionListPage />} />
 
           <Route path="transactions/all" element={<TransactionsPage />} />
           <Route path="transactions/bettings" element={<BettingTransactionsPage />} />

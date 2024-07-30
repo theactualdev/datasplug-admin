@@ -16,6 +16,11 @@ const menu = [
     link: "/assets",
     subMenu: [
       {
+        text: "All",
+        link: "/assets/all",
+        permission: "all",
+      },
+      {
         text: "Buy",
         link: "/assets/buy",
         permission: "all",
@@ -34,6 +39,11 @@ const menu = [
     link: "/giftcards",
     subMenu: [
       {
+        text: "All",
+        link: "/giftcards/all",
+        permission: "all",
+      },
+      {
         text: "Buy",
         link: "/giftcards/buy",
         permission: "all",
@@ -51,6 +61,11 @@ const menu = [
     permission: "wallet-transactions",
     // link: "/withdrawals",
     subMenu: [
+      {
+        text: "All",
+        link: "/wallet/all",
+        permission: "all",
+      },
       {
         text: "Deposit",
         link: "/wallet/deposit",

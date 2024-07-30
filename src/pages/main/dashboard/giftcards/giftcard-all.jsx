@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Badge, Card, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { useGetGiftcardTransactions } from "../../../../api/giftcard";
 import {
@@ -22,13 +22,13 @@ import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
 import { formatDateWithTime, formatter, tableNumbers } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
+import { FilterOptions } from "../tables/filter-select";
 import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
-import { FilterOptions } from "../tables/filter-select";
 import { giftcardFilterOptions } from "./data";
 import { AmountStatsCard, StatsDetailsCard } from "./stats-card";
 
-const GiftCardListPage = () => {
+const AllGiftCardListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -36,8 +36,7 @@ const GiftCardListPage = () => {
   const currentPage = searchParams.get("page") ?? 1;
   const search = searchParams.get("search") ?? "";
   const status = searchParams.get("status") ?? "";
-  const type = "buy";
-  // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
+  const type = "";
   const { isLoading, data, error } = useGetGiftcardTransactions(currentPage, itemsPerPage, search, status, type);
   // console.log(data);
   // console.log(data);
@@ -88,15 +87,14 @@ const GiftCardListPage = () => {
           </BlockBetween>
         </BlockHead>
 
-        <Row className="mb-5">
+        {/* <Row className="mb-5">
           <Col lg={4}>
-            <AmountStatsCard data={data?.stat?.buy} />
+            <AmountStatsCard data={data?.stat?.sell}  />
           </Col>
           <Col lg={8}>
-            <StatsDetailsCard data={data?.stat?.buy} />
-            {/* <StatsCard title={"Stats 2"} value={2} /> */}
+            <StatsDetailsCard data={data?.stat?.sell} />
           </Col>
-        </Row>
+        </Row> */}
         {/* PRODUCT TABLE HERE */}
         <Block>
           <Card>
@@ -281,4 +279,4 @@ const GiftCardListPage = () => {
   );
 };
 
-export default GiftCardListPage;
+export default AllGiftCardListPage;
