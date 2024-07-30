@@ -18,7 +18,7 @@ const AllWalletTransactionListPage = () => {
         </BlockHead>
         {/* PRODUCT TABLE HERE */}
 
-        <WithdrawalTable />
+        <WithdrawalTable type={"all"} />
       </Content>
     </React.Fragment>
   );

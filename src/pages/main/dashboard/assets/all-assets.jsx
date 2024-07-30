@@ -83,15 +83,14 @@ const AllAssetPage = () => {
             </BlockHeadContent>
           </BlockBetween>
         </BlockHead>
-        <Row className="mb-5">
+        {/* <Row className="mb-5">
           <Col lg={4}>
             <StatsCard data={data?.stat?.sell} />
           </Col>
           <Col lg={8}>
             <StatsDetailsCard data={data?.stat?.sell} />
-            {/* <StatsCard title={"Stats 2"} value={2} /> */}
           </Col>
-        </Row>
+        </Row> */}
         {/* PRODUCT TABLE HERE */}
         <Block>
           <Card>

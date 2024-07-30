@@ -17,7 +17,7 @@ const TransactionsPage = () => {
           </BlockBetween>
         </BlockHead>
         {/* PRODUCT TABLE HERE */}
-        <TransactionTable />
+        <TransactionTable purpose={"all"} />
       </Content>
     </React.Fragment>
   );

@@ -58,7 +58,7 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
     itemsPerPage,
     status,
     search,
-    type,
+    type === "all" ? "" : type,
     userId
   );
   // console.log(data);
@@ -224,7 +224,7 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
       {(type || showStats) && (
         <Row className="mb-5">
           <Col lg={4}>
-            <WalletAmountStatsCard data={0} />
+            <WalletAmountStatsCard data={data?.stat[type]?.total?.amount || 0} />
           </Col>
           <Col lg={8}>
             <WalletStatsCard data={data?.stat[type]} />

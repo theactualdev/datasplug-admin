@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, Modal, ModalBody } from "reactstrap";
-import { useCreateAppVersion, useEditAppVersion, useGetAppVersion } from "../../../../api/settings";
+import {
+  useCreateAppVersion,
+  useEditAppleSignInStatus,
+  useEditAppVersion,
+  useGetAppleSignInStatus,
+  useGetAppVersion,
+} from "../../../../api/settings";
 import {
   Block,
   BlockBetween,
@@ -24,6 +30,9 @@ const AppUpdatePage = () => {
   const { data, isLoading } = useGetAppVersion();
   const { mutate: createAppVersion } = useCreateAppVersion();
   const { mutate: editAppVersion } = useEditAppVersion(editedId);
+  const { data: appleSignInStatus, isLoading: loading } = useGetAppleSignInStatus();
+  // console.log(appleSignInStatus);
+  const { mutate: updateStatus } = useEditAppleSignInStatus("6");
 
   const [modalTab, setModalTab] = useState("1");
   const [modal, setModal] = useState(false);
@@ -197,11 +206,21 @@ const AppUpdatePage = () => {
 
                       <div className="data-item">
                         <div className="between-center flex-wrap flex-md-nowrap g-3 w-100">
-                          <div className="nk-block-text">
-                            <span className="data-label">Shut down Apple Sign-In</span>
+                          <div className="data-col">
+                            <span className="data-label">Apple Sign-In</span>
+                            <span className="data-value">
+                              {appleSignInStatus?.data?.value == 1 ? "Active" : "Inactive"}
+                            </span>
                           </div>
                           <div className="nk-block-actions">
-                            <Button color={"primary"}>Shut Down</Button>
+                            <Button
+                              color={"primary"}
+                              onClick={() => {
+                                updateStatus({ value: appleSignInStatus?.data?.value == 1 ? "0" : "1" });
+                              }}
+                            >
+                              {appleSignInStatus?.data?.value == 1 ? "Shut Down" : "Restore"}
+                            </Button>
                           </div>
                         </div>
                       </div>

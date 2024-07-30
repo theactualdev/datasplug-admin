@@ -32,13 +32,13 @@ const AllGiftCardListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const itemsPerPage = searchParams.get("limit") ?? 1;
+  const itemsPerPage = searchParams.get("limit") ?? 100;
   const currentPage = searchParams.get("page") ?? 1;
   const search = searchParams.get("search") ?? "";
   const status = searchParams.get("status") ?? "";
   const type = "";
   const { isLoading, data, error } = useGetGiftcardTransactions(currentPage, itemsPerPage, search, status, type);
-  //   console.log(data);
+  // console.log(data);
   // console.log(data);
 
   const [onSearch, setonSearch] = useState(false);
@@ -87,15 +87,14 @@ const AllGiftCardListPage = () => {
           </BlockBetween>
         </BlockHead>
 
-        <Row className="mb-5">
+        {/* <Row className="mb-5">
           <Col lg={4}>
-            <AmountStatsCard data={data?.stat?.sell} />
+            <AmountStatsCard data={data?.stat?.sell}  />
           </Col>
           <Col lg={8}>
             <StatsDetailsCard data={data?.stat?.sell} />
-            {/* <StatsCard title={"Stats 2"} value={2} /> */}
           </Col>
-        </Row>
+        </Row> */}
         {/* PRODUCT TABLE HERE */}
         <Block>
           <Card>
