@@ -31,13 +31,13 @@ import {
 import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
 import { formatDateWithTime, formatter, tableNumbers, truncateText } from "../../../../utils/Utils";
 import LoadingSpinner from "../../../components/spinner";
+import { WalletAmountStatsCard } from "../giftcards/stats-card";
 import EditModal from "../requests/edit-modal";
 import { FilterOptions } from "../tables/filter-select";
 import Search from "../tables/Search";
 import SortToolTip from "../tables/SortTooltip";
 import { WalletFilterOptions } from "./data";
 import { WalletStatsCard } from "./stats-card";
-import { WalletAmountStatsCard } from "../giftcards/stats-card";
 
 const WithdrawalTable = ({ type, userId, showStats }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -210,6 +210,7 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
   }, []);
 
   // const start = (currentPage - 1) * itemsPerPage;
+  // console.log(formData);
 
   useEffect(() => {
     reset(formData);
@@ -613,23 +614,23 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
                 </Row>
               )}
 
-              {/* {formData.status === "pending" && ( */}
-              <>
-                <h6>Bank</h6>
-                <Col sm={6} lg={4}>
-                  <span className="sub-text">Account Name</span>
-                  <span className="caption-text">{formData.accountName}</span>
-                </Col>
-                <Col sm={6} lg={4}>
-                  <span className="sub-text">Account Number</span>
-                  <span className="caption-text">{formData.accountNumber}</span>
-                </Col>
-                <Col sm={6} lg={4}>
-                  <span className="sub-text">Bank</span>
-                  <span className="caption-text"> {formData.bank}</span>
-                </Col>
-              </>
-              {/* )} */}
+              {formData.purpose === "withdrawal" && (
+                <>
+                  <h6>Bank</h6>
+                  <Col sm={6} lg={4}>
+                    <span className="sub-text">Account Name</span>
+                    <span className="caption-text">{formData.accountName}</span>
+                  </Col>
+                  <Col sm={6} lg={4}>
+                    <span className="sub-text">Account Number</span>
+                    <span className="caption-text">{formData.accountNumber}</span>
+                  </Col>
+                  <Col sm={6} lg={4}>
+                    <span className="sub-text">Bank</span>
+                    <span className="caption-text"> {formData.bank}</span>
+                  </Col>
+                </>
+              )}
               {formData?.proof && (
                 <Col>
                   <h6>Proof</h6>
@@ -641,7 +642,7 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
               )}
               <Col size="12" className="mt-5">
                 <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                  {formData.status === "pending" && formData.type === "withdrawal" ? (
+                  {formData.status === "pending" && formData.purpose === "withdrawal" ? (
                     <>
                       {/* <li>
                           <Button
