@@ -53,7 +53,7 @@ export const TransactionTable = ({ purpose, userId, showStats }) => {
     userId
   );
 
-  // console.log(data);
+  console.log(data);
 
   const [formData, setFormData] = useState({
     reference: "",
@@ -136,6 +136,7 @@ export const TransactionTable = ({ purpose, userId, showStats }) => {
           customerDetails = {
             customerPhone: item?.meta?.customer?.phone,
             network: item?.meta?.provider?.name,
+            bundle: item?.meta?.product?.name,
           };
         }
         if (item.purpose === "betting") {
@@ -483,6 +484,10 @@ export const TransactionTable = ({ purpose, userId, showStats }) => {
                   <Col lg={4}>
                     <span className="sub-text">Network</span>
                     <span className="caption-text">{formData.network}</span>
+                  </Col>
+                  <Col lg={8}>
+                    <span className="sub-text">Data Bundle</span>
+                    <span className="caption-text">{formData.bundle}</span>
                   </Col>
                 </>
               )}
