@@ -53,7 +53,7 @@ export const TransactionTable = ({ purpose, userId, showStats }) => {
     userId
   );
 
-  console.log(data);
+  // console.log(data);
 
   const [formData, setFormData] = useState({
     reference: "",
