@@ -205,3 +205,17 @@ export const useGetUserType = () => {
     }
   );
 };
+
+export const getUserOptions = async (currentPage, size, search) => {
+  const searchTerm = search ? `&search=${search}` : "";
+  const page = `page=${currentPage}`;
+  const per_page = `per_page=${size}`;
+  const request = await instance
+    .get(BACKEND_URLS.users + `?${page}&${per_page}${searchTerm}${statusTerm}`)
+    .then((res) => res?.data)
+    .catch((err) => {
+      throw err;
+    });
+  //   console.log(request);
+  return request;
+};

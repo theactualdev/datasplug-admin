@@ -2,10 +2,14 @@ import React, { useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import { Controller, useForm } from "react-hook-form";
 import { Form, Modal, ModalBody } from "reactstrap";
-import { Button, Col, Icon, RSelect } from "../../../../components/Component";
+import { Button, Col, Icon, RSelect, RASelect } from "../../../../components/Component";
 import { formatDateTimeNumeric } from "../../../../utils/Utils";
-import { useGetAllUsers } from "../../../../api/users/user";
+import { getUserOptions, useGetAllUsers } from "../../../../api/users/user";
 import toast from "react-hot-toast";
+import { instance } from "../../../../api/httpConfig";
+import BACKEND_URLS from "../../../../api/urls";
+import Cookies from "js-cookie";
+import { useDebouncedCallback } from "use-debounce";
 
 const channelOption = [
   { label: "Push", value: "push" },
@@ -28,19 +32,41 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
     watch,
     formState: { errors },
   } = useForm();
-  const { isLoading, data: users } = useGetAllUsers(1, 100);
-  const usersOptions = useMemo(() => {
-    if (!isLoading && users) {
-      return users.data.map((item) => ({
-        id: item.id,
-        label: `${item.firstname} ${item.lastname}`,
-        value: `${item.firstname} ${item.lastname}`,
-      }));
-    }
-  }, [isLoading, users]);
+
+  const access_token = Cookies.get("access_token");
+
+  // const { isLoading, data: users } = useGetAllUsers(1, 100);
+  // const usersOptions = useMemo(() => {
+  //   if (!isLoading && users) {
+  //     return users.data.map((item) => ({
+  //       id: item.id,
+  //       label: `${item.firstname} ${item.lastname}`,
+  //       value: `${item.firstname} ${item.lastname}`,
+  //     }));
+  //   }
+  // }, [isLoading, users]);
 
   const [selectedUsers, setSelectedUsers] = useState([]);
-  // console.log(usersOptions);
+
+  const userOptions = async (value) => {
+    const searchTerm = value ? `&search=${value}` : "";
+    // const data = await instance.get(BACKEND_URLS.users + `?${page}&${per_page}${searchTerm}`).then((res) => res?.data);
+
+    const data = await fetch(`${BACKEND_URLS.baseURL}${BACKEND_URLS.users}?page=1&per_page=10${searchTerm}`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    })
+      .then((response) => response.json())
+      .then((response) => response?.data);
+    // console.log(data);
+    const final = data?.map((data) => ({
+      id: data.id,
+      value: `${data.firstname} ${data?.lastname} - ${data?.email}`,
+      label: `${data.firstname} ${data?.lastname} - ${data?.email}`,
+    }));
+    // console.log(final);
+    return final;
+  };
+  // console.log(userOptions);
 
   const onSubmit = (data) => {
     //Assign apporiate values to the channel prop
@@ -89,6 +115,7 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
     } else {
       createFunction(submittedData);
     }
+    setSelectedUsers([]);
     closeModal();
   };
 
@@ -201,9 +228,13 @@ const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFun
               {targetType?.value === "specific" && (
                 <Col>
                   <label className="form-label">Select Users</label>
-                  <RSelect
+                  <RASelect
                     isMulti
-                    options={usersOptions}
+                    cacheOptions
+                    defaultOptions
+                    loadOptions={userOptions}
+                    value={selectedUsers}
+                    // options={usersOptions}
                     defaultValue={selectedUsers}
                     placeholder={"Select Users"}
                     onChange={(e) => setSelectedUsers(e)}
