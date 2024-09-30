@@ -44,6 +44,7 @@ import ReactDualList from "./dual-list/RDualList";
 import Sidebar from "./sidebar/Sidebar";
 import ReactDataTable from "./table/ReactDataTable";
 import RSelect from "./select/ReactSelect";
+import RASelect from "./select/AsyncSelect";
 
 export {
   Accordian,
@@ -105,4 +106,5 @@ export {
   PreviewAltCard,
   RSelect,
   Progress,
+  RASelect,
 };
