@@ -262,7 +262,8 @@ const GiftcardDetails = ({ match }) => {
                         </span>
                       ) : (
                         <span className="profile-ud-value">
-                          {formatter("NGN").format(giftcard?.data?.gift_card?.ngn_price_list[0])}
+                          {giftcard?.data?.gift_card?.ngn_price_list &&
+                            formatter("NGN").format(giftcard?.data?.gift_card?.ngn_price_list[0])}
                         </span>
                       )}
                     </div>
