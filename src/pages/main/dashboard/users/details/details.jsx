@@ -148,6 +148,24 @@ const Details = ({ user }) => {
               </span>
             </div>
           </div>
+
+          <div className="profile-ud-item">
+            <div className="profile-ud wider">
+              <span className="profile-ud-label">Phone Number Status</span>
+              <span className={`profile-ud-value ccap ${user?.data?.phone_verified ? "text-success" : "text-danger"}`}>
+                {user?.data?.phone_verified ? "Verified" : "Not verified"}
+              </span>
+            </div>
+          </div>
+
+          <div className="profile-ud-item">
+            <div className="profile-ud wider">
+              <span className="profile-ud-label">BVN Status</span>
+              <span className={`profile-ud-value ccap ${user?.data?.bvn_validated ? "text-success" : "text-danger"}`}>
+                {user?.data?.bvn_validated ? "Verified" : "Not verified"}
+              </span>
+            </div>
+          </div>
         </div>
       </Block>
     </React.Fragment>
