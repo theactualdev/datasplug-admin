@@ -244,7 +244,7 @@ const UserList = () => {
                     <DataTableRow>
                       <span className="tb-tnx-head bg-white text-secondary ">User</span>
                     </DataTableRow>
-                    <DataTableRow size="sm">
+                    <DataTableRow size="lg">
                       <span className="tb-tnx-head bg-white text-secondary">Username</span>
                     </DataTableRow>
                     <DataTableRow size="sm">
@@ -253,13 +253,13 @@ const UserList = () => {
                     <DataTableRow>
                       <span className="tb-tnx-head bg-white text-secondary ">Type</span>
                     </DataTableRow>
-                    <DataTableRow size="md">
+                    <DataTableRow size="sm">
                       <span className="tb-tnx-head bg-white text-secondary">Wallet</span>
                     </DataTableRow>
                     <DataTableRow size="sm">
                       <span className="tb-tnx-head bg-white text-secondary">Date Joined</span>
                     </DataTableRow>
-                    <DataTableRow>
+                    <DataTableRow size="md">
                       <span className="tb-tnx-head bg-white text-secondary">Status</span>
                     </DataTableRow>
                     <DataTableRow className="nk-tb-col-tools text-end">
@@ -321,10 +321,10 @@ const UserList = () => {
                         <DataTableRow size="sm">
                           <span>{formatter("NGN").format(item?.wallet?.balance)}</span>
                         </DataTableRow>
-                        <DataTableRow size="lg">
+                        <DataTableRow size="sm">
                           <span className="fs-12px">{formatDateWithTime(item.created_at)}</span>
                         </DataTableRow>
-                        <DataTableRow>
+                        <DataTableRow size={"md"}>
                           <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
                           <Badge
                             className="badge-sm badge-dot has-bg d-none d-sm-inline-flex fs-12px"
