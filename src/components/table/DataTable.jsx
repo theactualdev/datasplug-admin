@@ -26,7 +26,7 @@ export const DataTableBody = ({ compact, seperate, className, bodyclass, ...prop
     "is-separate": seperate,
   });
   return (
-    <div className={`card-inner p-0 ${className ? className : ""}`}>
+    <div className={`card-inner p-0 ${className ? className : ""}`} style={{ overflowX: "auto", minHeight: "300px" }}>
       <div className={innerclass}>{props.children}</div>
     </div>
   );

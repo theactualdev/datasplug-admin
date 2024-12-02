@@ -250,6 +250,9 @@ const UserList = () => {
                     <DataTableRow size="sm">
                       <span className="tb-tnx-head bg-white text-secondary">Phone</span>
                     </DataTableRow>
+                    <DataTableRow size="sm">
+                      <span className="tb-tnx-head bg-white text-secondary">BVN Verified</span>
+                    </DataTableRow>
                     <DataTableRow>
                       <span className="tb-tnx-head bg-white text-secondary ">Type</span>
                     </DataTableRow>
@@ -313,6 +316,14 @@ const UserList = () => {
                             </span>
                           ) : (
                             <span className="fs-12px">Not set</span>
+                          )}
+                        </DataTableRow>
+
+                        <DataTableRow size="sm">
+                          {item.bvn_verified ? (
+                            <span className="text-success fw-medium">Yes</span>
+                          ) : (
+                            <span className="text-danger fw-medium">No</span>
                           )}
                         </DataTableRow>
                         <DataTableRow>

@@ -160,9 +160,18 @@ const Details = ({ user }) => {
 
           <div className="profile-ud-item">
             <div className="profile-ud wider">
-              <span className="profile-ud-label">BVN Status</span>
+              <span className="profile-ud-label">BVN Verified</span>
+              <span className={`profile-ud-value ccap ${user?.data?.bvn_verified ? "text-success" : "text-danger"}`}>
+                {user?.data?.bvn_verified ? "Yes" : "No"}
+              </span>
+            </div>
+          </div>
+
+          <div className="profile-ud-item">
+            <div className="profile-ud wider">
+              <span className="profile-ud-label">BVN Validated</span>
               <span className={`profile-ud-value ccap ${user?.data?.bvn_validated ? "text-success" : "text-danger"}`}>
-                {user?.data?.bvn_validated ? "Verified" : "Not verified"}
+                {user?.data?.bvn_validated ? "Yes" : "No"}
               </span>
             </div>
           </div>
