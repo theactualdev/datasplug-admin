@@ -219,3 +219,39 @@ export const getUserOptions = async (currentPage, size, search) => {
   //   console.log(request);
   return request;
 };
+
+export const useViewUserBVN = (id, setValue) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data) =>
+      toast.promise(
+        instance
+          .post(BACKEND_URLS.users + `/${id}/bvn`, data)
+          .then((res) => res.data)
+          .catch((err) => {
+            throw err;
+          }),
+        {
+          success: (data) => data?.message || "Successful",
+          // success: `Store status updated.`,
+          loading: "Please wait...",
+          error: (data) => data.response.data.message || "Something happened",
+        },
+        {
+          style: {
+            minWidth: "180px",
+          },
+        }
+      ),
+    {
+      onSuccess: (data) => {
+        if (data?.data?.bvn === null) {
+          toast.error("User BVN not provided");
+        } else {
+          setValue(data?.data?.bvn);
+        }
+      },
+    }
+  );
+};
