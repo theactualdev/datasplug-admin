@@ -1,8 +1,34 @@
-import React from "react";
-import { UserAvatar, Block, BlockBetween, BlockHead, BlockTitle, Icon } from "../../../../../components/Component";
+import React, { useState } from "react";
+import {
+  UserAvatar,
+  Block,
+  BlockBetween,
+  BlockHead,
+  BlockTitle,
+  Icon,
+  Button,
+} from "../../../../../components/Component";
 import { findUpper, formatDateWithTime, formatter } from "../../../../../utils/Utils";
+import { useViewUserBVN } from "../../../../../api/users/user";
+import { Modal, ModalBody, Row, Col } from "reactstrap";
+import { useForm } from "react-hook-form";
 
 const Details = ({ user }) => {
+  const [bvn, setbvn] = useState(null);
+  const { mutate: viewBVN } = useViewUserBVN(user?.data?.id, setbvn);
+  const [showViewBVN, setShowViewBVN] = useState(false);
+  const [passState, setPassState] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ defaultValues: { password: "" } });
+
+  const handleViewBVN = (data) => {
+    viewBVN(data);
+  };
+
   return (
     <React.Fragment>
       <Block>
@@ -175,8 +201,103 @@ const Details = ({ user }) => {
               </span>
             </div>
           </div>
+          {user?.data?.bvn_verified && (
+            <div className="profile-ud-item">
+              <div className="profile-ud wider">
+                <span className="profile-ud-label">View User BVN</span>
+                <span className="profile-ud-value ccap">
+                  <Button
+                    onClick={() => {
+                      setShowViewBVN(true);
+                    }}
+                    size={"sm"}
+                    color={"primary"}
+                  >
+                    View
+                  </Button>
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </Block>
+
+      {/* FORM EDIT */}
+      <Modal isOpen={showViewBVN} toggle={() => setShowViewBVN(false)} className="modal-dialog-centered" size="sm">
+        <ModalBody>
+          <a href="#cancel" className="close">
+            {" "}
+            <Icon
+              name="cross-sm"
+              onClick={(ev) => {
+                ev.preventDefault();
+                setShowViewBVN(false);
+              }}
+            ></Icon>
+          </a>
+          <div className="p-2">
+            <h5 className="title">View User BVN</h5>
+            {bvn ? (
+              <div className="nk-tnx-details mt-sm-3">
+                <Row className="gy-3">
+                  <Col lg={6}>
+                    <span className="sub-text">BVN</span>
+                    <span className="caption-text">{bvn}</span>
+                  </Col>
+                </Row>
+              </div>
+            ) : (
+              <div className="mt-4">
+                <form onSubmit={handleSubmit(handleViewBVN)}>
+                  <Row className="g-3">
+                    <Col size="12">
+                      <div className="form-group">
+                        <div className="form-label-group">
+                          <label className="form-label" htmlFor="password">
+                            Passcode
+                          </label>
+                        </div>
+                        <div className="form-control-wrap">
+                          <a
+                            href="#password"
+                            onClick={(ev) => {
+                              ev.preventDefault();
+                              setPassState(!passState);
+                            }}
+                            className={`form-icon lg form-icon-right passcode-switch ${
+                              passState ? "is-hidden" : "is-shown"
+                            }`}
+                          >
+                            <Icon name="eye" className="passcode-icon icon-show"></Icon>
+
+                            <Icon name="eye-off" className="passcode-icon icon-hide"></Icon>
+                          </a>
+                          <input
+                            type={passState ? "text" : "password"}
+                            id="password"
+                            {...register("password", { required: "This field is required" })}
+                            // defaultValue="password"
+                            placeholder="Enter your passcode"
+                            className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
+                          />
+                          {errors.password && <span className="invalid">{errors.password.message}</span>}
+                        </div>
+                      </div>
+
+                      <Button color="primary" type="submit">
+                        <Icon className="plus"></Icon>
+                        <span>View User BVN</span>
+                      </Button>
+                    </Col>
+                  </Row>
+                </form>
+              </div>
+            )}
+          </div>
+        </ModalBody>
+      </Modal>
+
+      {showViewBVN && <div className="toggle-overlay" onClick={() => setShowViewBVN(false)}></div>}
     </React.Fragment>
   );
 };
