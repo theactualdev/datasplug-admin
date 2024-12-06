@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 // import ProductVideo from "../../../images/product/video-a.jpg";
-import Slider from "react-slick";
 import { Badge, Card } from "reactstrap";
 import {
   Block,
@@ -10,64 +9,17 @@ import {
   BlockHeadContent,
   BlockTitle,
   Button,
-  Col,
   Icon,
-  Row,
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
 // import { ProductContext } from "./ProductContext";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useGetProductInfo } from "../../../../api/product/products";
-import { SlickArrowLeft, SlickArrowRight } from "../../../../components/partials/slick/SlickComponents";
-import LoadingSpinner from "../../../components/spinner";
-import { formatCurrency, formatDateWithTime, formatter } from "../../../../utils/Utils";
-import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetGiftcardInfo } from "../../../../api/giftcard";
-
-// const sliderSettings = {
-//   className: "slider-init row",
-//   slidesToShow: 2,
-//   centerMode: false,
-//   slidesToScroll: 1,
-//   infinite: false,
-//   prevArrow: <SlickArrowLeft />,
-//   nextArrow: <SlickArrowRight />,
-//   responsive: [
-//     { breakpoint: 3000, settings: { slidesToShow: 4 } },
-//     { breakpoint: 1540, settings: { slidesToShow: 3 } },
-//     { breakpoint: 992, settings: { slidesToShow: 2 } },
-//     { breakpoint: 576, settings: { slidesToShow: 1 } },
-//   ],
-// };
-
-// const sliderSettingsDefault = {
-//   slidesToShow: 2,
-//   slidesToScroll: 1,
-//   centerMode: true,
-//   slide: null,
-//   responsive: [
-//     { breakpoint: 1539, settings: { slidesToShow: 2 } },
-//     { breakpoint: 768, settings: { slidesToShow: 2 } },
-//     { breakpoint: 420, settings: { slidesToShow: 1 } },
-//   ],
-//   arrows: false,
-//   swipeToSlide: true,
-//   focusOnSelect: true,
-//   className: "slider-init slider-nav",
-// };
-
-const settings = {
-  className: "slider-init slider-nav",
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  //   centerMode: true,
-  prevArrow: <SlickArrowLeft />,
-  nextArrow: <SlickArrowRight />,
-};
+import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
+import { formatDateWithTime, formatter } from "../../../../utils/Utils";
+import LoadingSpinner from "../../../components/spinner";
+import { ProductTable } from "./product-table";
 
 const GiftcardDetails = ({ match }) => {
   //   const { contextData } = useContext(ProductContext);
@@ -75,7 +27,10 @@ const GiftcardDetails = ({ match }) => {
   let { giftcardId } = useParams();
   // console.log(giftcardId);
   const { isLoading, data: giftcard } = useGetGiftcardInfo(giftcardId);
-  // console.log(giftcard);
+  const [showPartial, setShowPartial] = useState(false);
+  const [showDecline, setShowDecline] = useState(false);
+  const [showApprove, setShowApprove] = useState(false);
+  // console.log(giftcard?.data?.gift_card);
   // console.log("hello");
 
   const statusColor = useCallback((status) => {
@@ -122,6 +77,12 @@ const GiftcardDetails = ({ match }) => {
               </BlockHeadContent>
             </BlockBetween>
           </BlockHead>
+
+          {giftcard?.data?.gift_card && (
+            <Card>
+              <ProductTable data={giftcard?.data} />
+            </Card>
+          )}
 
           <Card>
             <div className="card-inner">
@@ -196,6 +157,44 @@ const GiftcardDetails = ({ match }) => {
                       </span>
                     </div>
                   </div>
+
+                  {/* {giftcard?.data?.status === "pending" && (
+                    <div className="profile-ud-item">
+                      <div className="profile-ud wider">
+                        <span className="profile-ud-label">Action</span>
+                        <span className="profile-ud-value ccap">
+                          <Button
+                            onClick={() => {
+                              setShowApprove(true);
+                            }}
+                            size={"sm"}
+                            color={"primary"}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setShowDecline(true);
+                            }}
+                            size={"sm"}
+                            className={"ms-1 me-1"}
+                            color={"danger"}
+                          >
+                            Decline
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setShowPartial(true);
+                            }}
+                            size={"sm"}
+                            color={"gray"}
+                          >
+                            Partial
+                          </Button>
+                        </span>
+                      </div>
+                    </div>
+                  )} */}
                 </div>
               </Block>
 

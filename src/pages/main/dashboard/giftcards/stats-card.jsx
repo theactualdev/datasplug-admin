@@ -74,7 +74,7 @@ export const StatsDetailsCard = ({ data }) => {
   );
 };
 
-export const WalletAmountStatsCard = ({ data }) => {
+export const WalletAmountStatsCard = ({ data, successful }) => {
   return (
     <Card>
       <div className="card-inner">
@@ -86,6 +86,15 @@ export const WalletAmountStatsCard = ({ data }) => {
               <div className="count">{formatter("NGN").format(data)}</div>
             </div>
           </li>
+          {successful && (
+            <li className="item">
+              <Icon name="sign-kobo" className="bg-success-dim"></Icon>
+              <div className="info">
+                <div className="title">Total Successful</div>
+                <div className="count">{formatter("NGN").format(successful)}</div>
+              </div>
+            </li>
+          )}
         </ul>
       </div>
     </Card>

@@ -84,6 +84,8 @@ import ReferralBonusPage from "../pages/main/dashboard/settings/ReferralBonus";
 import AllWalletTransactionListPage from "../pages/main/dashboard/wallet/all-wallet";
 import AllGiftCardListPage from "../pages/main/dashboard/giftcards/giftcard-all";
 import AllAssetPage from "../pages/main/dashboard/assets/all-assets";
+import InternationalAirtimeTransactionsPage from "../pages/main/dashboard/transactions/international-airtime";
+import InternationalDataTransactionsPage from "../pages/main/dashboard/transactions/international-data";
 
 const routes = (
   <Route>
@@ -134,7 +136,8 @@ const routes = (
           <Route path="transactions/electricity" element={<ElectricityTransactionsPage />} />
           <Route path="transactions/cable-tv" element={<CableTVTransactionsPage />} />
           <Route path="transactions/education" element={<EducationTransactionsPage />} />
-
+          <Route path="transactions/international-airtime" element={<InternationalAirtimeTransactionsPage />} />
+          <Route path="transactions/international-data" element={<InternationalDataTransactionsPage />} />
           <Route path="requests/deposit" element={<DepositRequest />} />
           <Route path="requests/withdrawal" element={<WithdrawalRequest />} />
 

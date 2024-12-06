@@ -280,6 +280,11 @@ export const TransactionTable = ({ purpose, userId, showStats }) => {
                       <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Fullname</span>
                       </DataTableRow>
+                      {(purpose === "data" || purpose === "international-data") && (
+                        <DataTableRow>
+                          <span className="tb-tnx-head bg-white text-secondary">Bundle</span>
+                        </DataTableRow>
+                      )}
                       <DataTableRow>
                         <span className="tb-tnx-head bg-white text-secondary">Amount</span>
                       </DataTableRow>
@@ -288,6 +293,9 @@ export const TransactionTable = ({ purpose, userId, showStats }) => {
                       </DataTableRow>
                       <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Provider</span>
+                      </DataTableRow>
+                      <DataTableRow size="sm">
+                        <span className="tb-tnx-head bg-white text-secondary">Network</span>
                       </DataTableRow>
                       <DataTableRow size="sm">
                         <span className="tb-tnx-head bg-white text-secondary">Date</span>
@@ -326,6 +334,11 @@ export const TransactionTable = ({ purpose, userId, showStats }) => {
                               {item?.user?.firstname} {item?.user?.lastname}
                             </Link>
                           </DataTableRow>
+                          {(purpose === "data" || purpose === "international-data") && (
+                            <DataTableRow>
+                              <span className="text-capitalize">{item?.meta?.product?.name}</span>
+                            </DataTableRow>
+                          )}
                           <DataTableRow>
                             <span>{formatter("NGN").format(item?.amount)}</span>
                           </DataTableRow>
@@ -338,6 +351,9 @@ export const TransactionTable = ({ purpose, userId, showStats }) => {
                           </DataTableRow>
                           <DataTableRow size="sm">
                             <span className="text-capitalize"> {item?.provider}</span>
+                          </DataTableRow>
+                          <DataTableRow size="sm">
+                            <span className="text-capitalize"> {item?.meta?.provider?.name}</span>
                           </DataTableRow>
                           <DataTableRow size="sm">
                             <span>{formatDateWithTime(item.created_at)}</span>

@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 // import ProductVideo from "../../../images/product/video-a.jpg";
-import Slider from "react-slick";
 import { Badge, Card } from "reactstrap";
 import {
   Block,
@@ -10,64 +9,16 @@ import {
   BlockHeadContent,
   BlockTitle,
   Button,
-  Col,
   Icon,
-  Row,
 } from "../../../../components/Component";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
 // import { ProductContext } from "./ProductContext";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useGetProductInfo } from "../../../../api/product/products";
-import { SlickArrowLeft, SlickArrowRight } from "../../../../components/partials/slick/SlickComponents";
-import LoadingSpinner from "../../../components/spinner";
-import { formatCurrency, formatDateWithTime, formatter } from "../../../../utils/Utils";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetAssetInfo } from "../../../../api/assets";
 import ImageContainer from "../../../../components/partials/gallery/GalleryImage";
-
-// const sliderSettings = {
-//   className: "slider-init row",
-//   slidesToShow: 2,
-//   centerMode: false,
-//   slidesToScroll: 1,
-//   infinite: false,
-//   prevArrow: <SlickArrowLeft />,
-//   nextArrow: <SlickArrowRight />,
-//   responsive: [
-//     { breakpoint: 3000, settings: { slidesToShow: 4 } },
-//     { breakpoint: 1540, settings: { slidesToShow: 3 } },
-//     { breakpoint: 992, settings: { slidesToShow: 2 } },
-//     { breakpoint: 576, settings: { slidesToShow: 1 } },
-//   ],
-// };
-
-// const sliderSettingsDefault = {
-//   slidesToShow: 2,
-//   slidesToScroll: 1,
-//   centerMode: true,
-//   slide: null,
-//   responsive: [
-//     { breakpoint: 1539, settings: { slidesToShow: 2 } },
-//     { breakpoint: 768, settings: { slidesToShow: 2 } },
-//     { breakpoint: 420, settings: { slidesToShow: 1 } },
-//   ],
-//   arrows: false,
-//   swipeToSlide: true,
-//   focusOnSelect: true,
-//   className: "slider-init slider-nav",
-// };
-
-const settings = {
-  className: "slider-init slider-nav",
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  //   centerMode: true,
-  prevArrow: <SlickArrowLeft />,
-  nextArrow: <SlickArrowRight />,
-};
+import { formatDateWithTime, formatter } from "../../../../utils/Utils";
+import LoadingSpinner from "../../../components/spinner";
 
 const AssetDetails = ({ match }) => {
   //   const { contextData } = useContext(ProductContext);
@@ -78,7 +29,7 @@ const AssetDetails = ({ match }) => {
   const statusColor = useCallback((status) => {
     if (status === "pending") {
       return "warning";
-    } else if (status === "success") {
+    } else if (status === "approved" || status === "partially_approved") {
       return "success";
     } else if (status === "transferred") {
       return "info";
@@ -137,7 +88,9 @@ const AssetDetails = ({ match }) => {
                           className="badge-sm badge-dot has-bg d-inline-flex"
                           color={statusColor(asset?.data?.status)}
                         >
-                          <span className="ccap">{asset?.data?.status}</span>
+                          <span className="ccap">
+                            {asset?.data?.status === "partially_approved" ? "Partial" : asset?.data?.status}
+                          </span>
                         </Badge>
                         {/* {asset?.data?.status} */}
                       </span>

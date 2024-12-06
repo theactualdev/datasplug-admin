@@ -10,6 +10,9 @@ import {
   Modal,
   ModalBody,
   UncontrolledDropdown,
+  Nav,
+  NavItem,
+  NavLink,
 } from "reactstrap";
 import {
   useGetWithdrawalTransactions,
@@ -39,7 +42,7 @@ import SortToolTip from "../tables/SortTooltip";
 import { WalletFilterOptions } from "./data";
 import { WalletStatsCard } from "./stats-card";
 
-const WithdrawalTable = ({ type, userId, showStats }) => {
+const WithdrawalTable = ({ type, userId, showStats, hideFilter = false }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -53,7 +56,7 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
 
   //   const type = searchParams.get("type") ?? undefined;
   // const { isLoading, data, error } = useGetAllProducts(currentPage, itemsPerPage, search, type);
-  const { isLoading, data, error } = useGetWithdrawalTransactions(
+  const { isLoading, data } = useGetWithdrawalTransactions(
     currentPage,
     itemsPerPage,
     status,
@@ -64,7 +67,7 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
   // console.log(data);
   // console.log(data?.stat);
   const { mutate: updateAmount } = useUpdateWalletDepositAmount(editedId);
-  const { mutate: updateStatus } = useUpdateWithdrawalWalletStatus(editedId, updatedStatus);
+  const { mutate: updateStatus, isSuccess } = useUpdateWithdrawalWalletStatus(editedId, updatedStatus);
 
   const [formData, setFormData] = useState({
     reference: "",
@@ -89,6 +92,8 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
     proof: "",
     balanceBefore: "",
     balanceAfter: "",
+    date: "",
+    meta: {},
   });
   const [view, setView] = useState({
     edit: false,
@@ -137,6 +142,8 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
       proof: "",
       balanceBefore: "",
       balanceAfter: "",
+      date: "",
+      meta: {},
     });
     reset({});
   };
@@ -168,6 +175,8 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
           proof: item?.proof,
           balanceBefore: item?.balance_before,
           balanceAfter: item?.balance_after,
+          date: item?.created_at,
+          meta: item?.meta,
         });
       }
     });
@@ -216,6 +225,14 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
     reset(formData);
   }, [formData, reset]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      onFormCancel();
+    }
+  }, [isSuccess]);
+
+  // console.log(formData);
+
   //scroll off when sidebar shows
   useEffect(() => {
     view.add ? document.body.classList.add("toggle-shown") : document.body.classList.remove("toggle-shown");
@@ -234,6 +251,25 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
       )}
       <Block>
         <Card>
+          {!hideFilter && (
+            <Nav tabs className="nav nav-tabs nav-tabs-card">
+              {WalletFilterOptions[0]?.options?.map((item, index) => (
+                <NavItem key={index}>
+                  <NavLink
+                    tag="a"
+                    href="#tab"
+                    className={status === item?.value ? "active" : ""}
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      setSearchParams({ status: item?.value });
+                    }}
+                  >
+                    {item.label}
+                  </NavLink>
+                </NavItem>
+              ))}
+            </Nav>
+          )}
           <div className="card-inner border-bottom">
             <div className="card-title-group">
               <div className="card-title">
@@ -575,6 +611,10 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
                 <span className="sub-text">Provider</span>
                 <span className="caption-text ccap">{formData.provider}</span>
               </Col>
+              <Col lg={4}>
+                <span className="sub-text">Date</span>
+                <span className="caption-text ccap">{formatDateWithTime(formData.date)}</span>
+              </Col>
               <Col>
                 <span className="sub-text">Remark</span>
                 <span className="caption-text ccap">{formData.remark}</span>
@@ -630,6 +670,35 @@ const WithdrawalTable = ({ type, userId, showStats }) => {
                     <span className="caption-text"> {formData.bank}</span>
                   </Col>
                 </>
+              )}
+              {formData?.provider !== "billpadi" && (
+                <Row className="mt-2">
+                  <h6>Transaction Meta</h6>
+                  {formData?.meta?.event_type && (
+                    <Col sm={6}>
+                      <span className="sub-text">Event Type</span>
+                      <span className="caption-text">{formData.meta?.event_type}</span>
+                    </Col>
+                  )}
+                  {formData?.meta?.paid_on && (
+                    <Col sm={6}>
+                      <span className="sub-text">Paid On</span>
+                      <span className="caption-text">{formatDateWithTime(formData.meta?.paid_on)}</span>
+                    </Col>
+                  )}
+                  {formData?.meta?.payment_method && (
+                    <Col sm={6}>
+                      <span className="sub-text">Payment Method </span>
+                      <span className="caption-text">{formData.meta?.payment_method}</span>
+                    </Col>
+                  )}
+                  {formData?.meta?.settlement_amount && (
+                    <Col sm={6}>
+                      <span className="sub-text">Settlement Amount </span>
+                      <span className="caption-text">{formatter("NGN").format(formData.meta?.settlement_amount)}</span>
+                    </Col>
+                  )}
+                </Row>
               )}
               {formData?.proof && (
                 <Col>
