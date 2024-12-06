@@ -23,7 +23,7 @@ import {
 
 import toast from "react-hot-toast";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useFinanceUser, useGetSingleUser, useUpdateUserStatus } from "../../../../api/users/user";
+import { useFinanceUser, useGetSingleUser, useUpdateUserStatus, useMarkAsFraud } from "../../../../api/users/user";
 import Content from "../../../../layout/content/Content";
 import Head from "../../../../layout/head/Head";
 import FaqTable from "../faq/faqTable";
@@ -32,6 +32,7 @@ import WithdrawalTable from "../wallet/table";
 import AddModal from "./AddModal";
 import Details from "./details/details";
 import ReferralUserList from "./details/referral-table";
+import { formatter } from "../../../../utils/Utils";
 
 const UserDetailsPage = () => {
   const { userId } = useParams();
@@ -44,6 +45,7 @@ const UserDetailsPage = () => {
   const { data: user, isLoading } = useGetSingleUser(userId);
   const { mutate: financeUser } = useFinanceUser(userId);
   const { mutate: updateUserStatus } = useUpdateUserStatus(userId);
+  const { mutate: markAsFraud } = useMarkAsFraud(userId);
 
   // console.log(user);
 
@@ -89,6 +91,76 @@ const UserDetailsPage = () => {
       </li>
     </ul>
   );
+
+  const RestrictActionOptions = ({ id }) => (
+    <ul className="nk-tb-actions gx-1 my-n1">
+      <li>
+        <UncontrolledDropdown>
+          <DropdownToggle tag="a" className="btn btn-trigger dropdown-toggle btn-icon me-n1">
+            <Icon name="more-h"></Icon>
+          </DropdownToggle>
+          <DropdownMenu end>
+            <ul className="link-list-opt no-bdr">
+              <li>
+                <DropdownItem
+                  tag="a"
+                  href="#"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    updateUserStatus();
+                  }}
+                >
+                  <Icon name="na" className={`${user?.data?.status === "active" && "text-danger"}`}></Icon>
+                  <span className={`${user?.data?.status === "active" && "text-danger"}`}>
+                    {user?.data?.status === "active" ? "Restrict" : "Unrestrict"}
+                  </span>
+                </DropdownItem>
+              </li>
+              {user?.data?.status !== "fraudulent" && (
+                <li
+                  onClick={() => {
+                    markAsFraud();
+                    // updateUserStatus();
+                  }}
+                >
+                  <DropdownItem
+                    tag="a"
+                    href="#suspend"
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                    }}
+                  >
+                    <Icon name="report"></Icon>
+                    <span>Flag as Fraud.</span>
+                  </DropdownItem>
+                </li>
+              )}
+              {/* {user?.data?.status !== "shadow banned" && (
+                <li
+                  onClick={() => {
+                    markAsFraud();
+                    // updateUserStatus();
+                  }}
+                >
+                  <DropdownItem
+                    tag="a"
+                    href="#suspend"
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                    }}
+                  >
+                    <Icon name="report"></Icon>
+                    <span>Shadow Ban User.</span>
+                  </DropdownItem>
+                </li>
+              )} */}
+            </ul>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </li>
+    </ul>
+  );
+
   const onFormSubmit = (data) => {
     let submittedData = {
       ...data,
@@ -160,6 +232,19 @@ const UserDetailsPage = () => {
           </BlockBetween>
           {/* <p>Basic info, like your name and address, that you use on Nio Platform.</p> */}
         </BlockHead>
+        <Card>
+          <div className="card-inner">
+            <ul className="nk-tranx-statistics">
+              <li className="item">
+                <Icon name="sign-kobo" className="bg-primary-dim"></Icon>
+                <div className="info">
+                  <div className="title">Wallet Balance</div>
+                  <div className="count">{formatter("NGN").format(user?.data?.wallet?.balance ?? 0)}</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </Card>
         <Card>
           <div className="card-aside-wrap" id="user-detail-block">
             <div className="card-content">
@@ -240,14 +325,16 @@ const UserDetailsPage = () => {
                     <span>Finance</span>
                   </Button>
 
-                  <Button
+                  <RestrictActionOptions />
+
+                  {/* <Button
                     outline={user?.data?.status !== "active"}
                     className="ccap"
                     onClick={updateUserStatus}
                     color={user?.data?.status !== "active" ? "primary" : "danger"}
                   >
                     <span>{user?.data?.status === "active" ? "Restrict" : "Unrestrict"}</span>
-                  </Button>
+                  </Button> */}
                 </NavItem>
               </Nav>
               <div className="card-inner">
@@ -255,12 +342,13 @@ const UserDetailsPage = () => {
                   <LoadingSpinner />
                 ) : (
                   <div> */}
+
                 <TabContent activeTab={activeTab}>
                   <TabPane tabId="details">
                     <Details user={user} />
                   </TabPane>
                   <TabPane tabId="wallet">
-                    <WithdrawalTable userId={userId} showStats={true} type={"all"} />
+                    <WithdrawalTable userId={userId} showStats={true} type={"all"} hideFilter={true} />
                   </TabPane>
                   <TabPane tabId="services">
                     <TransactionTable userId={userId} showStats={true} purpose={"all"} />

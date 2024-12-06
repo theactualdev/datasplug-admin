@@ -9,7 +9,7 @@ import Orders from "../../../components/partials/e-commerce/orders/Orders";
 import TotalSales from "../../../components/partials/e-commerce/total-sales/TotalSales";
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
-
+import { WalletStatsSection, ServicesStatsSection, AllServicesStats } from "./dashboard-stats";
 const Dashboard = () => {
   return (
     <React.Fragment>
@@ -25,13 +25,20 @@ const Dashboard = () => {
 
         <Block>
           <Row className="g-gs">
-            <Col xxl="4" md="6">
-              <TotalSales />
+            <Col>
+              <h5 className="mb-4">Total Wallet Transactions</h5>
+              <WalletStatsSection />
             </Col>
-            <Col xxl="4" md="6">
-              <AverageOrder />
+            <Col>
+              <h5 className="mb-4">Total Services Transactions</h5>
+              <ServicesStatsSection />
             </Col>
-            <Col xxl="4">
+
+            <Col>
+              <h5 className="mb-4">All Services Statistics</h5>
+              <AllServicesStats />
+            </Col>
+            {/* <Col xxl="4">
               <Row className="g-gs">
                 <Col xxl="12" md="6">
                   <Orders />
@@ -40,7 +47,7 @@ const Dashboard = () => {
                   <Customer />
                 </Col>
               </Row>
-            </Col>
+            </Col> */}
             {/* <Row className="g-gs">
               <Col xxl="3" sm="6">
                 <DataCard
@@ -79,7 +86,7 @@ const Dashboard = () => {
                 />
               </Col>
             </Row> */}
-
+            {/* 
             <Col xxl="8">
               <RecentOrders />
             </Col>
@@ -88,7 +95,7 @@ const Dashboard = () => {
             </Col>
             <Col xxl="3" md="6">
               <StoreStatistics />
-            </Col>
+            </Col> */}
             {/* <Col xxl="5" lg="6">
               <TrafficSources />
             </Col>

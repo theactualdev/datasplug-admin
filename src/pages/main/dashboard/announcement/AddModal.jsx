@@ -21,6 +21,9 @@ const targetOption = [
   { label: "All", value: "all" },
   { label: "Verified", value: "verified" },
   { label: "Specific", value: "specific" },
+  { label: "Phone Verified", value: "phone-verified" },
+  { label: "Completed Profile", value: "completed-profile" },
+  { label: "Not Completed Profile", value: "not-completed-profile" },
 ];
 
 const AddModal = ({ modal, closeModal, formData, isEdit, createFunction, editFunction }) => {

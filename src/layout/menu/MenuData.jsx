@@ -126,6 +126,16 @@ const menu = [
         link: "/transactions/education",
         permission: "all",
       },
+      {
+        text: "International Airtime",
+        link: "/transactions/international-airtime",
+        permission: "all",
+      },
+      {
+        text: "International Data",
+        link: "/transactions/international-data",
+        permission: "all",
+      },
 
       // {
       //   text: "Services Transactions",

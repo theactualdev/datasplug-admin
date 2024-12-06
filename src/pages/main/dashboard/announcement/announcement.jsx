@@ -59,7 +59,7 @@ const AnnouncementPage = () => {
   const { mutate: restoreAnnoucement } = useRestoreAnnouncement(editedId);
   const { mutate: dispatchAnnoucement } = useDispatchAnnouncement(editedId);
 
-  // console.log(data);
+  console.log(data);
   const [sm, updateSm] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -335,6 +335,9 @@ const AnnouncementPage = () => {
                         <DataTableRow size="md">
                           <span className="tb-tnx-head bg-white text-secondary">Target Count</span>
                         </DataTableRow>
+                        <DataTableRow size="md">
+                          <span className="tb-tnx-head bg-white text-secondary">Date Dispatch</span>
+                        </DataTableRow>
                         <DataTableRow>
                           <span className="tb-tnx-head bg-white text-secondary">Status</span>
                         </DataTableRow>
@@ -380,6 +383,10 @@ const AnnouncementPage = () => {
                             <DataTableRow size="md">
                               <span>{item.user_count}</span>
                             </DataTableRow>
+                            <DataTableRow size="sm">
+                              <span className="text-capitalize"> {formatDateWithTime(item?.dispatch_datetime)}</span>
+                            </DataTableRow>
+
                             <DataTableRow>
                               <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
                               <Badge

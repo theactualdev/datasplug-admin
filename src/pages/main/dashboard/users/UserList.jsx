@@ -250,9 +250,7 @@ const UserList = () => {
                     <DataTableRow size="sm">
                       <span className="tb-tnx-head bg-white text-secondary">Phone</span>
                     </DataTableRow>
-                    <DataTableRow size="sm">
-                      <span className="tb-tnx-head bg-white text-secondary">BVN Verified</span>
-                    </DataTableRow>
+
                     <DataTableRow>
                       <span className="tb-tnx-head bg-white text-secondary ">Type</span>
                     </DataTableRow>
@@ -261,6 +259,9 @@ const UserList = () => {
                     </DataTableRow>
                     <DataTableRow size="sm">
                       <span className="tb-tnx-head bg-white text-secondary">Date Joined</span>
+                    </DataTableRow>
+                    <DataTableRow size="sm">
+                      <span className="tb-tnx-head bg-white text-secondary">BVN</span>
                     </DataTableRow>
                     <DataTableRow size="md">
                       <span className="tb-tnx-head bg-white text-secondary">Status</span>
@@ -319,13 +320,6 @@ const UserList = () => {
                           )}
                         </DataTableRow>
 
-                        <DataTableRow size="sm">
-                          {item.bvn_verified ? (
-                            <span className="text-success fw-medium">Yes</span>
-                          ) : (
-                            <span className="text-danger fw-medium">No</span>
-                          )}
-                        </DataTableRow>
                         <DataTableRow>
                           <span className="ccap fs-12px">{item?.type}</span>
                         </DataTableRow>
@@ -335,13 +329,24 @@ const UserList = () => {
                         <DataTableRow size="sm">
                           <span className="fs-12px">{formatDateWithTime(item.created_at)}</span>
                         </DataTableRow>
+                        <DataTableRow size="sm">
+                          <span className={`dot bg-${item?.bvn_verified ? "success" : "danger"} d-sm-none`}></span>
+                          <Badge
+                            className="badge-sm badge-dot has-bg d-none d-sm-inline-flex fs-12px"
+                            color={item?.bvn_verified ? "success" : "danger"}
+                          >
+                            <span className="ccap fs-12px">{item?.bvn_verified ? "Yes" : "No"}</span>
+                          </Badge>
+                        </DataTableRow>
                         <DataTableRow size={"md"}>
                           <span className={`dot bg-${statusColor(item.status)} d-sm-none`}></span>
                           <Badge
                             className="badge-sm badge-dot has-bg d-none d-sm-inline-flex fs-12px"
                             color={statusColor(item.status)}
                           >
-                            <span className="ccap fs-12px">{item.status}</span>
+                            <span className="ccap fs-12px">
+                              {item.status === "shadow banned" ? "S-Banned" : item.status}
+                            </span>
                           </Badge>
                         </DataTableRow>
                         <DataTableRow className="nk-tb-col-tools">
