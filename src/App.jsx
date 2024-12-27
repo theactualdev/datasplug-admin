@@ -18,7 +18,7 @@ const App = () => {
             toastOptions={{
               success: {
                 iconTheme: {
-                  primary: "#1ee0ac",
+                  primary: "#000000",
                 },
               },
             }}

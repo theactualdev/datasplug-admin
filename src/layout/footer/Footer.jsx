@@ -10,7 +10,7 @@ const Footer = () => {
             <div className="nk-block-content">
               <p className="text-soft">
                 {" "}
-                All rights Reserved (copyright) {new Date().getFullYear()} - BillPadi Services Limited
+                All rights Reserved (copyright) {new Date().getFullYear()} - DatasPlug Services Limited
               </p>
             </div>
           </Col>

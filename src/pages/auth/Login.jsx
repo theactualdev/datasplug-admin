@@ -53,7 +53,7 @@ const Login = () => {
             <BlockContent>
               <BlockTitle tag="h4">Sign-In</BlockTitle>
               <BlockDes>
-                <p>Access BillPadi Admin using your email and passcode.</p>
+                <p>Access Datasplug Admin using your email and passcode.</p>
               </BlockDes>
             </BlockContent>
           </BlockHead>
