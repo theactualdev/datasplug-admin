@@ -1,5 +1,6 @@
 const BACKEND_URLS = {
   baseURL: import.meta.env.VITE_APP_BACKEND_BASE_URL,
+  // baseURL: process.env.VITE_APP_BACKEND_BASE_URL,
   // baseURL: "https://dummyjson.com",
   auth: {
     me: "/",
