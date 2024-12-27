@@ -28,7 +28,6 @@ const Login = () => {
       email: formData.name,
       password: formData.passcode,
     };
-    console.log(import.meta.env.VITE_APP_BACKEND_BASE_URL);
     mutate(data);
   };
 
