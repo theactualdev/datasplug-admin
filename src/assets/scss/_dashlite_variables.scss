@@ -53,14 +53,14 @@ $base-dim: mix($base-color, $white, 8%);
 // Base/Default color @used for text
 $accent-100: #f0eaff;
 $accent-200: #e7dcff;
-$accent-300: #d4c2ff;
-$accent-400: #b695ff;
-$accent-500: #9d72ff;
+$accent-300: #FFCA70;
+$accent-400: #F67D24;
+$accent-500: #DC630A;
 
-$accent-color: #854fff;
+$accent-color: #F67D24;
 $accent-light: $accent-300;
-$accent-dark: #3a2272;
-$accent-dim: #e3e7fe;
+$accent-dark: #AA3000;
+$accent-dim: #C5641D;
 
 $body-bg: $lighter;
 $body-color: $base-text;
